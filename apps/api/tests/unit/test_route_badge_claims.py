@@ -21,6 +21,7 @@ from __future__ import annotations
 
 from app.modules.badges.domain import (
     ChapterBadgeData,
+    PlaceMentionRecord,
     PlaceRecord,
     RouteRecord,
     RouteStopRecord,
@@ -28,6 +29,7 @@ from app.modules.badges.domain import (
     VerseText,
     build_route_badges,
 )
+from tests.gazetteer_doubles import published
 
 GAZETTEER = SourceAttribution(
     key="openbible_geocoding",
@@ -63,11 +65,11 @@ def _place(place_id: str, name: str, lng: float, lat: float) -> PlaceRecord:
         lat=lat,
         lng=lng,
         feature_type="region" if name in {"Mysia", "Bithynia"} else "settlement",
-        verse_count=4,
+        named_verse_count=4,
         candidate_count=1,
         precision_type="site",
         source_key=GAZETTEER.key,
-        spellings=frozenset({name.lower()}),
+        spellings=published(name),
     )
 
 
@@ -94,6 +96,15 @@ ROUTE = RouteRecord(
     ),
 )
 
+#: The `place_mentions` rows the repository loads beside those stops. The Route
+#: badge reads them because only the mention kind says whether the verse spells
+#: the name or merely refers to it -- see `test_route_names_are_in_the_text.py`.
+#: All three verses here spell theirs, so every stop survives.
+MENTIONS = tuple(
+    PlaceMentionRecord(verse_key=stop.verse_key, place_id=stop.place_id, mention_kind="name")
+    for stop in ROUTE.stops
+)
+
 CHAPTER = ChapterBadgeData(
     translation="BSB",
     book_number=44,
@@ -101,6 +112,7 @@ CHAPTER = ChapterBadgeData(
     verses=VERSES,
     sources={GAZETTEER.key: GAZETTEER},
     places=PLACES,
+    mentions=MENTIONS,
     routes=(ROUTE,),
 )
 
@@ -173,6 +185,7 @@ class TestTheRolesThePayloadAsserts:
                 verses=VERSES,
                 sources={GAZETTEER.key: GAZETTEER},
                 places=PLACES,
+                mentions=MENTIONS,
                 routes=(passage_route,),
             )
         )

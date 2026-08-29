@@ -32,7 +32,7 @@ import { basemap, ringsToPath } from '../geo/basemap';
 import type { MapTransform, Viewport } from '../geo/projection';
 import { mapPalette } from '../theme/map-palette';
 
-import { MapGraticule } from './MapGraticule';
+import { MapGraticule, type GraticuleLabelling } from './MapGraticule';
 
 /** Inputs to {@link MapSurface}. */
 export interface MapSurfaceProps {
@@ -42,6 +42,11 @@ export interface MapSurfaceProps {
   readonly viewport: Viewport;
   /** The route, pins and labels drawn over the basemap. */
   readonly children?: ReactNode;
+  /**
+   * How much of the coordinate grid carries a label. Defaults to `edges`; `all` is for a
+   * frame with no coastline in it, where the grid is the only geography there is.
+   */
+  readonly graticuleLabels?: GraticuleLabelling;
   /** Announced by a screen reader in place of the vectors. */
   readonly accessibilityLabel: string;
   /** Test hook. */
@@ -64,6 +69,7 @@ export function MapSurface({
   transform,
   viewport,
   children,
+  graticuleLabels = 'edges',
   accessibilityLabel,
   testID,
 }: MapSurfaceProps): JSX.Element {
@@ -89,7 +95,7 @@ export function MapSurface({
         </LinearGradient>
       </Defs>
       <Rect x="0" y="0" width="100%" height="100%" fill={`url(#${SEA_GRADIENT_ID})`} />
-      <MapGraticule transform={transform} viewport={viewport} />
+      <MapGraticule transform={transform} viewport={viewport} labels={graticuleLabels} />
       <Path
         d={coastline}
         fill={palette.land}

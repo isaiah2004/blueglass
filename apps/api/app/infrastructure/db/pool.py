@@ -53,8 +53,14 @@ _CONNECTION_FAILURES = (
 )
 
 
-async def _init_connection(connection: asyncpg.Connection) -> None:
-    """Round-trip jsonb as Python dicts and lists, not as text."""
+async def init_connection(connection: asyncpg.Connection) -> None:
+    """Round-trip jsonb as Python dicts and lists, not as text.
+
+    Public because a connection that skips it decodes every jsonb column as a
+    raw string, and a test opening its own connection to prove the SQL parses
+    would then be proving it against a different driver configuration than the
+    one that serves requests.
+    """
     await connection.set_type_codec(
         "jsonb",
         encoder=json.dumps,
@@ -85,7 +91,7 @@ class Database:
                 min_size=self._settings.db_pool_min_size,
                 max_size=self._settings.db_pool_max_size,
                 timeout=self._settings.db_connect_timeout_seconds,
-                init=_init_connection,
+                init=init_connection,
             )
         except (OSError, asyncpg.PostgresError) as exc:
             # Startup must not hard-crash the container: /health has to stay up

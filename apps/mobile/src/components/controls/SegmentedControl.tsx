@@ -17,8 +17,22 @@
  *
  * Accessibility
  *   `radiogroup` / `radio` rather than `tablist` / `tab`: these change a setting, they do
- *   not navigate. Each segment is at least 32 dp tall inside a 44 dp row, and carries its
- *   own label, so a screen reader announces "Light, radio button, 2 of 3".
+ *   not navigate. Each segment carries its own label, so a screen reader announces
+ *   "Light, radio button, 2 of 3".
+ *
+ * Why the pill is a child of the pressable and not the pressable itself
+ *   It used to be the pressable itself, at `minHeight: size.control` with no vertical
+ *   padding and no `hitSlop`, and it measured 103x32, 87x32 and 80x32 px in the walkthrough
+ *   against the 44 px `size.tapTarget` names as the minimum. The token states the remedy on
+ *   itself -- "a control shorter than this pads its hit area up to it" -- and padding a hit
+ *   area up is precisely what a bare `minHeight` cannot do, because the pill's fill is the
+ *   thing being measured. `hitSlop` is not the answer either: react-native-web does not
+ *   implement it, and web is a first-class target (`T-01`).
+ *
+ *   So the pressable is a transparent 44 dp row and the tinted pill is a 32 dp child of it.
+ *   The control still looks like `LampSize.control`, and the touchable area is the one
+ *   `spacing.ts` promised. This ships in the reader's display sheet and the settings theme
+ *   switcher, neither of which is a comfortable place to miss a tap.
  */
 
 import type { JSX } from 'react';
@@ -102,15 +116,13 @@ export function SegmentedControl<Value extends string>({
             aria-checked={isSelected}
             accessibilityLabel={option.accessibilityLabel ?? option.label}
             testID={`${testID ?? 'segment'}-${option.value}`}
-            style={({ pressed }) => [
-              styles.segment,
-              isSelected ? styles.segmentSelected : null,
-              pressed && { opacity: PRESSED_OPACITY },
-            ]}
+            style={({ pressed }) => [styles.segment, pressed && { opacity: PRESSED_OPACITY }]}
           >
-            <Text style={[styles.label, isSelected ? styles.labelSelected : null]}>
-              {option.label}
-            </Text>
+            <View style={[styles.pill, isSelected ? styles.pillSelected : null]}>
+              <Text style={[styles.label, isSelected ? styles.labelSelected : null]}>
+                {option.label}
+              </Text>
+            </View>
           </Pressable>
         );
       })}
@@ -130,7 +142,14 @@ const useStyles = createThemedStyles((theme: Theme) => ({
     backgroundColor: theme.background.card,
     ...Platform.select({ web: { userSelect: 'none' as const }, default: {} }),
   },
+  // The touch target. Transparent, so the control still looks like a 32 dp row of pills.
   segment: {
+    minHeight: size.tapTarget,
+    justifyContent: 'center',
+    borderRadius: radius.pill,
+  },
+  // The visible pill, at the height every small control in the app shares.
+  pill: {
     minHeight: size.control,
     justifyContent: 'center',
     paddingHorizontal: spacing.md,
@@ -138,7 +157,7 @@ const useStyles = createThemedStyles((theme: Theme) => ({
     borderWidth: borderWidth.hairline,
     borderColor: 'transparent',
   },
-  segmentSelected: {
+  pillSelected: {
     backgroundColor: withOpacity(theme.accent.cyan, SELECTED_FILL_ALPHA),
     borderColor: withOpacity(theme.accent.cyan, SELECTED_EDGE_ALPHA),
   },

@@ -18,7 +18,9 @@ Dependencies
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+
+from .place_spelling import PlaceSpelling
 
 
 @dataclass(frozen=True, slots=True)
@@ -35,11 +37,17 @@ class VerseText:
 class PlaceRecord:
     """One ancient place, with every spelling that should resolve to it.
 
-    `spellings` holds already-folded keys from `place_names`, restricted to the
-    kinds that can occur in an English Bible -- the published name and the
-    translations' variants. Modern names are excluded deliberately: "Athens" is
-    a modern name for the place filed as Greece, and anchoring a badge on it
-    would put a pin on a word scripture did not write.
+    `spellings` holds the `place_names` rows restricted to the kinds that can
+    occur in an English Bible -- the published name and the translations'
+    variants. Modern names are excluded deliberately: "Athens" is a modern name
+    for the place filed as Greece, and anchoring a badge on it would put a pin
+    on a word scripture did not write. They arrive as records rather than as
+    bare folded keys because a badge has to weigh them: see `spellings.py`.
+
+    `homonym_count` is how many gazetteer rows carry this exact name. Above 1
+    the sheet must say the name is shared rather than present one of them as
+    THE Ramah (DECISIONS #10); nine places are called Ramah, four Gilgal, three
+    Babylon.
     """
 
     place_id: str
@@ -48,11 +56,12 @@ class PlaceRecord:
     lat: float | None
     lng: float | None
     feature_type: str
-    verse_count: int
+    named_verse_count: int
     candidate_count: int
     precision_type: str | None
     source_key: str
-    spellings: frozenset[str] = field(default_factory=frozenset)
+    spellings: tuple[PlaceSpelling, ...] = ()
+    homonym_count: int = 1
 
     @property
     def is_located(self) -> bool:
@@ -147,7 +156,11 @@ class RulerRecord:
 
     ruler_id: int
     name: str
-    realm: str
+    #: The territory the SOURCE names, or None when the office label carries
+    #: none: Wikidata gives Herod Antipas and Philip the bare label "tetrarch"
+    #: and no territory, and neither ruled the Judaea that used to be filled in
+    #: for them. A lane with no name is honest; a lane with the wrong one is not.
+    realm: str | None
     title: str
     start_year: int | None
     end_year: int | None

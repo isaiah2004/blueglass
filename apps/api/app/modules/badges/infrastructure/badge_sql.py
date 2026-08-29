@@ -46,6 +46,15 @@ PLACE_MENTIONS = """
      ORDER BY verse_key, place_id
 """
 
+#: The offset the loader adds to a primary name's weight so that a place's own
+#: spelling always outranks a variant (`scripts.place_rows.PRIMARY_NAME_WEIGHT`).
+#: Subtracting it back out recovers the raw translation count, which is the only
+#: number the admissibility gates can compare across spellings -- Jerusalem
+#: publishes "Jerusalem" 7,819 times and "Jews" once, and without this the
+#: denominator would be 10 rather than 7,819. `tests/integration/test_schema.py`
+#: asserts the two constants agree, so they cannot drift apart silently.
+PRIMARY_NAME_WEIGHT = 1_000_000
+
 #: $1 first verse key, $2 last, $3 book_number, $4 chapter.
 #:
 #: The place set is the union of what the chapter MENTIONS and what its route
@@ -56,7 +65,14 @@ PLACE_MENTIONS = """
 #: excluded deliberately: the gazetteer files Athens as a modern name for the
 #: place called Greece, and anchoring a badge on it would tint a word scripture
 #: did not write.
-CHAPTER_PLACES = """
+#:
+#: Each spelling arrives as a record, not as a bare key, because the domain has
+#: to weigh it: `kind`, how many translation uses OpenBible counted for it, and
+#: whether some OTHER place publishes the same string as its own name. The last
+#: one cannot be answered from a single row, which is why it is a subquery here
+#: rather than a rule in `spellings.py` -- the adapter supplies the fact, the
+#: domain makes the judgement (rule 5.1).
+CHAPTER_PLACES = f"""
     WITH wanted AS (
         SELECT place_id FROM place_mentions WHERE verse_key BETWEEN $1 AND $2
         UNION
@@ -71,14 +87,28 @@ CHAPTER_PLACES = """
            p.lat,
            p.lng,
            p.feature_type,
-           p.verse_count,
+           p.named_verse_count,
            p.candidate_count,
+           p.homonym_count,
            p.precision_type,
            ds.key AS source_key,
            COALESCE(
-               array_agg(DISTINCT pn.normalised)
-                   FILTER (WHERE pn.kind IN ('primary', 'translation')),
-               ARRAY[]::varchar[]
+               jsonb_agg(
+                   jsonb_build_object(
+                       'normalised', pn.normalised,
+                       'name', pn.name,
+                       'kind', pn.kind,
+                       'attestation', GREATEST(
+                           pn.weight - CASE WHEN pn.kind = 'primary'
+                                            THEN {PRIMARY_NAME_WEIGHT} ELSE 0 END, 0),
+                       'names_another_place', EXISTS (
+                           SELECT 1 FROM place_names other
+                            WHERE other.normalised = pn.normalised
+                              AND other.kind = 'primary'
+                              AND other.place_id <> p.place_id)
+                   )
+               ) FILTER (WHERE pn.kind IN ('primary', 'translation')),
+               '[]'::jsonb
            ) AS spellings
       FROM places p
       JOIN data_sources ds ON ds.id = p.source_id
@@ -86,7 +116,7 @@ CHAPTER_PLACES = """
      WHERE p.place_id IN (SELECT place_id FROM wanted)
      GROUP BY p.place_id, ds.key
      ORDER BY p.place_id
-"""
+"""  # noqa: S608 - the only interpolation is a module constant
 
 #: $1 book_number, $2 chapter.
 CHAPTER_ROUTES = """
@@ -162,6 +192,12 @@ RULERS = """
 #: The INNER join to lexicon_usage is a filter as well as a fetch: a lemma with
 #: no usage row has no occurrence count, and the Root badge's whole selection
 #: rule is rarity, so a word we cannot count is a word we cannot rank.
+#:
+#: It joins on `simple_strongs` because `simple_strongs` is what the badge
+#: prints. Joined on `l.strongs` -- the disambiguated key the word rows carry --
+#: the payload paired a number a reader can look up with a count of one sense
+#: of it, and told 26 badges' worth of readers that Ἰησοῦς, ποιέω and πνεῦμα
+#: occur once. See `db/versions/0009_20260829_usage_by_published_strongs.py`.
 CHAPTER_WORDS = """
     SELECT a.verse_key,
            a.token_index,
@@ -189,7 +225,7 @@ CHAPTER_WORDS = """
       FROM verse_word_alignments a
       JOIN verse_words w ON w.id = a.verse_word_id
       JOIN lexicon l ON l.strongs = w.strongs
-      JOIN lexicon_usage u ON u.strongs = l.strongs
+      JOIN lexicon_usage u ON u.simple_strongs = l.simple_strongs
       JOIN data_sources ads ON ads.id = a.source_id
       JOIN data_sources wds ON wds.id = w.source_id
       JOIN data_sources lds ON lds.id = l.source_id

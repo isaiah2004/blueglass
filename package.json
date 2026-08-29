@@ -1,6 +1,6 @@
 {
   "name": "atlas-bible",
-  "version": "0.17.3",
+  "version": "0.19.1",
   "private": true,
   "type": "module",
   "description": "Atlas Bible (Aletheia) — multimodal Bible atlas. pnpm workspace root; holds shared tooling and task scripts only, never application code.",

@@ -17,10 +17,17 @@
  * The preferred zoom is a starting point, not the answer
  *   Zoom is degrees per *pixel*, so one constant frames three different amounts of world
  *   across a 375 dp phone sheet, a 290 dp rail and a 560 dp wide rail. An inland site such
- *   as Lystra came out as an empty graticule with a single pin — a grey blob a reader
- *   reasonably reads as a broken map. `geo/site-framing.ts` steps the camera out until the
- *   vendored coastline is genuinely in frame, so a coastal site keeps the close framing it
- *   already had and an inland one widens exactly as far as it must.
+ *   as Lystra came out as a near-empty graticule with two black wedges intruding from the
+ *   edges — a picture a reader reasonably reads as a broken map. `geo/map-framing.ts`
+ *   steps the camera out until the frame holds a readable share of both land and water, so
+ *   a coastal site keeps the close framing it already had and an inland one widens exactly
+ *   as far as it must.
+ *
+ * And when no zoom can find water
+ *   Babylon, Nineveh and Susa are landlocked at every zoom the framing rule will open. The
+ *   map does not pretend otherwise: it labels every grid line instead of the usual two,
+ *   because with no coast the graticule is the only geography there is, and it says so in a
+ *   `MapKey` when the frame draws no coastline at all.
  *
  * Where a real model would go
  *   `model/reconstruction.ts` is the seam. When a model is commissioned, `CitySiteSheet`
@@ -33,12 +40,21 @@
 import { useMemo, type JSX } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { project, transformForZoom, type GeoPoint } from '../geo/projection';
-import { siteZoom } from '../geo/site-framing';
+import { spacing } from '@/theme';
+
+import {
+  project,
+  transformForZoom,
+  type GeoPoint,
+  type MapTransform,
+  type Viewport,
+} from '../geo/projection';
+import { mapFraming, type MapFraming } from '../geo/map-framing';
 import { useMapViewport } from '../hooks/use-map-viewport';
 
+import { MapKey } from './MapKey';
 import { MapMarker } from './MapMarker';
-import { MapScaleBar } from './MapScaleBar';
+import { MapScaleBar, SCALE_BAR_HEIGHT } from './MapScaleBar';
 import { MapSurface } from './MapSurface';
 
 /** Inputs to {@link CitySiteMap}. */
@@ -74,6 +90,25 @@ const REGION_ZOOM = 5;
 const WIDE_FEATURES: ReadonlySet<string> = new Set(['region', 'river', 'water', 'terrain']);
 
 /**
+ * Said on the map when no zoom down to the floor could balance the frame.
+ *
+ * Both wordings are statements about this picture, checkable against it: the frame is at
+ * the widest the rule will open, and less than a fifth of it is water. Which is exactly
+ * what a reader needs to know before deciding the render has failed — the report on the
+ * Lystra screenshot is what that conclusion looks like.
+ *
+ * `coastless` is the stronger case: no vendored coastline is drawn at all, which the
+ * gazetteer cannot produce inside the basemap's crop but a bad coordinate can.
+ */
+const INLAND_NOTE = 'Inland — widest view';
+
+/** Said instead when the frame draws no coastline at all. See {@link INLAND_NOTE}. */
+const COASTLESS_NOTE = 'No coastline in view';
+
+/** Stacks the note above the scale bar rather than over it. */
+const NOTE_INSET = { x: spacing.md, y: spacing.md + SCALE_BAR_HEIGHT + spacing.xs } as const;
+
+/**
  * Draw the site map.
  *
  * @param props - See {@link CitySiteMapProps}.
@@ -90,31 +125,86 @@ export function CitySiteMap({
   const { viewport, onLayout } = useMapViewport(MAP_ASPECT);
   const preferredZoom = WIDE_FEATURES.has(featureType) ? REGION_ZOOM : SITE_ZOOM;
 
-  const transform = useMemo(() => {
-    if (viewport === null) return null;
-    return transformForZoom(coordinates, siteZoom(coordinates, viewport, preferredZoom), viewport);
-  }, [coordinates, preferredZoom, viewport]);
+  const framing = useMemo(
+    () => (viewport === null ? null : mapFraming(coordinates, viewport, preferredZoom)),
+    [coordinates, preferredZoom, viewport],
+  );
+  const transform = useMemo(
+    () =>
+      viewport === null || framing === null
+        ? null
+        : transformForZoom(coordinates, framing.zoom, viewport),
+    [coordinates, framing, viewport],
+  );
 
   return (
     <View style={[styles.frame, style]} onLayout={onLayout} testID="spatial-city-map">
-      {viewport !== null && transform !== null ? (
-        <MapSurface
+      {viewport === null || transform === null || framing === null ? null : (
+        <SiteSurface
+          coordinates={coordinates}
+          name={name}
+          framing={framing}
           transform={transform}
           viewport={viewport}
-          accessibilityLabel={`Map of ${name}`}
-          testID="spatial-city-map-surface"
-        >
-          <MapMarker
-            point={project(transform, coordinates)}
-            name={name}
-            viewport={viewport}
-            emphasised
-            labelled
-          />
-          <MapScaleBar transform={transform} viewport={viewport} latitude={coordinates[1]} />
-        </MapSurface>
-      ) : null}
+        />
+      )}
     </View>
+  );
+}
+
+/** What {@link SiteSurface} draws with. */
+interface SiteSurfaceProps {
+  readonly coordinates: GeoPoint;
+  readonly name: string;
+  readonly framing: MapFraming;
+  readonly transform: MapTransform;
+  readonly viewport: Viewport;
+}
+
+/**
+ * The drawn surface, once layout has measured the frame.
+ *
+ * Split from {@link CitySiteMap} at the seam rule 5.4.3 forces: the camera is decided
+ * above, the picture is drawn here, and neither half runs before the other has an answer.
+ *
+ * @param props - See {@link SiteSurfaceProps}.
+ * @returns The basemap, the pin, the scale bar, and the note an unbalanced frame owes the
+ *   reader. Side effects: none.
+ */
+function SiteSurface({
+  coordinates,
+  name,
+  framing,
+  transform,
+  viewport,
+}: SiteSurfaceProps): JSX.Element {
+  return (
+    <MapSurface
+      transform={transform}
+      viewport={viewport}
+      graticuleLabels={framing.framed ? 'edges' : 'all'}
+      accessibilityLabel={`Map of ${name}`}
+      testID="spatial-city-map-surface"
+    >
+      <MapMarker
+        point={project(transform, coordinates)}
+        name={name}
+        viewport={viewport}
+        emphasised
+        labelled
+      />
+      <MapScaleBar transform={transform} viewport={viewport} latitude={coordinates[1]} />
+      {framing.framed ? null : (
+        <MapKey
+          viewport={viewport}
+          caption={framing.coastless ? COASTLESS_NOTE : INLAND_NOTE}
+          mark="none"
+          corner="bottomLeft"
+          inset={NOTE_INSET}
+          testID="spatial-city-inland-note"
+        />
+      )}
+    </MapSurface>
   );
 }
 

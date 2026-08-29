@@ -75,8 +75,8 @@ describe.each(BOTH_THEMES)('the site sheet in the %s theme', (theme: ThemeName) 
       <SpatialSheet badge={{ payload: JERUSALEM_CITY, sources: [OPENBIBLE_SOURCE] }} />,
       theme,
     );
-    expect(view.text()).toContain('955');
-    expect(view.text()).toContain('VERSES IN CANON');
+    expect(view.text()).toContain('766');
+    expect(view.text()).toContain('VERSES NAMING IT');
     view.unmount();
   });
 
@@ -92,6 +92,36 @@ describe.each(BOTH_THEMES)('the site sheet in the %s theme', (theme: ThemeName) 
     view.unmount();
   });
 
+  it('opens a balanced frame on a coastal site, and says nothing about it', () => {
+    const view = renderSpatial(
+      <SpatialSheet badge={{ payload: LYSTRA_CITY, sources: [OPENBIBLE_SOURCE] }} />,
+      theme,
+    );
+    layoutTo(view.byTestId('spatial-city-map')!, 358);
+    // Lystra widens until land and water share the frame, so there is nothing to explain.
+    expect(view.byTestId('spatial-city-inland-note')).toBeNull();
+    view.unmount();
+  });
+
+  it('explains a landlocked frame instead of leaving it looking broken', () => {
+    // Babylon, from the gazetteer: no zoom down to the floor puts a fifth of the frame
+    // under water. An unexplained field of one colour is what the Lystra report called a
+    // rendering bug, so the map says why it looks like that.
+    const babylon = {
+      ...LYSTRA_CITY,
+      location: { ...LYSTRA_CITY.location, name: 'Babylon', coordinates: [44.422222, 32.543333] },
+    } as typeof LYSTRA_CITY;
+    const view = renderSpatial(
+      <SpatialSheet badge={{ payload: babylon, sources: [OPENBIBLE_SOURCE] }} />,
+      theme,
+    );
+    layoutTo(view.byTestId('spatial-city-map')!, 358);
+
+    expect(view.byTestId('spatial-city-inland-note')).not.toBeNull();
+    expect(view.text()).toContain('Inland');
+    view.unmount();
+  });
+
   it('draws no line between pins at all — a site is one place', () => {
     const view = renderSpatial(
       <SpatialSheet badge={{ payload: LYSTRA_CITY, sources: [OPENBIBLE_SOURCE] }} />,
@@ -99,7 +129,7 @@ describe.each(BOTH_THEMES)('the site sheet in the %s theme', (theme: ThemeName) 
     );
     layoutTo(view.byTestId('spatial-city-map')!, 358);
     expect(view.byTestId('spatial-route-line')).toBeNull();
-    expect(view.byTestId('spatial-mention-trace')).toBeNull();
+    expect(view.container.querySelector('[data-testid="spatial-mention-trace"]')).toBeNull();
     view.unmount();
   });
 });

@@ -12,7 +12,7 @@
  *   Nothing here writes prose about a city. There is no `summary`, no "leading city of
  *   Macedonia", no era description — the server does not send them because inventing them
  *   would be the pillar-3 violation the product exists to avoid. What the sheet says about
- *   significance is arithmetic on `canon_verse_count` and `identification_count`, phrased
+ *   significance is arithmetic on `named_verse_count` and `identification_count`, phrased
  *   so the arithmetic is visible.
  *
  * The identification count is the interesting field
@@ -24,6 +24,7 @@
  *   `./passage-label`, `./spatial-payload.types`. No React.
  */
 
+import { sharedNameNote } from './identification';
 import { formatOsis } from './passage-label';
 import type { CitySheetPayload, SpatialLocation } from './spatial-payload.types';
 
@@ -45,6 +46,15 @@ export interface CityView {
   readonly coordinateLabel: string;
   /** How sure the pin is, in a sentence. Never omitted — an unqualified pin over-claims. */
   readonly precisionNote: string;
+  /**
+   * `One of 9 places of this name`, or `null` when the name belongs to one place.
+   *
+   * A different caveat from `precisionNote`, which is about where THIS place is. This one
+   * is about whether the sheet is even looking at the place the reader means: three
+   * ancient towns are called Bethel, and a sheet headed "Bethel" that says nothing has
+   * picked one of them for the reader (`DECISIONS.md` #10).
+   */
+  readonly sharedNameNote: string | null;
   /** What kind of place it is, capitalised for display. */
   readonly featureLabel: string;
   /** `Acts 16:1`, `Acts 16:2` — where this chapter names it. */
@@ -54,7 +64,7 @@ export interface CityView {
 }
 
 /** Caption for how much of the canon names this place. */
-const CANON_CAPTION = 'VERSES IN CANON';
+const CANON_CAPTION = 'VERSES NAMING IT';
 
 /** Caption for how many verses of the chapter being read name it. */
 const CHAPTER_CAPTION = 'IN THIS CHAPTER';
@@ -144,10 +154,11 @@ export function toCityView(payload: CitySheetPayload): CityView {
     location: payload.location,
     coordinateLabel: formatCoordinates(payload.location.coordinates),
     precisionNote: precisionNote(payload.precisionType, payload.identificationCount),
+    sharedNameNote: sharedNameNote(payload.location.sharedNameCount),
     featureLabel: titleCase(payload.location.featureType),
     mentions,
     stats: [
-      { value: String(payload.canonVerseCount), caption: CANON_CAPTION },
+      { value: String(payload.namedVerseCount), caption: CANON_CAPTION },
       { value: String(mentions.length), caption: CHAPTER_CAPTION },
       { value: String(payload.identificationCount), caption: IDENTIFICATION_CAPTION },
     ],

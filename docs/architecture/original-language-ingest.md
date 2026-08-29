@@ -18,7 +18,7 @@ suggests.
 | ↳ definitions | 19,708 | Dodson where it has one (5,408 keys), else the headword's own lexicon | CC0 / CC BY 4.0 |
 | `verse_words` | **142,096** | STEPBible TAGNT, both files | CC BY 4.0 |
 | `verse_word_alignments` | **185,703** | computed here from TAGNT's English column | derived, CC BY 4.0 upstream |
-| `lexicon_usage` | **5,580** | aggregated from `verse_words` in the same transaction | — |
+| `lexicon_usage` | **5,417** | aggregated from `verse_words` per PUBLISHED Strong's number | — |
 
 `lexicon` by language: **11,040 Greek** (11,035 + 5 minted), **8,021 Hebrew**,
 **653 Aramaic**. `verse_words` covers **7,957 verses** — the whole Greek New Testament.
@@ -187,6 +187,16 @@ Three additions to the proposed word layer:
 3. **`lexicon_usage`.** `AI-07` says badge content is pre-computed; the stat strip is
    three aggregates over 142k rows, computed in the same transaction that writes them so
    the counts can never describe a different corpus.
+
+   It is keyed on **`simple_strongs`, the number the badge prints**, not on the
+   disambiguated key the word rows carry — 5,417 rows, not 5,580. Keyed per sense it
+   counted one sense of a number a reader can look up, and 26 Root badges said "This
+   word occurs once in the whole of the Greek New Testament" of Ἰησοῦς (992), ποιέω
+   (579) and πνεῦμα (386). Since the builder picks the rarest word in a verse, the
+   artificially rare split was preferentially chosen. Summing the per-sense rows at
+   read time would not have fixed it: `verse_count` and `book_count` would double-count
+   every verse holding two senses, so the aggregate is grouped once, at write time.
+   `scripts/lexicon/assertions.py` refuses the load if it is grouped any other way.
 
 `data_sources` gained **`retrieved_at`** (added `IF NOT EXISTS`, since several agents
 extend that table): the ingest brief requires source, licence *and* retrieval date to

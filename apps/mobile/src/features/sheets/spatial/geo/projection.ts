@@ -258,6 +258,24 @@ export function visibleBounds(transform: MapTransform, viewport: Viewport): GeoB
 }
 
 /**
+ * The coordinate at the centre of the frame.
+ *
+ * The inverse of {@link project} applied to the middle pixel. Framing widens a map about
+ * its own centre, and it has to know which coordinate that is in order to ask what is
+ * around it — see `./map-framing`.
+ *
+ * @param transform - The map's current transform.
+ * @param viewport - The pixel box.
+ * @returns `[longitude, latitude]`, or `null` for a degenerate transform. Side effects: none.
+ */
+export function centreOf(transform: MapTransform, viewport: Viewport): GeoPoint | null {
+  if (!Number.isFinite(transform.scale) || transform.scale <= 0) return null;
+  const worldX = (viewport.width / 2 - transform.offsetX) / transform.scale;
+  const worldY = (viewport.height / 2 - transform.offsetY) / transform.scale;
+  return [worldX * 360 - 180, latitudeAt(worldY)];
+}
+
+/**
  * The zoom a transform is currently at.
  *
  * Exposed so a sheet can report or cap its own framing; the fit is otherwise expressed

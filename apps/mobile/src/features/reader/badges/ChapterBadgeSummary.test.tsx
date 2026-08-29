@@ -59,7 +59,10 @@ describe.each(BOTH_THEMES)('ChapterBadgeSummary — %s theme', (theme: ThemeName
 
     expect(text).toContain('Route]');
     expect(text).toContain('Site]');
-    expect(text).toContain('Derbe to Thyatira');
+    // "Derbe to Thyatira" until the fixture was re-captured: the server stopped titling the
+    // chapter route as a journey when it turned out no dataset says Paul made one, and the
+    // stale fixture kept the retracted claim alive in this assertion.
+    expect(text).toContain('15 places named in this chapter');
     expect(text).toContain('Samothrace');
     view.unmount();
   });
@@ -107,6 +110,22 @@ describe.each(BOTH_THEMES)('ChapterBadgeSummary — %s theme', (theme: ThemeName
     view.byTestId(`badge-summary-row-${first.id}`)?.click();
 
     expect(opened).toEqual([first.id]);
+    view.unmount();
+  });
+
+  it('clamps a teaser at three lines, not two, so none loses its last word', () => {
+    const view = renderReader(summary(), theme);
+
+    // `numberOfLines` reaches the DOM as an inline `-webkit-line-clamp`, which is what the
+    // browser measurement was taken against. At two, the 375 dp column cut the longest live
+    // teasers mid-word — Galatians 3's `used once in th…` and two of Acts 16's Root rows —
+    // and a counted claim that stops mid-word is not one the reader can check.
+    const clamped = [...view.container.querySelectorAll('[style*="line-clamp"]')];
+
+    expect(clamped).toHaveLength(fixture().badges.length);
+    for (const teaser of clamped) {
+      expect(teaser.getAttribute('style')).toContain('-webkit-line-clamp: 3');
+    }
     view.unmount();
   });
 

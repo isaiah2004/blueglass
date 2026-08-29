@@ -20,13 +20,21 @@ from collections.abc import AsyncIterator
 import asyncpg
 import pytest
 
+from app.infrastructure.db.pool import init_connection
+
 pytestmark = pytest.mark.integration
 
 
 @pytest.fixture
 async def connection(live_database_url: str) -> AsyncIterator[asyncpg.Connection]:
-    """A connection whose work is always rolled back."""
+    """A connection whose work is always rolled back.
+
+    Configured with the pool's own `init_connection`, so a statement is proven
+    against the driver setup that serves requests rather than against a bare
+    connection that decodes jsonb as text.
+    """
     conn = await asyncpg.connect(dsn=live_database_url)
+    await init_connection(conn)
     transaction = conn.transaction()
     await transaction.start()
     try:

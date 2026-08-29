@@ -42,6 +42,19 @@ export interface SpatialLocation extends MappedLocation {
   readonly placeId: string;
   /** The packed key of the verse that names it, so a pin can cite its own verse. */
   readonly verseKey: number;
+  /**
+   * How many different ancient places carry this name.
+   *
+   * Nine are called Ramah, four Gilgal, three Babylon, and 1,122 of the canon's route
+   * waypoints are one of them. `DECISIONS.md` #10 forbids presenting one of several as
+   * the settled identification, so above 1 the sheet has to say the name is shared.
+   */
+  readonly sharedNameCount: number;
+  /**
+   * How many modern sites scholarship proposes for THIS place. 777 of the 1,342 ancient
+   * places have more than one; the same rule applies.
+   */
+  readonly candidateCount: number;
 }
 
 /** A span of verses as the wire sends it: two packed integers, both ends inclusive. */
@@ -83,8 +96,14 @@ export interface CitySheetPayload {
   readonly identificationCount: number;
   /** How precisely the pin is known, e.g. `tel`, `site`, `region`. */
   readonly precisionType?: string | undefined;
-  /** How many verses of the whole canon name this place. */
-  readonly canonVerseCount: number;
+  /**
+   * How many verses of the whole canon SPELL this place's name.
+   *
+   * Namings, not references. `place_mentions` also records people_group,
+   * common_noun and no_translation rows, and counting those had the sheet say
+   * Jerusalem is named in 955 verses where 766 spell it.
+   */
+  readonly namedVerseCount: number;
   /** OSIS ids of the verses in THIS chapter that name it, e.g. `Acts.16.1`. */
   readonly mentionedAt: readonly string[];
   /** Whether a 3D reconstruction exists to load. `false` for every row M2 ships. */

@@ -44,19 +44,27 @@ _ALIGNMENT_COLUMNS = (
 #: Aggregates the Root sheet's stat strip renders. Computed from the rows just
 #: written, in the same transaction, so the counts can never describe a corpus
 #: other than the one on disk.
+#:
+#: Grouped by `simple_strongs`, NOT by the disambiguated key the words carry.
+#: The badge prints the simple number, so the simple number is what must be
+#: counted: keyed per sense, this aggregate said Ἰησοῦς / G2424 occurs once
+#: while G2424 occurs 992 times. Aggregating here rather than at read time is
+#: what keeps `verse_count` a count of DISTINCT verses -- summing the per-sense
+#: rows would count a verse once per sense it contains.
 _BUILD_USAGE = """
     INSERT INTO lexicon_usage
-        (strongs, occurrence_count, verse_count, book_count, first_verse_key,
-         source_id)
-    SELECT strongs,
+        (simple_strongs, occurrence_count, verse_count, book_count,
+         first_verse_key, source_id)
+    SELECT l.simple_strongs,
            count(*),
-           count(DISTINCT verse_key),
-           count(DISTINCT verse_key / 1000000),
-           min(verse_key),
+           count(DISTINCT w.verse_key),
+           count(DISTINCT w.verse_key / 1000000),
+           min(w.verse_key),
            $1
-      FROM verse_words
-     WHERE source_id = $1
-     GROUP BY strongs
+      FROM verse_words w
+      JOIN lexicon l ON l.strongs = w.strongs
+     WHERE w.source_id = $1
+     GROUP BY l.simple_strongs
 """
 
 

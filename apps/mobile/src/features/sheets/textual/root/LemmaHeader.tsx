@@ -21,6 +21,15 @@
  *   Colours come from the active palette. When the lemma is right-to-left the whole block
  *   flips its alignment with it, so a Hebrew headword and its transliteration share an edge
  *   instead of drifting to opposite sides of the card.
+ *
+ * A headword must never be shown incomplete
+ *   The lemma is one unbreakable word set at the display step, and a flex item's `min-width`
+ *   defaults to `auto` — its min-content width, which for a single word is the whole word.
+ *   So `προευαγγελίζομαι` measured 266 dp inside the 231 dp tablet rail and was clipped by
+ *   an ancestor to `προευαγγελίζομα` — a different word, silently, with no ellipsis to warn
+ *   the reader. `minWidth: 0` lets the box be narrower than its content so the word wraps
+ *   instead. A wrapped headword is ugly at the worst widths; a truncated one is wrong, and
+ *   this sheet exists to show the reader exactly which word is in the text.
  */
 
 import type { JSX } from 'react';
@@ -107,8 +116,9 @@ const useStyles = createThemedStyles((theme: Theme) => ({
   alignStart: { alignItems: 'flex-start' },
   alignEnd: { alignItems: 'flex-end' },
   // Gold: §2 gives the accent to "place names, verse numbers" — the nouns of scripture —
-  // and the headword is the same category of thing.
-  lemma: { color: theme.accent.gold },
+  // and the headword is the same category of thing. `minWidth: 0` is not decoration: see
+  // the header note — without it a long lemma is clipped rather than wrapped.
+  lemma: { color: theme.accent.gold, minWidth: 0, alignSelf: 'stretch' },
   transliteration: { ...uiText('lg'), color: theme.accent.cyan },
   chips: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.sm },
   strongs: {
@@ -131,5 +141,6 @@ const useStyles = createThemedStyles((theme: Theme) => ({
   },
   surfaceRow: { gap: spacing.xs },
   surfaceLabel: { ...metadataText('sm', 'medium'), color: theme.ink.secondary },
-  surface: { color: theme.ink.primary },
+  // The inflected form is a single word too, and can be longer than the headword.
+  surface: { color: theme.ink.primary, minWidth: 0, alignSelf: 'stretch' },
 }));

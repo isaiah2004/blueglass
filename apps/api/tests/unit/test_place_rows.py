@@ -12,8 +12,9 @@ import json
 
 import pytest
 
+from app.modules.badges.domain.builders.place_support import ANCHORABLE_MENTION
 from scripts.place_parser import clamp_confidence, parse_lonlat, parse_places
-from scripts.place_rows import PlaceDataError
+from scripts.place_rows import NAMED_MENTION_KIND, PlaceDataError
 
 PHILIPPI_ANCIENT = {
     "id": "a49e1d0",
@@ -157,3 +158,125 @@ def test_the_dominant_mention_kind_wins() -> None:
     dataset = parse_places(_jsonl(ancient), _jsonl(PHILIPPI_MODERN))
 
     assert dataset.mentions[0].mention_kind == "people_group"
+
+
+def test_named_verse_count_counts_only_the_verses_that_spell_the_name() -> None:
+    """A "named in N verses" line is a claim about words on the page.
+
+    Counting every mention row instead had the 3D City teaser say Jerusalem is
+    named in 955 verses where 766 spell it, and put 2 Samuel 11:22 -- which
+    names no place at all -- among them.
+    """
+    ancient = _philippi(
+        verses=[
+            {"osis": "Acts.16.12", "sort": "44016012", "instance_types": {"name": 10}},
+            {"osis": "Acts.20.6", "sort": "44020006", "instance_types": {"people_group": 4}},
+            {"osis": "Phil.1.1", "sort": "50001001", "instance_types": {"no_translation": 2}},
+        ]
+    )
+    dataset = parse_places(_jsonl(ancient), _jsonl(PHILIPPI_MODERN))
+
+    assert len(dataset.mentions) == 3
+    assert dataset.places[0].named_verse_count == 1
+
+
+def test_the_loader_and_the_domain_agree_on_which_kind_is_a_naming() -> None:
+    """One string, stated twice because neither layer may import the other."""
+    assert NAMED_MENTION_KIND == ANCHORABLE_MENTION
+
+
+def _homonym(index: int, place_id: str, **overrides: object) -> dict[str, object]:
+    """One of two places OpenBible files as "Antioch N"."""
+    return _philippi(
+        id=place_id,
+        friendly_id=f"Antioch {index}",
+        url_slug=f"antioch-{index}",
+        translation_name_counts={"Antioch": 10 * index},
+        **overrides,
+    )
+
+
+def test_the_homonym_ordinal_never_reaches_the_name() -> None:
+    """315 of the 1,342 published ids carry one, and `name` is what a badge
+    prints beside scripture. No manuscript calls anywhere "Antioch 2"."""
+    dataset = parse_places(_jsonl(_homonym(2, "a6c704a")), _jsonl(PHILIPPI_MODERN))
+    (place,) = dataset.places
+
+    assert place.name == "Antioch"
+    assert place.disambiguation_index == 2
+    assert place.slug == "antioch-2"
+
+
+def test_the_ordinal_survives_beside_the_name() -> None:
+    """Losing the ability to tell two same-named places apart would be a worse
+    bug than showing the ordinal, so it is moved rather than deleted."""
+    dataset = parse_places(
+        _jsonl(_homonym(1, "ae41ab4"), _homonym(2, "a6c704a")), _jsonl(PHILIPPI_MODERN)
+    )
+
+    assert {place.disambiguation_index for place in dataset.places} == {1, 2}
+    assert {place.homonym_count for place in dataset.places} == {2}
+    assert all(place.is_ambiguous for place in dataset.places)
+
+
+def test_an_unshared_name_is_not_marked_ambiguous() -> None:
+    dataset = parse_places(_jsonl(PHILIPPI_ANCIENT), _jsonl(PHILIPPI_MODERN))
+    (place,) = dataset.places
+
+    assert place.homonym_count == 1
+    assert place.is_ambiguous is False
+    assert place.disambiguation_index is None
+
+
+def test_a_spurious_ordinal_does_not_invent_ambiguity() -> None:
+    """ "Carmel 1", "Joktheel 1" and "Kadesh 2" have no siblings in the file."""
+    dataset = parse_places(
+        _jsonl(_philippi(id="a053f15", friendly_id="Carmel 1", url_slug="carmel-1")),
+        _jsonl(PHILIPPI_MODERN),
+    )
+    (place,) = dataset.places
+
+    assert (place.name, place.disambiguation_index, place.homonym_count) == (
+        "Carmel",
+        1,
+        1,
+    )
+
+
+def test_the_source_note_arrives_as_plain_text() -> None:
+    """OpenBible's own words are what actually tell two homonyms apart, and it
+    publishes them as HTML."""
+    ancient = _homonym(2, "a6c704a", comment='in <ancient id="a55aded">Pisidia</ancient>')
+    dataset = parse_places(_jsonl(ancient), _jsonl(PHILIPPI_MODERN))
+
+    assert dataset.places[0].disambiguation == "in Pisidia"
+
+
+def test_a_place_with_no_note_is_given_none() -> None:
+    dataset = parse_places(_jsonl(PHILIPPI_ANCIENT), _jsonl(PHILIPPI_MODERN))
+
+    assert dataset.places[0].disambiguation is None
+
+
+def test_the_gazetteer_is_keyed_on_the_name_a_reader_would_type() -> None:
+    """Keying the primary row on friendly_id produced "antioch2", a spelling
+    that appears in no Bible and that no model will ever emit."""
+    dataset = parse_places(_jsonl(_homonym(2, "a6c704a")), _jsonl(PHILIPPI_MODERN))
+    primary = [row for row in dataset.names if row.kind == "primary"]
+
+    assert [(row.normalised, row.name) for row in primary] == [("antioch", "Antioch")]
+
+
+def test_homonyms_are_ranked_by_attestation_not_by_place_id() -> None:
+    """Nine places are called Ramah. Tied weights would make the default pin
+    fall out of place-id order -- an arbitrary pick dressed as a ranking."""
+    dataset = parse_places(
+        _jsonl(_homonym(1, "zzz_low"), _homonym(2, "aaa_high")),
+        _jsonl(PHILIPPI_MODERN),
+    )
+    ranked = sorted(
+        (row for row in dataset.names if row.normalised == "antioch"),
+        key=lambda row: (-row.weight, row.place_id),
+    )
+
+    assert [row.place_id for row in ranked] == ["aaa_high", "zzz_low"]

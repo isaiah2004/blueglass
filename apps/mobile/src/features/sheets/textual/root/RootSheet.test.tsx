@@ -116,6 +116,26 @@ describe.each(BOTH_THEMES)('RootSheet in the %s theme', (theme: ThemeName) => {
   });
 });
 
+describe('RootSheet and a headword too wide for its surface', () => {
+  // Measured in Chrome, not asserted from theory: in the 231 dp tablet rail
+  // `προευαγγελίζομαι` laid out 266 dp wide and an ancestor clipped it to
+  // `προευαγγελίζομα`, with no ellipsis to tell the reader a letter was missing. jsdom
+  // cannot lay text out, so what is pinned here is the pair of properties that let the box
+  // be narrower than the word: a flex item defaults to `min-width: auto`, its min-content
+  // width, and a shrink-to-fit cross size takes that same min-content width, so the lemma
+  // has to both stretch and be allowed below its content width. Either alone still clips.
+  it.each(['root-lemma', 'root-surface'])('lets %s wrap rather than be clipped', (testID) => {
+    const view = renderSheet(<RootSheet badge={ROOT_BADGE} />, 'dark');
+    const element = view.byTestId(testID);
+
+    expect(element, `${testID} is not rendered`).not.toBeNull();
+    const style = getComputedStyle(element as HTMLElement);
+    expect(style.minWidth).toBe('0px');
+    expect(style.alignSelf).toBe('stretch');
+    view.unmount();
+  });
+});
+
 describe('RootSheet and right-to-left scripts', () => {
   it('renders a Hebrew lemma intact, not as replacement characters', () => {
     const view = renderSheet(<RootSheet badge={HEBREW_ROOT_PROBE} />, 'dark');

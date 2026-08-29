@@ -88,8 +88,14 @@ export interface City3dBadgePayload {
   readonly identificationCount: number;
   /** How precisely the pin is known, e.g. `site`, `region`. */
   readonly precisionType?: string;
-  /** How many verses of the whole canon name this place. Drives the sheet's stat strip. */
-  readonly canonVerseCount: number;
+  /**
+   * How many verses of the whole canon SPELL this place's name.
+   *
+   * Namings, not references. `place_mentions` also records people_group,
+   * common_noun and no_translation rows, and counting those had the sheet say
+   * Jerusalem is named in 955 verses where 766 spell it.
+   */
+  readonly namedVerseCount: number;
   /** OSIS ids of the verses in THIS chapter that name it. */
   readonly mentionedAt: readonly string[];
   /**

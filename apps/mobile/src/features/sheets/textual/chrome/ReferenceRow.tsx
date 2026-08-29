@@ -22,6 +22,15 @@
  *   `size.tapTarget` is the floor, not the height: the row is as tall as its text and is
  *   padded up to 44 dp when the text is short, so a one-line reference is still reachable
  *   with a thumb.
+ *
+ * Why `trailing` is wrapped rather than dropped straight into the header
+ *   The header is one flex row and `trailing` is a node this component cannot style. React
+ *   Native defaults `flexShrink` to 0, so an unwrapped trailing node keeps its intrinsic
+ *   width whatever the row is given: in the 231 dp tablet rail, `1 Thessalonians 5:16-18`
+ *   wrapped to two lines and pushed the strength meter 13 dp past the rail, where an
+ *   ancestor clipped it to `STRONG CONSENS` / `42 VOT`. A truncated vote count is a claim
+ *   the reader cannot check, which is pillar 3, not polish. The wrapper gives the slot
+ *   `flexShrink: 1` and `minWidth: 0` so whatever is in it wraps inside the row instead.
  */
 
 import type { JSX, ReactNode } from 'react';
@@ -47,7 +56,12 @@ export interface ReferenceRowProps {
   readonly text?: string | undefined;
   /** A short qualifier under the text, e.g. that only the first verse is shown. */
   readonly note?: string | undefined;
-  /** Anything on the right of the reference — a vote count, a strength bar. */
+  /**
+   * Anything on the right of the reference — a vote count, a strength bar.
+   *
+   * Rendered into a slot that shrinks and wraps, so it must be able to reflow narrower
+   * than its natural width. A fixed-width child inside it will still overflow.
+   */
   readonly trailing?: ReactNode | undefined;
   /** Open this passage in the reader. Absent makes the row static rather than dead. */
   readonly onPress?: (() => void) | undefined;
@@ -81,7 +95,7 @@ export function ReferenceRow({
     <>
       <View style={styles.header}>
         <Text style={styles.reference}>{reference}</Text>
-        {trailing}
+        {trailing === undefined ? null : <View style={styles.trailing}>{trailing}</View>}
       </View>
       {text === undefined ? null : <Text style={styles.text}>{text}</Text>}
       {note === undefined ? null : <Text style={styles.note}>{note}</Text>}
@@ -128,7 +142,15 @@ const useStyles = createThemedStyles((theme: Theme) => ({
     justifyContent: 'space-between',
     gap: spacing.sm,
   },
-  reference: { ...metadataText('md', 'bold'), color: theme.accent.gold, flexShrink: 1 },
+  // `minWidth: 0` beside `flexShrink: 1`: without it a flex item will not go below its own
+  // min-content width, so a long single-word reference pushes the trailing slot out of frame.
+  reference: {
+    ...metadataText('md', 'bold'),
+    color: theme.accent.gold,
+    flexShrink: 1,
+    minWidth: 0,
+  },
+  trailing: { flexShrink: 1, minWidth: 0 },
   text: { ...scriptureText('sm'), color: theme.ink.primary },
   note: { ...uiText('sm'), color: theme.ink.secondary },
 }));

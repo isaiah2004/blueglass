@@ -118,6 +118,11 @@ export function CitySiteSheet({
       <StatRow stats={view.stats} />
       <View style={styles.facts}>
         <Text style={styles.coordinates}>{view.coordinateLabel}</Text>
+        {view.sharedNameNote === null ? null : (
+          <Text style={styles.note} testID="spatial-city-shared-name">
+            {view.sharedNameNote}
+          </Text>
+        )}
         <Text style={styles.note}>{view.precisionNote}</Text>
         {model === null ? <Text style={styles.note}>{NO_MODEL_NOTE}</Text> : null}
       </View>

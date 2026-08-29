@@ -13,6 +13,8 @@ What is checked, and why each one caught something real
       it fails on 235 words, and with it the two sets match exactly at 7,957.
     - No lexeme carries a definition without a definition source (AI-05 at the
       row level, in addition to the schema's CHECK).
+    - The usage aggregate is keyed on the Strong's number the badge PRINTS,
+      not on the disambiguated sense key the word rows carry.
     - Every alignment points at a real word of the SAME verse.
 
 Dependencies
@@ -108,6 +110,41 @@ async def _assert_provenance(connection: asyncpg.Connection) -> None:
         )
 
 
+async def _assert_usage_counts_the_published_number(
+    connection: asyncpg.Connection, expected: Expectations
+) -> None:
+    """Pillar 3: the number the badge prints is the number the badge counts.
+
+    `lexicon` is keyed per disambiguated sense and the Root badge publishes
+    `simple_strongs`, so an aggregate keyed the other way pairs a checkable
+    number with a count of one sense of it -- which is how 26 badges came to
+    say Ἰησοῦς occurs once. This proves the aggregate is grouped the way the
+    payload is published, from the word rows themselves.
+    """
+    mismatched = await _require(
+        connection,
+        """
+        SELECT count(*)
+          FROM (
+              SELECT l.simple_strongs AS number, count(*) AS occurrences
+                FROM verse_words w
+                JOIN lexicon l ON l.strongs = w.strongs
+               WHERE w.source_id = $1
+               GROUP BY l.simple_strongs
+          ) AS counted
+          LEFT JOIN lexicon_usage u ON u.simple_strongs = counted.number
+         WHERE u.occurrence_count IS DISTINCT FROM counted.occurrences
+        """,
+        expected.word_source_id,
+    )
+    if mismatched:
+        raise WordLayerAssertionError(
+            f"{mismatched} Strong's numbers are counted under a key other than "
+            "the one the badge prints. A rarity claim beside a number it is not "
+            "a count of is a false claim."
+        )
+
+
 async def _assert_alignments(connection: asyncpg.Connection, expected: Expectations) -> None:
     """An alignment must point at a word of its own verse, or it is a lie."""
     crossed = await _require(
@@ -133,4 +170,5 @@ async def assert_word_layer_is_sound(
     await _assert_counts(connection, expected)
     await _assert_versification(connection, expected)
     await _assert_provenance(connection)
+    await _assert_usage_counts_the_published_number(connection, expected)
     await _assert_alignments(connection, expected)

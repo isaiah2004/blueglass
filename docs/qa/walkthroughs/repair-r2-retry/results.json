@@ -1,0 +1,405 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\isaia\\AppData\\Local\\mise\\installs\\node\\25.8.2\\node.exe",
+      "W:\\spark-expo\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--project=tablet",
+      "-g",
+      "chapter badge summary|badge surfaces"
+    ],
+    "configFile": "W:\\spark-expo\\playwright.config.ts",
+    "rootDir": "W:/spark-expo/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "W:\\spark-expo\\e2e\\support\\global-setup.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 4
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "W:/spark-expo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "phone",
+        "name": "phone",
+        "testDir": "W:/spark-expo/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "W:/spark-expo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "tablet",
+        "name": "tablet",
+        "testDir": "W:/spark-expo/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "W:/spark-expo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "desktop",
+        "name": "desktop",
+        "testDir": "W:/spark-expo/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "W:\\spark-expo\\docs\\qa\\walkthroughs\\repair-r2-retry/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 4,
+    "webServer": {
+      "command": "pnpm --filter @atlas/mobile run web",
+      "url": "http://localhost:8081",
+      "reuseExistingServer": true,
+      "timeout": 240000,
+      "stdout": "ignore",
+      "stderr": "pipe"
+    }
+  },
+  "suites": [
+    {
+      "title": "walkthrough\\13-badge-summary.spec.ts",
+      "file": "walkthrough/13-badge-summary.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "13 · chapter badge summary",
+          "file": "walkthrough/13-badge-summary.spec.ts",
+          "line": 39,
+          "column": 6,
+          "specs": [
+            {
+              "title": "the summary repeats every badge in the chapter",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 14467,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open Acts 16",
+                          "duration": 8285
+                        },
+                        {
+                          "title": "scroll to the foot of the chapter",
+                          "duration": 1682
+                        },
+                        {
+                          "title": "one row per badge, none missing and none invented",
+                          "duration": 1708
+                        },
+                        {
+                          "title": "the summary prints the sources it rests on",
+                          "duration": 1968
+                        }
+                      ],
+                      "startTime": "2026-08-29T18:37:40.356Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "efa322d0ce719f36aefe-a283e000f410f23d0337",
+              "file": "walkthrough/13-badge-summary.spec.ts",
+              "line": 40,
+              "column": 3
+            },
+            {
+              "title": "a summary row opens the same badge its pill does",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 14226,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "reach the summary",
+                          "duration": 8707
+                        },
+                        {
+                          "title": "tap the first row",
+                          "duration": 2665
+                        },
+                        {
+                          "title": "it opened that badge, not another",
+                          "duration": 2066
+                        }
+                      ],
+                      "startTime": "2026-08-29T18:37:40.371Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "efa322d0ce719f36aefe-210520a8ee1ca6dfc3e0",
+              "file": "walkthrough/13-badge-summary.spec.ts",
+              "line": 83,
+              "column": 3
+            },
+            {
+              "title": "tapping a linked passage navigates to it",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 14901,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open a cross-reference badge",
+                          "duration": 9782
+                        },
+                        {
+                          "title": "the sheet lists the passages it links to",
+                          "duration": 1852
+                        },
+                        {
+                          "title": "tapping one goes there",
+                          "duration": 2717
+                        }
+                      ],
+                      "startTime": "2026-08-29T18:37:40.463Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "efa322d0ce719f36aefe-139e5ffea55ce69a13f5",
+              "file": "walkthrough/13-badge-summary.spec.ts",
+              "line": 117,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "walkthrough\\14-badge-surfaces.spec.ts",
+      "file": "walkthrough/14-badge-surfaces.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "14 · badge surfaces",
+          "file": "walkthrough/14-badge-surfaces.spec.ts",
+          "line": 39,
+          "column": 6,
+          "specs": [
+            {
+              "title": "a badge opens into the home its width calls for",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 14207,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open a badge at tablet width",
+                          "duration": 10079
+                        },
+                        {
+                          "title": "it opened as a rail, and only as a rail",
+                          "duration": 1596
+                        },
+                        {
+                          "title": "scripture is still on screen beside or above it",
+                          "duration": 1752
+                        }
+                      ],
+                      "startTime": "2026-08-29T18:37:40.400Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "793cc63f2662614aa942-5ce2cbc62cabbe57e16c",
+              "file": "walkthrough/14-badge-surfaces.spec.ts",
+              "line": 40,
+              "column": 3
+            },
+            {
+              "title": "badges survive the API going away mid-session",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 9422,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "read Acts 16 with the API up",
+                          "duration": 2479
+                        },
+                        {
+                          "title": "cut the API and step to the next chapter",
+                          "duration": 2329
+                        },
+                        {
+                          "title": "no pill claims data the app does not have",
+                          "duration": 193
+                        },
+                        {
+                          "title": "the reader itself still says something honest",
+                          "duration": 191
+                        },
+                        {
+                          "title": "restoring the API brings the pills back",
+                          "duration": 3781
+                        }
+                      ],
+                      "startTime": "2026-08-29T18:37:55.268Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "793cc63f2662614aa942-b707134339ff9f44d37e",
+              "file": "walkthrough/14-badge-surfaces.spec.ts",
+              "line": 103,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-08-29T18:37:32.325Z",
+    "duration": 33822.72,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

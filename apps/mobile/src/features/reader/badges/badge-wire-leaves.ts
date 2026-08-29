@@ -84,6 +84,8 @@ interface LocationWire {
   feature_type: string;
   place_id: string;
   verse_key: number;
+  shared_name_count: number;
+  candidate_count: number;
 }
 
 const decodeLocationWire = decodeObject<LocationWire>({
@@ -93,6 +95,8 @@ const decodeLocationWire = decodeObject<LocationWire>({
   feature_type: decodeString,
   place_id: decodeString,
   verse_key: decodeNumber,
+  shared_name_count: decodeNumber,
+  candidate_count: decodeNumber,
 });
 
 /**
@@ -100,6 +104,11 @@ const decodeLocationWire = decodeObject<LocationWire>({
  *
  * The role is narrowed rather than passed through: it is what decides the pin's glyph and the
  * shape of the route line, and an unrecognised value would draw a journey that never happened.
+ *
+ * The two counts are required, not optional. A pin that silently defaulted them to 1 would
+ * present nine places called Ramah as one settled identification, which is the failure
+ * `DECISIONS.md` #10 exists to forbid — so a server that stops sending them fails the
+ * decode rather than rendering a confident guess.
  */
 export const decodeSpatialLocation: Decoder<SpatialLocation> = (raw, path) => {
   const wire = decodeLocationWire(raw, path);
@@ -117,6 +126,8 @@ export const decodeSpatialLocation: Decoder<SpatialLocation> = (raw, path) => {
     featureType: wire.value.feature_type,
     placeId: wire.value.place_id,
     verseKey: wire.value.verse_key,
+    sharedNameCount: wire.value.shared_name_count,
+    candidateCount: wire.value.candidate_count,
   });
 };
 

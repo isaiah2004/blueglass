@@ -17,9 +17,27 @@ Which words earn a badge: RARITY, not importance
 
     So the rule is: at most one Root badge per verse, on the rarest aligned
     word with a usable gloss, and only when that word occurs at most twelve
-    times in the corpus. Twelve is where the distribution turns: 4,501 of the
-    5,580 attested lemmas occur ten times or fewer, so a higher bar would badge
-    most of the vocabulary and a much lower one would badge almost nothing.
+    times in the corpus. Twelve is where the distribution turns: 4,366 of the
+    5,417 published Strong's numbers occur ten times or fewer, so a higher bar
+    would badge most of the vocabulary and a much lower one almost nothing.
+
+The count and the number on the chip are the SAME number
+    `lexicon` is keyed per disambiguated sense -- Ἰησοῦς is five rows, G2424G
+    through G2424K -- while `strongs_number` publishes `simple_strongs`, which
+    is what a reader can look up. Counted per sense, the payload paired a real
+    concordance number with the frequency of one sense of it, and 26 badges
+    said "This word occurs once in the whole of the Greek New Testament" of
+    Ἰησοῦς (992), ποιέω (579) and πνεῦμα (386). `_rarity_key` sorts rarest
+    first, so the artificially rare split was PREFERENTIALLY chosen: the defect
+    selected for itself.
+
+    `lexicon_usage` is therefore keyed on `simple_strongs`, and the 88
+    sense-split lexemes now measure above the twelve-occurrence bar and earn no
+    badge. That is the honest outcome -- they are not rare words. The sense
+    survives where it belongs: the gloss still comes from the disambiguated
+    row, so a badge on Ἰησοῦς would still read "Joshua" where the sense is
+    Joshua. Only the counts are simple-level, because only the counts are
+    printed beside the simple number.
 
 Scope: NEW TESTAMENT ONLY, and deliberately so
     `verse_words` and `verse_word_alignments` hold book numbers 40-66 and nothing

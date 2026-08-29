@@ -192,6 +192,31 @@ async def test_sql_and_python_resolve_a_name_to_the_same_place(
     assert hit.entry.place_id == rows[0]["place_id"] == PHILIPPI_ID
 
 
+async def test_named_verse_count_counts_only_the_verses_that_spell_the_place(
+    connection: asyncpg.Connection,
+) -> None:
+    """The 3D City teaser reads "X - named in N verses of scripture".
+
+    `place_mentions` classifies each row and only `name` means the English
+    spells the place. Counting all of them made the sentence false for 232 of
+    the 1,285 places with mentions and wrong on 280 of the 922 badges:
+    Jerusalem read 955 where 766 spell it, and 2 Samuel 11:22 -- which names no
+    place at all -- was among the 189 difference. The same number scores the
+    badge, so an over-count also decided which badge a chapter showed.
+    """
+    wrong = await connection.fetchval(
+        """
+        SELECT count(*) FROM places p
+          JOIN (SELECT place_id,
+                       count(*) FILTER (WHERE mention_kind = 'name') AS named
+                  FROM place_mentions GROUP BY place_id) m
+            ON m.place_id = p.place_id
+         WHERE p.named_verse_count <> m.named
+        """,
+    )
+    assert wrong == 0
+
+
 async def test_a_place_cannot_be_stored_outside_the_world(
     connection: asyncpg.Connection,
 ) -> None:

@@ -74,7 +74,15 @@ class VerseRangeOut(BaseModel):
 
 
 class MappedLocationOut(BaseModel):
-    """A pin. `coordinates` is [longitude, latitude] -- GeoJSON order."""
+    """A pin. `coordinates` is [longitude, latitude] -- GeoJSON order.
+
+    The last two fields are DECISIONS #10 on the wire: a sheet showing one pin
+    for a shared or disputed identification has to say the identification is
+    shared. `shared_name_count` is how many different ancient places carry this
+    name (nine are called Ramah); `candidate_count` is how many modern dig
+    sites are proposed for THIS place (777 of 1,342 have more than one). Both
+    are 1 when there is nothing to caveat.
+    """
 
     name: str
     coordinates: tuple[float, float]
@@ -82,6 +90,8 @@ class MappedLocationOut(BaseModel):
     feature_type: str
     place_id: str
     verse_key: int
+    shared_name_count: int = 1
+    candidate_count: int = 1
 
 
 class MapCameraOut(BaseModel):
@@ -135,7 +145,9 @@ class City3dPayloadOut(BaseModel):
     modern_name: str | None = None
     identification_count: int = Field(description="Candidate modern sites proposed.")
     precision_type: str | None = None
-    canon_verse_count: int
+    named_verse_count: int = Field(
+        description="Verses of the canon whose text spells this place's name."
+    )
     mentioned_at: list[str]
     has_reconstruction: bool
 

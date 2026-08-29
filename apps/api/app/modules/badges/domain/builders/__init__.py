@@ -9,7 +9,8 @@ is not their job; that is `domain/selection.py`.
 from .crossref import build_cross_ref_badges
 from .history import build_history_badges
 from .root import build_root_badges
-from .spatial import build_city_badges, build_route_badges
+from .route import build_route_badges
+from .spatial import build_city_badges
 
 __all__ = [
     "build_city_badges",

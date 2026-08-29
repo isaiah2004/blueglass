@@ -43,6 +43,26 @@ export interface RoutePlace {
   readonly position: number;
   /** `Acts 16:11`, or `null` when the verse key does not resolve. */
   readonly verseLabel: string | null;
+  /**
+   * The other names in this list that the gazetteer pins at the exact same point.
+   *
+   * 1 Samuel 1 names Ramathaim-zophim and Ramah, and the gazetteer gives both
+   * `35.23161, 31.85434` — one dot. The badge teased "3 places named in this chapter"
+   * over a map a reader could count two marks on. Deduplication is by `place_id`, which
+   * cannot see that two gazetteer rows resolve to one site, so the sheet says so instead
+   * of the count quietly disagreeing with the picture.
+   */
+  readonly coLocatedWith: readonly string[];
+}
+
+/** One mark on the map. Structurally the `RouteMapPin` the map component takes. */
+export interface RouteMapMark {
+  /** React key, from the first place at this point. */
+  readonly key: string;
+  /** Every name the gazetteer pins here, joined. */
+  readonly name: string;
+  /** `[longitude, latitude]`. */
+  readonly coordinates: GeoPoint;
 }
 
 /** One cell of the stat strip. */
@@ -66,6 +86,13 @@ export interface RouteView {
   readonly isMentionOrder: boolean;
   /** The places, in mention order. */
   readonly places: readonly RoutePlace[];
+  /**
+   * One mark per distinct point — never per place.
+   *
+   * Two places at one coordinate are one dot on any map ever drawn, so the mark carries
+   * both names rather than the second being painted invisibly over the first.
+   */
+  readonly mapPins: readonly RouteMapMark[];
   /** The pins, ready for the projection. */
   readonly coordinates: readonly GeoPoint[];
   /** The stat strip. One or two cells; never a cell with no figure behind it. */
@@ -84,6 +111,9 @@ const SPAN_CAPTION = 'SPAN';
 
 /** Caption for how many places the passage names. */
 const PLACES_CAPTION = 'PLACES';
+
+/** Joins the names of two places the gazetteer pins at one point. */
+const SHARED_SITE_SEPARATOR = ' · ';
 
 /**
  * How each `scheme` the server can send is phrased for a reader.
@@ -123,14 +153,54 @@ export function schemeLabel(scheme: string): string {
   return SCHEME_LABELS[scheme] ?? UNKNOWN_SCHEME;
 }
 
-/** Build the place list, numbered in mention order. */
+/** A coordinate as a map key. Exact equality is the point: near is not the same site. */
+function pointKey(coordinates: GeoPoint): string {
+  return `${String(coordinates[0])},${String(coordinates[1])}`;
+}
+
+/** Build the place list, numbered in mention order, each knowing who shares its point. */
 function toPlaces(waypoints: readonly SpatialLocation[]): readonly RoutePlace[] {
+  const namesAt = new Map<string, string[]>();
+  for (const location of waypoints) {
+    const at = namesAt.get(pointKey(location.coordinates)) ?? [];
+    at.push(location.name);
+    namesAt.set(pointKey(location.coordinates), at);
+  }
   return waypoints.map((location, index) => ({
     key: `${location.placeId}:${String(index)}`,
     location,
     position: index + 1,
     verseLabel: formatVerseKey(location.verseKey),
+    coLocatedWith: (namesAt.get(pointKey(location.coordinates)) ?? []).filter(
+      (name) => name !== location.name,
+    ),
   }));
+}
+
+/**
+ * Collapse the places into the marks a reader can actually count.
+ *
+ * @param places - The place list, in mention order.
+ * @returns One mark per distinct coordinate, named for every place pinned there.
+ *   Side effects: none.
+ */
+function toMapPins(places: readonly RoutePlace[]): readonly RouteMapMark[] {
+  const marks = new Map<string, RouteMapMark>();
+  for (const place of places) {
+    const at = pointKey(place.location.coordinates);
+    const existing = marks.get(at);
+    marks.set(
+      at,
+      existing === undefined
+        ? {
+            key: place.key,
+            name: place.location.name,
+            coordinates: place.location.coordinates,
+          }
+        : { ...existing, name: `${existing.name}${SHARED_SITE_SEPARATOR}${place.location.name}` },
+    );
+  }
+  return [...marks.values()];
 }
 
 /** Build the stat strip, dropping any cell with no figure behind it. */
@@ -161,6 +231,7 @@ export function toRouteView(payload: RouteSheetPayload): RouteView {
     schemeLabel: schemeLabel(payload.scheme),
     isMentionOrder: !TRAVEL_SCHEMES.includes(payload.scheme),
     places,
+    mapPins: toMapPins(places),
     coordinates,
     stats: toStats(coordinates, places),
   };

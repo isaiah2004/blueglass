@@ -49,9 +49,11 @@ describe('toCityView', () => {
     expect(odd.mentions).toEqual(['Acts 16:1']);
   });
 
-  it('reports the canon-wide count the gazetteer holds', () => {
-    expect(lystra.stats).toContainEqual({ value: '6', caption: 'VERSES IN CANON' });
-    expect(jerusalem.stats).toContainEqual({ value: '955', caption: 'VERSES IN CANON' });
+  it('reports how many verses of the canon SPELL the place, not how many refer to it', () => {
+    // 766, not 955: the gazetteer records 189 further Jerusalem mentions that the English
+    // does not spell, and the caption is a claim about words on the page.
+    expect(lystra.stats).toContainEqual({ value: '6', caption: 'VERSES NAMING IT' });
+    expect(jerusalem.stats).toContainEqual({ value: '766', caption: 'VERSES NAMING IT' });
   });
 
   it('counts the chapter mentions from the mentions it could actually render', () => {

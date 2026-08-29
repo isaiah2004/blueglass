@@ -13,13 +13,21 @@
  *   viewport turned out to be. The payload camera is still honoured where there is nothing
  *   to fit; see `CitySiteMap`.
  *
+ * Why the fit is not the last word
+ *   A bounding box says how far apart the pins are and nothing about what is around them.
+ *   Mark 11 names Jerusalem, Bethphage, Bethany and the Mount of Olives — 0.022 degrees
+ *   apart — and the fitted frame is a flat field with four dots on it, which is the same
+ *   defect the site map was reported for. `geo/map-framing.ts` widens such a fit until
+ *   there is geography in it, and never narrows one.
+ *
  * Dependencies
  *   The geo layer and the declutter rule. No React Native, no SVG.
  */
 
 import { useMemo } from 'react';
 
-import { selectLabels } from '../components/label-declutter';
+import { selectLabels, type PlateBox } from '../components/label-declutter';
+import { framedTransform } from '../geo/map-framing';
 import {
   boundsOf,
   fitTransform,
@@ -29,6 +37,9 @@ import {
   type ScreenPoint,
   type Viewport,
 } from '../geo/projection';
+
+/** The default for a map with no key over it. Module-level, so it is referentially stable. */
+const NOTHING_RESERVED: readonly PlateBox[] = [];
 
 /** One place the map has to draw. */
 export interface RouteMapPin {
@@ -75,12 +86,15 @@ export interface RouteGeometryOptions {
  * @param pins - The places to draw, in the order the payload lists them.
  * @param viewport - The measured pixel box, or `null` before the first layout pass.
  * @param options - See {@link RouteGeometryOptions}.
+ * @param reserved - Rectangles a label may not sit under — the map's key. Memoise it; it
+ *   is a dependency of the declutter pass.
  * @returns See {@link RouteGeometry}. Side effects: none.
  */
 export function useRouteGeometry(
   pins: readonly RouteMapPin[],
   viewport: Viewport | null,
   options: RouteGeometryOptions,
+  reserved: readonly PlateBox[] = NOTHING_RESERVED,
 ): RouteGeometry {
   const { padding, fallbackZoom, labelSize } = options;
 
@@ -88,7 +102,10 @@ export function useRouteGeometry(
     if (viewport === null) return null;
     const bounds = boundsOf(pins.map((pin) => pin.coordinates));
     if (bounds === null) return null;
-    return fitTransform(bounds, viewport, { padding, fallbackZoom });
+    // Fit to the pins, then widen if that fit framed nothing: Mark 11's four places span
+    // 0.022 degrees and fit to a flat field with four dots on it. `map-framing` only ever
+    // widens, so every pin the fit included is still included.
+    return framedTransform(fitTransform(bounds, viewport, { padding, fallbackZoom }), viewport);
   }, [pins, viewport, padding, fallbackZoom]);
 
   const placed = useMemo(() => {
@@ -103,8 +120,9 @@ export function useRouteGeometry(
   }, [pins, transform]);
 
   const labelled = useMemo(
-    () => (viewport === null ? new Set<string>() : selectLabels(placed, labelSize, viewport)),
-    [placed, viewport, labelSize],
+    () =>
+      viewport === null ? new Set<string>() : selectLabels(placed, labelSize, viewport, reserved),
+    [placed, viewport, labelSize, reserved],
   );
 
   return { transform, pins: placed, labelled };

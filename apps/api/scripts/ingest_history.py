@@ -235,7 +235,7 @@ async def load() -> int:
     """Load rulers, events and dating end to end. Returns the dated count."""
     rulers = read_rulers()
     events = read_new_testament_events()
-    realms = sorted({ruler.realm for ruler in rulers})
+    realms = sorted({ruler.realm or "(no realm in source)" for ruler in rulers})
     print(
         f"[history] parsed {len(rulers)} rulers across {realms}, "
         f"{len(events)} event rows over {len({e.external_id for e in events})} events",

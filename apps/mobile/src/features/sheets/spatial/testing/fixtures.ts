@@ -5,10 +5,15 @@
  *   Every fixture here was taken verbatim from
  *   `GET /badges/chapters/BSB/Acts/16` on 2026-08-29 and camel-cased, which is the one
  *   transformation the client's decoder applies. Hand-written fixtures are how a component
- *   ends up passing its tests and failing on the real wire: Acts 16 names sixteen distinct
+ *   ends up passing its tests and failing on the real wire: Acts 16 names fifteen distinct
  *   places, mixes settlements with regions and one island, includes Jerusalem — which the
  *   chapter names without anyone going there — and ends its list at Thyatira, which is
  *   Lydia's home town. None of that is what anyone inventing a fixture would write.
+ *
+ *   Sixteen until the route badge started checking its own claim. The sixteenth was
+ *   Greece, which Acts 16 never names — the gazetteer records it at 16:9 because "a man
+ *   of Macedonia" implies it. A fixture is a copy of the wire, so it lost the place when
+ *   the wire did.
  *
  * Regenerate
  *   `curl -s http://localhost:8010/badges/chapters/BSB/Acts/16`, then camel-case the keys.
@@ -33,7 +38,7 @@ export const OPENBIBLE_SOURCE: SourceAttribution = {
   retrievedAt: '2026-08-28',
 };
 
-/** `route~44016001~chapter:Acts.16` — every place Acts 16 names, sixteen of them. */
+/** `route~44016001~chapter:Acts.16` — every place Acts 16 names, fifteen of them. */
 export const ACTS_16_ROUTE: RouteSheetPayload = {
   kind: 'route',
   title: 'Places named in this chapter',
@@ -48,6 +53,12 @@ export const ACTS_16_ROUTE: RouteSheetPayload = {
       featureType: 'settlement',
       placeId: 'aa401a9',
       verseKey: 44016001,
+      sharedNameCount: 1,
+      // Three, as the loaded gazetteer records: Derbe is one of the 777 ancient places
+      // with rival modern sites, and it is what keeps the DECISIONS #10 caveat exercised
+      // by a fixture rather than only by a unit test. No place Acts 16 names shares a
+      // name with another, so `sharedNameCount` is honestly 1 throughout this chapter.
+      candidateCount: 3,
     },
     {
       name: 'Lystra',
@@ -56,6 +67,8 @@ export const ACTS_16_ROUTE: RouteSheetPayload = {
       featureType: 'settlement',
       placeId: 'af0719d',
       verseKey: 44016001,
+      sharedNameCount: 1,
+      candidateCount: 1,
     },
     {
       name: 'Iconium',
@@ -64,6 +77,8 @@ export const ACTS_16_ROUTE: RouteSheetPayload = {
       featureType: 'settlement',
       placeId: 'ae425aa',
       verseKey: 44016002,
+      sharedNameCount: 1,
+      candidateCount: 1,
     },
     {
       name: 'Jerusalem',
@@ -72,6 +87,8 @@ export const ACTS_16_ROUTE: RouteSheetPayload = {
       featureType: 'settlement',
       placeId: 'a15257a',
       verseKey: 44016004,
+      sharedNameCount: 1,
+      candidateCount: 1,
     },
     {
       name: 'Asia',
@@ -80,6 +97,8 @@ export const ACTS_16_ROUTE: RouteSheetPayload = {
       featureType: 'region',
       placeId: 'a197f19',
       verseKey: 44016006,
+      sharedNameCount: 1,
+      candidateCount: 1,
     },
     {
       name: 'Phrygia',
@@ -88,6 +107,8 @@ export const ACTS_16_ROUTE: RouteSheetPayload = {
       featureType: 'region',
       placeId: 'ab8ae56',
       verseKey: 44016006,
+      sharedNameCount: 1,
+      candidateCount: 1,
     },
     {
       name: 'Galatia',
@@ -96,6 +117,8 @@ export const ACTS_16_ROUTE: RouteSheetPayload = {
       featureType: 'region',
       placeId: 'a0f440a',
       verseKey: 44016006,
+      sharedNameCount: 1,
+      candidateCount: 1,
     },
     {
       name: 'Mysia',
@@ -104,6 +127,8 @@ export const ACTS_16_ROUTE: RouteSheetPayload = {
       featureType: 'region',
       placeId: 'a2d9bc8',
       verseKey: 44016007,
+      sharedNameCount: 1,
+      candidateCount: 1,
     },
     {
       name: 'Bithynia',
@@ -112,6 +137,8 @@ export const ACTS_16_ROUTE: RouteSheetPayload = {
       featureType: 'region',
       placeId: 'a5c0cb0',
       verseKey: 44016007,
+      sharedNameCount: 1,
+      candidateCount: 1,
     },
     {
       name: 'Troas',
@@ -120,6 +147,8 @@ export const ACTS_16_ROUTE: RouteSheetPayload = {
       featureType: 'settlement',
       placeId: 'a91c509',
       verseKey: 44016008,
+      sharedNameCount: 1,
+      candidateCount: 1,
     },
     {
       name: 'Macedonia',
@@ -128,14 +157,8 @@ export const ACTS_16_ROUTE: RouteSheetPayload = {
       featureType: 'region',
       placeId: 'a69e1b8',
       verseKey: 44016009,
-    },
-    {
-      name: 'Greece',
-      coordinates: [23.726738, 37.971851],
-      role: 'waypoint',
-      featureType: 'region',
-      placeId: 'a4492a0',
-      verseKey: 44016009,
+      sharedNameCount: 1,
+      candidateCount: 1,
     },
     {
       name: 'Samothrace',
@@ -144,6 +167,8 @@ export const ACTS_16_ROUTE: RouteSheetPayload = {
       featureType: 'island',
       placeId: 'a68750d',
       verseKey: 44016011,
+      sharedNameCount: 1,
+      candidateCount: 1,
     },
     {
       name: 'Neapolis',
@@ -152,6 +177,8 @@ export const ACTS_16_ROUTE: RouteSheetPayload = {
       featureType: 'settlement',
       placeId: 'a6a7150',
       verseKey: 44016011,
+      sharedNameCount: 1,
+      candidateCount: 1,
     },
     {
       name: 'Philippi',
@@ -160,6 +187,8 @@ export const ACTS_16_ROUTE: RouteSheetPayload = {
       featureType: 'settlement',
       placeId: 'a49e1d0',
       verseKey: 44016012,
+      sharedNameCount: 1,
+      candidateCount: 1,
     },
     {
       name: 'Thyatira',
@@ -168,6 +197,8 @@ export const ACTS_16_ROUTE: RouteSheetPayload = {
       featureType: 'settlement',
       placeId: 'a94b661',
       verseKey: 44016014,
+      sharedNameCount: 1,
+      candidateCount: 1,
     },
   ],
 };
@@ -182,16 +213,18 @@ export const LYSTRA_CITY: CitySheetPayload = {
     featureType: 'settlement',
     placeId: 'af0719d',
     verseKey: 44016001,
+    sharedNameCount: 1,
+    candidateCount: 1,
   },
   modernName: 'Tel Lystra',
   identificationCount: 1,
   precisionType: 'tel',
-  canonVerseCount: 6,
+  namedVerseCount: 6,
   mentionedAt: ['Acts.16.1', 'Acts.16.2'],
   hasReconstruction: false,
 };
 
-/** `3d-city~44016004~a15257a` — the other extreme: 955 verses of the canon name it. */
+/** `3d-city~44016004~a15257a` — the other extreme: 766 verses of the canon name it. */
 export const JERUSALEM_CITY: CitySheetPayload = {
   kind: '3d-city',
   location: {
@@ -201,11 +234,13 @@ export const JERUSALEM_CITY: CitySheetPayload = {
     featureType: 'settlement',
     placeId: 'a15257a',
     verseKey: 44016004,
+    sharedNameCount: 1,
+    candidateCount: 1,
   },
   modernName: 'Jerusalem',
   identificationCount: 1,
   precisionType: 'settlement',
-  canonVerseCount: 955,
+  namedVerseCount: 766,
   mentionedAt: ['Acts.16.4'],
   hasReconstruction: false,
 };

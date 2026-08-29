@@ -38,14 +38,16 @@ while the wire discriminant is `3d-city`.
 
 ## 1 · What the sheets show, and what they refuse to
 
-|                 | `[Route]`                                                      | `[3D City]`                                                                    |
-| --------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| Comes from      | `RoutePayloadOut`                                              | `City3dPayloadOut`                                                             |
-| Shows           | Every place the passage names, mapped, and the list beneath it | The site, its modern identification, its precision, where the chapter names it |
-| Derives         | The count, and the span between the two furthest-apart pins    | Nothing                                                                        |
-| **Never shows** | **Travel, duration, or a distance anybody covered**            | **A 3D reconstruction**                                                        |
+|                 | `[Route]`                                                         | `[3D City]`                                                                    |
+| --------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Comes from      | `RoutePayloadOut`                                                 | `City3dPayloadOut`                                                             |
+| Shows           | Every place the passage names, mapped, and the list beneath it    | The site, its modern identification, its precision, where the chapter names it |
+| Derives         | The count, and the span between the two furthest-apart pins       | Nothing                                                                        |
+| **Never draws** | **A line between the pins under a scheme that cannot attest one** | —                                                                              |
+| **Never shows** | **Travel, duration, or a distance anybody covered**               | **A 3D reconstruction**                                                        |
 
-**Travel.** This is the sheet's hardest rule and it was got wrong once. Under
+**Travel, and the line that asserted it.** This is the sheet's hardest rule and it has now
+been got wrong three times. Under
 `routes.scheme = 'chapter'` the waypoints are derived by reading the place names out of the
 chapter in the order the text prints them — a derivation that cannot tell a place travelled
 through from a place merely mentioned. Acts 16 contains three of the second kind: Jerusalem,
@@ -65,6 +67,20 @@ of places, not about a journey, and unchanged by reordering them. The summed-leg
 that used to sit here was captioned `STRAIGHT LINE`, which sounded careful and still
 measured a path nobody walked; `geo/distance.ts` no longer offers one. The mockup's
 "125 Miles by Sea" was never reproducible from any coordinate we hold.
+
+**The connector.** The wording was fixed twice and the _picture_ was left saying the old
+thing. A cyan polyline joined the pins in mention order — later softened to a dashed
+hairline at 42 % strength — and in the desktop rail it still ran from Derbe across the
+Mediterranean to Jerusalem. A line between two pins asserts that somebody went from one to
+the other, and no amount of thinning changes what it asserts; that is a pillar-3 false claim
+drawn rather than written. So under `mentionOrder` **no line is drawn at all**: the places
+are points, and `MapKey` prints `Places named, not a journey` on the drawing itself, because
+a map cropped into a rail or screenshotted carries none of the sheet copy with it.
+`RouteLine` still exists unchanged for a scheme that can establish an ordered journey — the
+glowing progressive line of `design-language.md` §6, keyed as `Attested journey`. The two
+maps are then unmistakably different pictures, which is the only way a reader can tell which
+claim they are looking at. `TRAVEL_SCHEMES` in `model/route-view.ts` is the list that
+switches them, and it is empty today.
 
 **The reconstruction.** `Q-008` and `dataset-validation.md` §4.3 are a confirmed negative:
 no openly-licensed 3D reconstruction of a biblical city exists, and the nearest candidate is
@@ -124,7 +140,57 @@ the visible **degrees** before projecting it. Projecting first and discarding af
 
 ---
 
-## 3 · The basemap
+## 3 · Framing, and why a map frame is measured
+
+Two reports, one cause. An inland site (Lystra) opened on a frame that was **3 % water** — a
+near-empty grid with a corner of Lake Tuz and a corner of the Gulf of Antalya intruding from
+the edges, which reads as a rendering bug rather than as a map. And the route map, which fits
+its camera to the pins, fits it to nothing when a chapter's places are all in one town:
+**Mark 11** names Jerusalem, Bethphage, Bethany and the Mount of Olives, spanning **0.022
+degrees**.
+
+Two rules were tried before this one, and both shipped that picture:
+
+| Rule                                   | Why it failed                                                                                                                                   |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| "Is a coastline ring visible?"         | The single ring carrying Asia overlaps the viewport for every inland site in the gazetteer. Lystra had a visible coastline while showing none.  |
+| "Are twelve of its vertices in frame?" | Twelve points of a lake in one corner and twelve of a gulf in the other **are** twelve points. This is the rule the reported screenshot passed. |
+
+`geo/frame-geography.ts` measures the quantity a reader actually judges instead: the **share
+of the frame that is water**, by sampling a 9 x 7 grid across the visible degrees and
+ray-casting each sample against the same even-odd rings the basemap draws with. Measured at
+**0.21 ms** per call against the whole basemap.
+
+`geo/map-framing.ts` steps the camera out until that share is between 0.18 and 0.82 — both
+elements present — stopping at a floor of zoom 3. Measured at the four container widths the
+sheets are handed:
+
+| Site       | Water at the preferred zoom | Outcome                                         |
+| ---------- | --------------------------- | ----------------------------------------------- |
+| Jerusalem  | 0.25 - 0.30                 | keeps its framing; the loop exits immediately   |
+| Samothrace | 0.43 - 0.59                 | keeps its framing                               |
+| Lystra     | 0.00 - 0.11                 | widens one to one-and-a-half zoom levels        |
+| Babylon    | 0.00 - 0.03 at every zoom   | **landlocked**: opens at the floor, and says so |
+
+`framedTransform` applies the same rule to a fitted route camera, about the fit's own centre,
+and **only ever widens** — so every pin the fit included is still included, and a route
+already wider than the floor (Acts 21 spans nine degrees) is returned untouched.
+
+When no zoom can balance the frame the map does not pretend otherwise: it labels **every**
+grid line instead of the usual two, because with no coast the graticule is the only geography
+there is, and it prints `Inland — widest view` in the corner above the scale bar. If a
+frame draws no coastline at all — which the gazetteer cannot produce inside the basemap's
+crop, but a bad coordinate can — it says `No coastline in view` instead.
+
+**Land and sea have to be tellable apart for any of that to matter.** At `LAND_ALPHA = 0.30`
+land measured **1.31:1** against the sea in the dark palette and **1.35:1** in the light one,
+which is why the reported coastline read as two unexplained black wedges rather than as a
+coast. It is now 0.55 — **1.84:1** and **1.77:1** — and the coastline stroke is
+`ink.secondary` at full strength, which measures **4.1:1** against land and **7.6:1** against
+sea (3.9 and 6.9 in the light palette), both clear of WCAG 1.4.11's 3:1 bar for a graphic
+that carries meaning. `theme/map-palette.test.ts` holds every one of those figures to a floor.
+
+## 4 · The basemap
 
 `geo/basemap.data.json` — Natural Earth 1:50m land and lakes, **public domain**, cropped to
 `-12..60 E / 10..52 N`, Douglas–Peucker simplified at 0.02° (~2 km), 3 dp.
@@ -142,14 +208,15 @@ subtracting correctly.
 
 ---
 
-## 4 · Layout
+## 5 · Layout
 
 ```
-geo/        projection · basemap · distance · route-path · scale-bar · graticule   (pure)
+geo/        projection · basemap · frame-geography · map-framing · distance
+            route-path · scale-bar · graticule                                     (pure)
 model/      payload types · route-view · city-view · attribution · reconstruction  (pure)
-hooks/      draw-progress · use-draw-progress · use-map-viewport
-theme/      map-palette — twelve colours, every one derived from a `Theme` role
-components/ MapSurface · RouteLine · MapMarker · MapScaleBar · MapGraticule
+hooks/      draw-progress · use-draw-progress · use-map-viewport · use-route-geometry
+theme/      map-palette — fourteen colours, every one derived from a `Theme` role
+components/ MapSurface · RouteLine · MapMarker · MapScaleBar · MapGraticule · MapKey
             RouteMap · CitySiteMap · RouteSheet · CitySiteSheet · SpatialSheet
 gallery/    SpatialSheetGallery — the /spike/spatial-sheets diagnostic
 ```
@@ -168,7 +235,7 @@ example) and leave the pixels to the browser.
 
 ---
 
-## 5 · Motion
+## 6 · Motion
 
 The route line draws progressively over `motion.duration.slow`, linearly — `theme/motion.ts`
 reserves its `linear` curve for "progress indicators and route-line draws only", and an
@@ -188,7 +255,7 @@ sheet's own spring.
 
 ---
 
-## 6 · Known gaps
+## 7 · Known gaps
 
 - **Nothing here has run on Android.** Same position as `spike-inline-badges.md` §6: no AVD,
   no `android/` directory. The residual risks are `fillRule="evenodd"` on a path with 48
@@ -196,6 +263,10 @@ sheet's own spring.
 - **The map does not pan or zoom.** The camera is fitted once per layout. A gesture layer is
   a later milestone and belongs outside `MapSurface`, which is a pure function of its
   transform.
+- **The route map draws no scale bar.** After framing, a tight cluster such as Mark 11's four
+  places is one blob beside Jerusalem — true, and the list beneath still names all four, but
+  a bar would say _how_ tight. `MapScaleBar` is ready; the corner it would sit in is now the
+  key's, so placing both needs the stacking inset `CitySiteMap` already uses.
 - **`packages/shared/src/geo.ts` is behind the wire.** `MappedLocation` there has no
   `featureType`, `placeId` or `verseKey`, all three of which the API sends and these sheets
   use. `model/spatial-payload.types.ts` extends it rather than replacing it; when the shared

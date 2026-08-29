@@ -22,6 +22,29 @@ Scope
     another ingest. The scheme column lets passage-level routes land beside
     these rather than replacing them.
 
+What this module deliberately does NOT decide
+    Whether the reader's translation spells a stop's name. Two measured facts
+    make that undecidable here, and both were tried before this note existed.
+
+    `mention_kind` cannot answer it. OpenBible's `instance_types` is a vote
+    across the ten English translations it surveys, not a fact about one text:
+    Greece at Acts 16:9 is `{"name": 1, "no_translation": 9}` and Alexandria at
+    Acts 27:6 is `{"name": 4, "people_group": 6}`. 8,649 of the 8,742 mentions
+    carry a non-zero `name` count, so "contains name" keeps everything, while
+    the dominant kind is a majority verdict that is wrong for the minority --
+    it would drop a place four of ten translations spell out.
+
+    The BSB text cannot answer it either, though this module reads it for
+    ordering. One `routes` row serves all four loaded translations, and they
+    disagree: BSB has "an Adramyttian ship" at Acts 27:2 where the KJV has "a
+    ship of Adramyttium". Pruning on BSB would silently remove, from the KJV
+    reader's map, a place the KJV names.
+
+    So a stop is every located mention, and the claim is gated one layer up,
+    against the text actually being rendered, by
+    `badges/domain/builders/place_support.spelling_in_verse`. Any filter added
+    here can only lose a place some reader can see on their own page.
+
 Dependencies
     The scripture domain's book table, for the OSIS code in a route id. No I/O.
 

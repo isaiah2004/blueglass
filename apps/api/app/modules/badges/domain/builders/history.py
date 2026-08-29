@@ -170,7 +170,7 @@ def _world_axis(
     """Every office open in the passage's year, earliest accession first."""
     holding = [ruler for ruler in data.rulers if ruler.covers(dated.year_approx)]
     ordered = sorted(
-        holding, key=lambda item: (item.start_year or -9999, item.realm, item.ruler_id)
+        holding, key=lambda item: (item.start_year or -9999, item.realm or "", item.ruler_id)
     )
     return tuple(_ruler_node(ruler) for ruler in ordered[:_MAX_AXIS_NODES])
 
@@ -179,11 +179,35 @@ def _ruler_node(ruler: RulerRecord) -> TimelineEvent:
     """One world-axis node. A missing bound prints as "unrecorded", not a guess."""
     return TimelineEvent(
         id=f"ruler-{ruler.ruler_id}",
-        label=f"{ruler.name}, {ruler.title} of {ruler.realm}",
+        label=_ruler_label(ruler),
         year_label=_reign_label(ruler),
         sort_year=ruler.start_year if ruler.start_year is not None else -9999,
         detail=ruler.realm,
     )
+
+
+def _ruler_label(ruler: RulerRecord) -> str:
+    """The person, their office, and the territory the SOURCE gives it.
+
+    Two rules, both of them about not saying more than is known:
+
+    The realm is appended only when the office label carried one. Wikidata
+    records Herod Antipas and Philip as "tetrarch" with no territory, and the
+    ingest used to supply "Judaea" -- so 369 badges cited a CC0 source for a
+    claim it does not make, about the two men Luke 3:1 lists precisely to
+    distinguish them from the ruler of Judaea.
+
+    The title is appended only when the name has not already said it. Wikidata
+    knows Philip as "Philip the Tetrarch", so the composed label stuttered:
+    "Philip the Tetrarch, Tetrarch of Judaea".
+    """
+    label = ruler.name if _name_states_the_title(ruler) else f"{ruler.name}, {ruler.title}"
+    return label if ruler.realm is None else f"{label} of {ruler.realm}"
+
+
+def _name_states_the_title(ruler: RulerRecord) -> bool:
+    """True when the office is already a word of the person's own name."""
+    return ruler.title.casefold() in ruler.name.casefold().split()
 
 
 def _reign_label(ruler: RulerRecord) -> str:
@@ -192,7 +216,14 @@ def _reign_label(ruler: RulerRecord) -> str:
 
 
 def _year_label(year: int | None) -> str:
-    """A signed year as a reader reads it, or "unrecorded"."""
+    """A signed year as a reader reads it, or "unrecorded".
+
+    A negative year is already the BC year a reference work prints: Wikidata's
+    astronomical numbering is converted once, in
+    `scripts/wikidata_rulers._parse_xsd_date`, so nothing here has to know that
+    `-0003` means 4 BC. Converting a second time would move every band back
+    another year.
+    """
     if year is None:
         return "unrecorded"
     return f"{-year} BC" if year < 0 else f"AD {year}"

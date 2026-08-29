@@ -12,7 +12,8 @@ import pytest
 from httpx import AsyncClient
 
 from app.modules.badges.domain import MAX_BADGES_PER_CHAPTER, MAX_BADGES_PER_VERSE
-from tests.contract.badge_doubles import (
+from tests.contract.badge_doubles import InMemoryBadgeRepository
+from tests.contract.badge_fixture import (
     BARE_CHAPTER,
     PURPLE_END,
     PURPLE_START,
@@ -21,7 +22,6 @@ from tests.contract.badge_doubles import (
     TEXT_14,
     VERSE_1,
     VERSE_14,
-    InMemoryBadgeRepository,
 )
 
 CHAPTER_URL = "/badges/chapters/BSB/Acts/16"

@@ -109,4 +109,31 @@ describe('selectLabels', () => {
     ];
     expect(selectLabels(duplicated, FONT, SHEET).size).toBe(1);
   });
+
+  it('drops a name that would be hidden under the map key rather than drawing it there', () => {
+    // The desktop rail printed "Jerusalem" under the key's plate: the name was in the DOM,
+    // covered by an opaque rectangle, and unreadable. The key is handed in as reserved.
+    const corner: LabelCandidate = {
+      key: 'jerusalem',
+      name: 'Jerusalem',
+      point: { x: 30, y: SHEET.height - 20 },
+      emphasised: false,
+    };
+    const key = { x: 12, y: SHEET.height - 34, width: 180, height: 22 };
+
+    expect(selectLabels([corner], FONT, SHEET).has('jerusalem')).toBe(true);
+    expect(selectLabels([corner], FONT, SHEET, [key]).has('jerusalem')).toBe(false);
+  });
+
+  it('leaves a name clear of the key alone', () => {
+    const away: LabelCandidate = {
+      key: 'troas',
+      name: 'Troas',
+      point: { x: 200, y: 40 },
+      emphasised: false,
+    };
+    const key = { x: 12, y: SHEET.height - 34, width: 180, height: 22 };
+
+    expect(selectLabels([away], FONT, SHEET, [key]).has('troas')).toBe(true);
+  });
 });

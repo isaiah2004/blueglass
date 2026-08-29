@@ -50,7 +50,14 @@ class TestWikidataRulers:
         assert row.start_date == date(26, 1, 1)
 
     def test_a_bc_reign_keeps_the_year_and_drops_the_date(self) -> None:
-        """datetime cannot represent a negative year; NULL says so honestly."""
+        """datetime cannot represent a negative year; NULL says so honestly.
+
+        The year itself is converted out of Wikidata's astronomical numbering,
+        where year zero exists and is 1 BC. This assertion used to read -26,
+        which is the number in the file rather than the year of the event:
+        Augustus's principate begins in **27 BC** in every reference work a
+        reader will check, and the badge printed "26 BC" with no caveat.
+        """
         row = _row_from(
             _binding(
                 ruler="http://www.wikidata.org/entity/Q1405",
@@ -62,9 +69,33 @@ class TestWikidataRulers:
         )
 
         assert row is not None
-        assert row.start_year == -26
+        assert row.start_year == -27
         assert row.start_date is None
         assert row.date_precision == "day"
+
+    def test_an_office_with_no_territory_carries_no_realm(self) -> None:
+        """Wikidata labels Antipas and Philip "tetrarch" and names no place.
+
+        `realm='Judaea'` was hard-coded for the bare office, so 369 History
+        badges cited a CC0 source for a territory it does not record -- and got
+        it wrong: Antipas held Galilee and Peraea, Philip Iturea and
+        Trachonitis, which is the very distinction Luke 3:1 draws.
+        """
+        row = _row_from(
+            _binding(
+                person="http://www.wikidata.org/entity/Q345647",
+                personLabel="Philip the Tetrarch",
+                officeLabel="tetrarch",
+                start="-0003-01-01T00:00:00Z",
+                end="0034-01-01T00:00:00Z",
+            )
+        )
+
+        assert row is not None
+        assert row.realm is None
+        assert row.title == "Tetrarch"
+        # 4 BC, as every reference work prints Philip's accession.
+        assert row.start_year == -4
 
     def test_january_the_first_is_wikidatas_shrug_not_a_real_day(self) -> None:
         row = _row_from(

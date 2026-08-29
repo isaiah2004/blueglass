@@ -40,7 +40,10 @@ PLACE_COLUMNS = (
     "precision_meters",
     "precision_type",
     "candidates",
-    "verse_count",
+    "named_verse_count",
+    "disambiguation_index",
+    "homonym_count",
+    "disambiguation",
     "source_id",
 )
 NAME_COLUMNS = ("normalised", "name", "place_id", "kind", "weight")
@@ -75,7 +78,10 @@ def place_records(dataset: PlaceDataset, source_id: int) -> list[tuple[object, .
             place.precision_meters,
             place.precision_type,
             json.dumps([candidate.as_json() for candidate in place.candidates]),
-            place.verse_count,
+            place.named_verse_count,
+            place.disambiguation_index,
+            place.homonym_count,
+            place.disambiguation,
             source_id,
         )
         for place in dataset.places

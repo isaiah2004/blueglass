@@ -57,7 +57,7 @@ describe('toRouteView', () => {
   });
 
   it('lists every place the chapter names, each exactly once', () => {
-    expect(view.places).toHaveLength(16);
+    expect(view.places).toHaveLength(15);
     const names = view.places.map((place) => place.location.name);
     expect(new Set(names).size).toBe(names.length);
   });
@@ -70,12 +70,12 @@ describe('toRouteView', () => {
   it('numbers the places from one, in the order the text names them', () => {
     expect(view.places[0]?.position).toBe(1);
     expect(view.places[0]?.location.name).toBe('Derbe');
-    expect(view.places[15]?.position).toBe(16);
+    expect(view.places[14]?.position).toBe(15);
   });
 
   it('labels each place with the verse that names it', () => {
     expect(view.places[0]?.verseLabel).toBe('Acts 16:1');
-    expect(view.places[15]?.verseLabel).toBe('Acts 16:14');
+    expect(view.places[14]?.verseLabel).toBe('Acts 16:14');
   });
 
   it('keeps Jerusalem, which the chapter names without anyone travelling there', () => {
@@ -106,8 +106,8 @@ describe('the stat strip', () => {
     expect(captions).not.toMatch(/DAY|DURATION|TRAVEL TIME/i);
   });
 
-  it('counts all sixteen places', () => {
-    expect(view.stats.find((stat) => stat.caption === 'PLACES')?.value).toBe('16');
+  it('counts all fifteen places', () => {
+    expect(view.stats.find((stat) => stat.caption === 'PLACES')?.value).toBe('15');
   });
 
   it('reports the span in miles, grouped, with the unit joined to the figure', () => {
@@ -148,12 +148,66 @@ describe('schemeLabel', () => {
 
 describe('coordinates handed to the projection', () => {
   it('are in payload order and in GeoJSON axis order', () => {
-    expect(view.coordinates).toHaveLength(16);
+    expect(view.coordinates).toHaveLength(15);
     expect(view.coordinates[0]).toEqual([33.361453, 37.348569]);
     // Longitude first. Jerusalem is 31.78 N, 35.23 E — the one place on this map where
     // the two numbers cannot be confused, because its longitude exceeds its latitude.
     const jerusalem = view.coordinates[3]!;
     expect(jerusalem).toEqual([35.234167, 31.776667]);
     expect(jerusalem[0]).toBeGreaterThan(jerusalem[1]);
+  });
+});
+
+describe('two gazetteer rows pinned at one point', () => {
+  /** 1 Samuel 1: Ramathaim-zophim and Ramah share 35.23161, 31.85434 exactly. */
+  const oneSite: RouteSheetPayload = {
+    ...ACTS_16_ROUTE,
+    waypoints: [
+      {
+        ...ACTS_16_ROUTE.waypoints[0]!,
+        name: 'Ramathaim-zophim',
+        placeId: 'ramathaim',
+        coordinates: [35.23161, 31.85434],
+      },
+      {
+        ...ACTS_16_ROUTE.waypoints[1]!,
+        name: 'Ramah',
+        placeId: 'ramah',
+        coordinates: [35.23161, 31.85434],
+      },
+      {
+        ...ACTS_16_ROUTE.waypoints[2]!,
+        name: 'Shiloh',
+        placeId: 'shiloh',
+        coordinates: [35.29, 32.05],
+      },
+    ],
+  };
+
+  it('still lists all three places, because the chapter names all three', () => {
+    expect(toRouteView(oneSite).places).toHaveLength(3);
+  });
+
+  it('draws one mark per point, not one per place', () => {
+    // The badge teased "3 places named" over a map a reader could count two marks on.
+    expect(toRouteView(oneSite).mapPins).toHaveLength(2);
+  });
+
+  it('names both places on the mark they share, rather than painting one over the other', () => {
+    const shared = toRouteView(oneSite).mapPins[0]!;
+
+    expect(shared.name).toBe('Ramathaim-zophim · Ramah');
+  });
+
+  it('tells each row which other names share its site', () => {
+    const [first, second, third] = toRouteView(oneSite).places;
+
+    expect(first!.coLocatedWith).toEqual(['Ramah']);
+    expect(second!.coLocatedWith).toEqual(['Ramathaim-zophim']);
+    expect(third!.coLocatedWith).toEqual([]);
+  });
+
+  it('leaves a chapter whose places are all distinct with one mark each', () => {
+    expect(view.mapPins).toHaveLength(view.places.length);
   });
 });

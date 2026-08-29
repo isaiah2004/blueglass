@@ -1,0 +1,3881 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\isaia\\AppData\\Local\\mise\\installs\\node\\25.8.2\\node.exe",
+      "W:\\spark-expo\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "-g",
+      "badge"
+    ],
+    "configFile": "W:\\spark-expo\\playwright.config.ts",
+    "rootDir": "W:/spark-expo/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "W:\\spark-expo\\e2e\\support\\global-setup.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 4
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "W:/spark-expo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "phone",
+        "name": "phone",
+        "testDir": "W:/spark-expo/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "W:/spark-expo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "tablet",
+        "name": "tablet",
+        "testDir": "W:/spark-expo/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "W:/spark-expo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "desktop",
+        "name": "desktop",
+        "testDir": "W:/spark-expo/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "W:\\spark-expo\\docs\\qa\\walkthroughs\\verify-r1-repeat2/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 4,
+    "webServer": {
+      "command": "pnpm --filter @atlas/mobile run web",
+      "url": "http://localhost:8081",
+      "reuseExistingServer": true,
+      "timeout": 240000,
+      "stdout": "ignore",
+      "stderr": "pipe"
+    }
+  },
+  "suites": [
+    {
+      "title": "inline-badge-spike.spec.ts",
+      "file": "inline-badge-spike.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "the inline-badge spike",
+          "file": "inline-badge-spike.spec.ts",
+          "line": 34,
+          "column": 6,
+          "specs": [
+            {
+              "title": "renders every strategy under comparison",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5707,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-29T17:24:29.403Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0b3f4cbccd38eb882047-9f7084b36cb64d646354",
+              "file": "inline-badge-spike.spec.ts",
+              "line": 40,
+              "column": 3
+            },
+            {
+              "title": "the pill is hit-testable inside a line of scripture",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 5914,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-29T17:24:29.408Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0b3f4cbccd38eb882047-a23975bfd066b30d07b7",
+              "file": "inline-badge-spike.spec.ts",
+              "line": 52,
+              "column": 3
+            },
+            {
+              "title": "the pill keeps counting, so the first tap was not a fluke",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 5710,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-29T17:24:29.528Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0b3f4cbccd38eb882047-b439fa89639a5dadcbdf",
+              "file": "inline-badge-spike.spec.ts",
+              "line": 64,
+              "column": 3
+            },
+            {
+              "title": "tapping the surrounding text does not count as a badge tap",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 2351,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-29T17:24:29.398Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0b3f4cbccd38eb882047-ab9e88e5506049081fc7",
+              "file": "inline-badge-spike.spec.ts",
+              "line": 74,
+              "column": 3
+            },
+            {
+              "title": "renders every strategy under comparison",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 3530,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-29T17:25:44.084Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0b3f4cbccd38eb882047-fa94fd38ef6d7c96e444",
+              "file": "inline-badge-spike.spec.ts",
+              "line": 40,
+              "column": 3
+            },
+            {
+              "title": "the pill is hit-testable inside a line of scripture",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 64802,
+                      "error": {
+                        "message": "TimeoutError: page.goto: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8081/spike/badges\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "TimeoutError: page.goto: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8081/spike/badges\", waiting until \"load\"\u001b[22m\n\n    at W:\\spark-expo\\e2e\\inline-badge-spike.spec.ts:36:16",
+                        "location": {
+                          "file": "W:\\spark-expo\\e2e\\inline-badge-spike.spec.ts",
+                          "column": 16,
+                          "line": 36
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 34 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m'the inline-badge spike'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n \u001b[90m 35 |\u001b[39m   test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 36 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/spike/badges'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 37 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByText(\u001b[32m'Inline badge spike'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 38 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 39 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "W:\\spark-expo\\e2e\\inline-badge-spike.spec.ts",
+                            "column": 16,
+                            "line": 36
+                          },
+                          "message": "TimeoutError: page.goto: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8081/spike/badges\", waiting until \"load\"\u001b[22m\n\n\n  34 | test.describe('the inline-badge spike', () => {\n  35 |   test.beforeEach(async ({ page }) => {\n> 36 |     await page.goto('/spike/badges');\n     |                ^\n  37 |     await expect(page.getByText('Inline badge spike')).toBeVisible();\n  38 |   });\n  39 |\n    at W:\\spark-expo\\e2e\\inline-badge-spike.spec.ts:36:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-29T17:25:46.358Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "W:\\spark-expo\\test-results\\inline-badge-spike-the-inl-c2309--inside-a-line-of-scripture-tablet\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "W:\\spark-expo\\test-results\\inline-badge-spike-the-inl-c2309--inside-a-line-of-scripture-tablet\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "W:\\spark-expo\\e2e\\inline-badge-spike.spec.ts",
+                        "column": 16,
+                        "line": 36
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "0b3f4cbccd38eb882047-c36c49fe13e57eb47f59",
+              "file": "inline-badge-spike.spec.ts",
+              "line": 52,
+              "column": 3
+            },
+            {
+              "title": "the pill keeps counting, so the first tap was not a fluke",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 2395,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-29T17:25:43.650Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0b3f4cbccd38eb882047-f21a281c4c504d618dd8",
+              "file": "inline-badge-spike.spec.ts",
+              "line": 64,
+              "column": 3
+            },
+            {
+              "title": "tapping the surrounding text does not count as a badge tap",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3441,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-29T17:25:44.737Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0b3f4cbccd38eb882047-be9ec4f69d9cafeb1f46",
+              "file": "inline-badge-spike.spec.ts",
+              "line": 74,
+              "column": 3
+            },
+            {
+              "title": "renders every strategy under comparison",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 63914,
+                      "error": {
+                        "message": "TimeoutError: page.goto: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8081/spike/badges\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "TimeoutError: page.goto: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8081/spike/badges\", waiting until \"load\"\u001b[22m\n\n    at W:\\spark-expo\\e2e\\inline-badge-spike.spec.ts:36:16",
+                        "location": {
+                          "file": "W:\\spark-expo\\e2e\\inline-badge-spike.spec.ts",
+                          "column": 16,
+                          "line": 36
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 34 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m'the inline-badge spike'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n \u001b[90m 35 |\u001b[39m   test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 36 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/spike/badges'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 37 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByText(\u001b[32m'Inline badge spike'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 38 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 39 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "W:\\spark-expo\\e2e\\inline-badge-spike.spec.ts",
+                            "column": 16,
+                            "line": 36
+                          },
+                          "message": "TimeoutError: page.goto: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8081/spike/badges\", waiting until \"load\"\u001b[22m\n\n\n  34 | test.describe('the inline-badge spike', () => {\n  35 |   test.beforeEach(async ({ page }) => {\n> 36 |     await page.goto('/spike/badges');\n     |                ^\n  37 |     await expect(page.getByText('Inline badge spike')).toBeVisible();\n  38 |   });\n  39 |\n    at W:\\spark-expo\\e2e\\inline-badge-spike.spec.ts:36:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-29T17:26:54.840Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "W:\\spark-expo\\test-results\\inline-badge-spike-the-inl-f8855-y-strategy-under-comparison-desktop\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "W:\\spark-expo\\test-results\\inline-badge-spike-the-inl-f8855-y-strategy-under-comparison-desktop\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "W:\\spark-expo\\e2e\\inline-badge-spike.spec.ts",
+                        "column": 16,
+                        "line": 36
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "0b3f4cbccd38eb882047-9464544398817d8def3f",
+              "file": "inline-badge-spike.spec.ts",
+              "line": 40,
+              "column": 3
+            },
+            {
+              "title": "the pill is hit-testable inside a line of scripture",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 3031,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-29T17:26:53.393Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0b3f4cbccd38eb882047-fe6efa61a60890179d74",
+              "file": "inline-badge-spike.spec.ts",
+              "line": 52,
+              "column": 3
+            },
+            {
+              "title": "the pill keeps counting, so the first tap was not a fluke",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2770,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-29T17:26:53.835Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0b3f4cbccd38eb882047-37dc982bcd8e23c18b72",
+              "file": "inline-badge-spike.spec.ts",
+              "line": 64,
+              "column": 3
+            },
+            {
+              "title": "tapping the surrounding text does not count as a badge tap",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2918,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-29T17:26:55.225Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0b3f4cbccd38eb882047-411f6d2d57fcbd766b60",
+              "file": "inline-badge-spike.spec.ts",
+              "line": 74,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "walkthrough\\11-badges-inline.spec.ts",
+      "file": "walkthrough/11-badges-inline.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "11 · badges inline",
+          "file": "walkthrough/11-badges-inline.spec.ts",
+          "line": 49,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Acts 16 carries pills for all five badge kinds",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 12247,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open Acts 16",
+                          "duration": 11380
+                        },
+                        {
+                          "title": "every pill names a badge kind the product committed to",
+                          "duration": 381
+                        },
+                        {
+                          "title": "each pill sits inside its verse, not beside it",
+                          "duration": 261
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:24:32.299Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e128606658f01f984d4d-aec57c433993bdcd0cc0",
+              "file": "walkthrough/11-badges-inline.spec.ts",
+              "line": 50,
+              "column": 3
+            },
+            {
+              "title": "the pills do not break the line rhythm",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12358,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open Acts 16",
+                          "duration": 11013
+                        },
+                        {
+                          "title": "no pill is taller than the line it sits on",
+                          "duration": 356
+                        },
+                        {
+                          "title": "scripture still dominates the canvas",
+                          "duration": 462
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:24:35.995Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e128606658f01f984d4d-93cd6ec4796c88885df8",
+              "file": "walkthrough/11-badges-inline.spec.ts",
+              "line": 99,
+              "column": 3
+            },
+            {
+              "title": "Leviticus 13 degrades to plain scripture",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 12882,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open Leviticus 13",
+                          "duration": 10881
+                        },
+                        {
+                          "title": "there are no pills, and nothing apologises for it",
+                          "duration": 580
+                        },
+                        {
+                          "title": "the reader itself is unaffected",
+                          "duration": 841
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:24:36.197Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e128606658f01f984d4d-54ab21292171e5e3a51e",
+              "file": "walkthrough/11-badges-inline.spec.ts",
+              "line": 152,
+              "column": 3
+            },
+            {
+              "title": "Acts 16 carries pills for all five badge kinds",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 8614,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open Acts 16",
+                          "duration": 4931
+                        },
+                        {
+                          "title": "every pill names a badge kind the product committed to",
+                          "duration": 1861
+                        },
+                        {
+                          "title": "each pill sits inside its verse, not beside it",
+                          "duration": 1385
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:25:46.934Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e128606658f01f984d4d-b6043541d08acff2a477",
+              "file": "walkthrough/11-badges-inline.spec.ts",
+              "line": 50,
+              "column": 3
+            },
+            {
+              "title": "the pills do not break the line rhythm",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 11828,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open Acts 16",
+                          "duration": 9809
+                        },
+                        {
+                          "title": "no pill is taller than the line it sits on",
+                          "duration": 940
+                        },
+                        {
+                          "title": "scripture still dominates the canvas",
+                          "duration": 689
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:25:48.568Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e128606658f01f984d4d-ba452b5eea8313386857",
+              "file": "walkthrough/11-badges-inline.spec.ts",
+              "line": 99,
+              "column": 3
+            },
+            {
+              "title": "Leviticus 13 degrades to plain scripture",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9654,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open Leviticus 13",
+                          "duration": 7554
+                        },
+                        {
+                          "title": "there are no pills, and nothing apologises for it",
+                          "duration": 1312
+                        },
+                        {
+                          "title": "the reader itself is unaffected",
+                          "duration": 447
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:25:49.113Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e128606658f01f984d4d-04625026046481deecad",
+              "file": "walkthrough/11-badges-inline.spec.ts",
+              "line": 152,
+              "column": 3
+            },
+            {
+              "title": "Acts 16 carries pills for all five badge kinds",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 5812,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open Acts 16",
+                          "duration": 3874
+                        },
+                        {
+                          "title": "every pill names a badge kind the product committed to",
+                          "duration": 897
+                        },
+                        {
+                          "title": "each pill sits inside its verse, not beside it",
+                          "duration": 704
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:26:57.083Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e128606658f01f984d4d-388101e7dad87b59753e",
+              "file": "walkthrough/11-badges-inline.spec.ts",
+              "line": 50,
+              "column": 3
+            },
+            {
+              "title": "the pills do not break the line rhythm",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6147,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open Acts 16",
+                          "duration": 4494
+                        },
+                        {
+                          "title": "no pill is taller than the line it sits on",
+                          "duration": 550
+                        },
+                        {
+                          "title": "scripture still dominates the canvas",
+                          "duration": 637
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:26:57.290Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e128606658f01f984d4d-4f86e6e8bd316e39c78d",
+              "file": "walkthrough/11-badges-inline.spec.ts",
+              "line": 99,
+              "column": 3
+            },
+            {
+              "title": "Leviticus 13 degrades to plain scripture",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 10380,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open Leviticus 13",
+                          "duration": 7805
+                        },
+                        {
+                          "title": "there are no pills, and nothing apologises for it",
+                          "duration": 706
+                        },
+                        {
+                          "title": "the reader itself is unaffected",
+                          "duration": 1403
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:26:59.033Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e128606658f01f984d4d-a86eadbf6d69650e0669",
+              "file": "walkthrough/11-badges-inline.spec.ts",
+              "line": 152,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "walkthrough\\12-badge-sheets.spec.ts",
+      "file": "walkthrough/12-badge-sheets.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "12 · badge sheets",
+          "file": "walkthrough/12-badge-sheets.spec.ts",
+          "line": 124,
+          "column": 6,
+          "specs": [
+            {
+              "title": "route opens a sheet with real data and its attribution",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 17782,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "find a route badge in Acts 16",
+                          "duration": 10578
+                        },
+                        {
+                          "title": "tap the route pill",
+                          "duration": 1460
+                        },
+                        {
+                          "title": "the route sheet names its source and licence",
+                          "duration": 1079
+                        },
+                        {
+                          "title": "everything in the route sheet fits inside it",
+                          "duration": 1194
+                        },
+                        {
+                          "title": "the route sheet shows the drawn route map (M-01: GeoJSON, no tile provider)",
+                          "duration": 777
+                        },
+                        {
+                          "title": "close the route sheet",
+                          "duration": 1877
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:24:36.535Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-b71b36d6bcffe5ea2a6b",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 126,
+              "column": 5
+            },
+            {
+              "title": "3d-city opens a sheet with real data and its attribution",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 14338,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "find a 3d-city badge in Acts 16",
+                          "duration": 7488
+                        },
+                        {
+                          "title": "tap the 3d-city pill",
+                          "duration": 2485
+                        },
+                        {
+                          "title": "the 3d-city sheet names its source and licence",
+                          "duration": 686
+                        },
+                        {
+                          "title": "everything in the 3d-city sheet fits inside it",
+                          "duration": 477
+                        },
+                        {
+                          "title": "the 3d-city sheet shows the city site map",
+                          "duration": 1373
+                        },
+                        {
+                          "title": "close the 3d-city sheet",
+                          "duration": 1473
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:24:44.622Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-6afca5be6315c97deb2e",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 126,
+              "column": 5
+            },
+            {
+              "title": "history opens a sheet with real data and its attribution",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 18049,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "find a history badge in Acts 16",
+                          "duration": 8349
+                        },
+                        {
+                          "title": "tap the history pill",
+                          "duration": 2852
+                        },
+                        {
+                          "title": "the history sheet names its source and licence",
+                          "duration": 730
+                        },
+                        {
+                          "title": "everything in the history sheet fits inside it",
+                          "duration": 1338
+                        },
+                        {
+                          "title": "the history sheet shows the dual-axis timeline",
+                          "duration": 1103
+                        },
+                        {
+                          "title": "close the history sheet",
+                          "duration": 2012
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:24:48.541Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-6a7eaffe362ad13ec441",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 126,
+              "column": 5
+            },
+            {
+              "title": "root opens a sheet with real data and its attribution",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 17316,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "find a root badge in Acts 16",
+                          "duration": 8951
+                        },
+                        {
+                          "title": "tap the root pill",
+                          "duration": 2587
+                        },
+                        {
+                          "title": "the root sheet names its source and licence",
+                          "duration": 1026
+                        },
+                        {
+                          "title": "everything in the root sheet fits inside it",
+                          "duration": 951
+                        },
+                        {
+                          "title": "the root sheet shows the Greek or Hebrew lemma and its lexicon entry",
+                          "duration": 1140
+                        },
+                        {
+                          "title": "close the root sheet",
+                          "duration": 1656
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:24:49.240Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-3df261b442ce1bf3c037",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 126,
+              "column": 5
+            },
+            {
+              "title": "cross-ref opens a sheet with real data and its attribution",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 15210,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "find a cross-ref badge in Acts 16",
+                          "duration": 9143
+                        },
+                        {
+                          "title": "tap the cross-ref pill",
+                          "duration": 2287
+                        },
+                        {
+                          "title": "the cross-ref sheet names its source and licence",
+                          "duration": 927
+                        },
+                        {
+                          "title": "everything in the cross-ref sheet fits inside it",
+                          "duration": 465
+                        },
+                        {
+                          "title": "the cross-ref sheet shows the list of linked passages",
+                          "duration": 711
+                        },
+                        {
+                          "title": "close the cross-ref sheet",
+                          "duration": 1103
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:24:54.547Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-712d518adff3222f5eba",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 126,
+              "column": 5
+            },
+            {
+              "title": "the history sheet attributes Murai rather than stating his reading as fact",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 13271,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open the history badge",
+                          "duration": 11419
+                        },
+                        {
+                          "title": "the sheet says \"Murai's reading\"",
+                          "duration": 509
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:24:59.045Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-041530380fe759a8e8f2",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 134,
+              "column": 3
+            },
+            {
+              "title": "route opens a sheet with real data and its attribution",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 12807,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "find a route badge in Acts 16",
+                          "duration": 6085
+                        },
+                        {
+                          "title": "tap the route pill",
+                          "duration": 2347
+                        },
+                        {
+                          "title": "the route sheet names its source and licence",
+                          "duration": 632
+                        },
+                        {
+                          "title": "everything in the route sheet fits inside it",
+                          "duration": 1279
+                        },
+                        {
+                          "title": "the route sheet shows the drawn route map (M-01: GeoJSON, no tile provider)",
+                          "duration": 687
+                        },
+                        {
+                          "title": "close the route sheet",
+                          "duration": 1199
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:25:55.721Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-4274a4460659ad68d20e",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 126,
+              "column": 5
+            },
+            {
+              "title": "3d-city opens a sheet with real data and its attribution",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 11530,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "find a 3d-city badge in Acts 16",
+                          "duration": 5599
+                        },
+                        {
+                          "title": "tap the 3d-city pill",
+                          "duration": 1948
+                        },
+                        {
+                          "title": "the 3d-city sheet names its source and licence",
+                          "duration": 983
+                        },
+                        {
+                          "title": "everything in the 3d-city sheet fits inside it",
+                          "duration": 895
+                        },
+                        {
+                          "title": "the 3d-city sheet shows the city site map",
+                          "duration": 625
+                        },
+                        {
+                          "title": "close the 3d-city sheet",
+                          "duration": 940
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:25:58.907Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-6ab5f3d09ddb8b5f9855",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 126,
+              "column": 5
+            },
+            {
+              "title": "history opens a sheet with real data and its attribution",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 11855,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "find a history badge in Acts 16",
+                          "duration": 6695
+                        },
+                        {
+                          "title": "tap the history pill",
+                          "duration": 1779
+                        },
+                        {
+                          "title": "the history sheet names its source and licence",
+                          "duration": 627
+                        },
+                        {
+                          "title": "everything in the history sheet fits inside it",
+                          "duration": 475
+                        },
+                        {
+                          "title": "the history sheet shows the dual-axis timeline",
+                          "duration": 741
+                        },
+                        {
+                          "title": "close the history sheet",
+                          "duration": 1146
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:26:00.522Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-4e76b4e4f7a125eb5136",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 126,
+              "column": 5
+            },
+            {
+              "title": "root opens a sheet with real data and its attribution",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 10625,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "find a root badge in Acts 16",
+                          "duration": 4058
+                        },
+                        {
+                          "title": "tap the root pill",
+                          "duration": 1541
+                        },
+                        {
+                          "title": "the root sheet names its source and licence",
+                          "duration": 587
+                        },
+                        {
+                          "title": "everything in the root sheet fits inside it",
+                          "duration": 1212
+                        },
+                        {
+                          "title": "the root sheet shows the Greek or Hebrew lemma and its lexicon entry",
+                          "duration": 1316
+                        },
+                        {
+                          "title": "close the root sheet",
+                          "duration": 1403
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:26:08.638Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-4c5bcce46cfe2483e5b8",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 126,
+              "column": 5
+            },
+            {
+              "title": "cross-ref opens a sheet with real data and its attribution",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12225,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "find a cross-ref badge in Acts 16",
+                          "duration": 7567
+                        },
+                        {
+                          "title": "tap the cross-ref pill",
+                          "duration": 1945
+                        },
+                        {
+                          "title": "the cross-ref sheet names its source and licence",
+                          "duration": 656
+                        },
+                        {
+                          "title": "everything in the cross-ref sheet fits inside it",
+                          "duration": 448
+                        },
+                        {
+                          "title": "the cross-ref sheet shows the list of linked passages",
+                          "duration": 340
+                        },
+                        {
+                          "title": "close the cross-ref sheet",
+                          "duration": 975
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:26:10.552Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-d5700478fa803cfe72c2",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 126,
+              "column": 5
+            },
+            {
+              "title": "the history sheet attributes Murai rather than stating his reading as fact",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 8085,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open the history badge",
+                          "duration": 6505
+                        },
+                        {
+                          "title": "the sheet says \"Murai's reading\"",
+                          "duration": 1227
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:26:12.431Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-1e9cbb7f274491ae00f2",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 134,
+              "column": 3
+            },
+            {
+              "title": "route opens a sheet with real data and its attribution",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 11183,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "find a route badge in Acts 16",
+                          "duration": 6937
+                        },
+                        {
+                          "title": "tap the route pill",
+                          "duration": 1132
+                        },
+                        {
+                          "title": "the route sheet names its source and licence",
+                          "duration": 663
+                        },
+                        {
+                          "title": "everything in the route sheet fits inside it",
+                          "duration": 688
+                        },
+                        {
+                          "title": "the route sheet shows the drawn route map (M-01: GeoJSON, no tile provider)",
+                          "duration": 447
+                        },
+                        {
+                          "title": "close the route sheet",
+                          "duration": 948
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:27:03.039Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-1dbc2bc87c030fa7f15c",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 126,
+              "column": 5
+            },
+            {
+              "title": "3d-city opens a sheet with real data and its attribution",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8589,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "find a 3d-city badge in Acts 16",
+                          "duration": 3872
+                        },
+                        {
+                          "title": "tap the 3d-city pill",
+                          "duration": 1754
+                        },
+                        {
+                          "title": "the 3d-city sheet names its source and licence",
+                          "duration": 766
+                        },
+                        {
+                          "title": "everything in the 3d-city sheet fits inside it",
+                          "duration": 326
+                        },
+                        {
+                          "title": "the 3d-city sheet shows the city site map",
+                          "duration": 450
+                        },
+                        {
+                          "title": "close the 3d-city sheet",
+                          "duration": 965
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:27:03.560Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-7dfcf54aa19de79e745d",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 126,
+              "column": 5
+            },
+            {
+              "title": "history opens a sheet with real data and its attribution",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 14654,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "find a history badge in Acts 16",
+                          "duration": 7661
+                        },
+                        {
+                          "title": "tap the history pill",
+                          "duration": 2231
+                        },
+                        {
+                          "title": "the history sheet names its source and licence",
+                          "duration": 1154
+                        },
+                        {
+                          "title": "everything in the history sheet fits inside it",
+                          "duration": 842
+                        },
+                        {
+                          "title": "the history sheet shows the dual-axis timeline",
+                          "duration": 772
+                        },
+                        {
+                          "title": "close the history sheet",
+                          "duration": 1496
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:27:09.563Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-0df6bfc820f37d97693a",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 126,
+              "column": 5
+            },
+            {
+              "title": "root opens a sheet with real data and its attribution",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 11154,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "find a root badge in Acts 16",
+                          "duration": 4608
+                        },
+                        {
+                          "title": "tap the root pill",
+                          "duration": 1945
+                        },
+                        {
+                          "title": "the root sheet names its source and licence",
+                          "duration": 832
+                        },
+                        {
+                          "title": "everything in the root sheet fits inside it",
+                          "duration": 1170
+                        },
+                        {
+                          "title": "the root sheet shows the Greek or Hebrew lemma and its lexicon entry",
+                          "duration": 931
+                        },
+                        {
+                          "title": "close the root sheet",
+                          "duration": 1348
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:27:12.287Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-9917dca2a68c4bff5f3f",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 126,
+              "column": 5
+            },
+            {
+              "title": "cross-ref opens a sheet with real data and its attribution",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 11979,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "find a cross-ref badge in Acts 16",
+                          "duration": 7562
+                        },
+                        {
+                          "title": "tap the cross-ref pill",
+                          "duration": 1808
+                        },
+                        {
+                          "title": "the cross-ref sheet names its source and licence",
+                          "duration": 769
+                        },
+                        {
+                          "title": "everything in the cross-ref sheet fits inside it",
+                          "duration": 315
+                        },
+                        {
+                          "title": "the cross-ref sheet shows the list of linked passages",
+                          "duration": 271
+                        },
+                        {
+                          "title": "close the cross-ref sheet",
+                          "duration": 747
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:27:14.291Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-bf24f25fe5507cfd1db7",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 126,
+              "column": 5
+            },
+            {
+              "title": "the history sheet attributes Murai rather than stating his reading as fact",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6527,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open the history badge",
+                          "duration": 5199
+                        },
+                        {
+                          "title": "the sheet says \"Murai's reading\"",
+                          "duration": 973
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:27:23.517Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "743c08d6146a337ad359-198595435b13ae1adf94",
+              "file": "walkthrough/12-badge-sheets.spec.ts",
+              "line": 134,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "walkthrough\\13-badge-summary.spec.ts",
+      "file": "walkthrough/13-badge-summary.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "13 · chapter badge summary",
+          "file": "walkthrough/13-badge-summary.spec.ts",
+          "line": 39,
+          "column": 6,
+          "specs": [
+            {
+              "title": "the summary repeats every badge in the chapter",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 11680,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open Acts 16",
+                          "duration": 8435
+                        },
+                        {
+                          "title": "scroll to the foot of the chapter",
+                          "duration": 1089
+                        },
+                        {
+                          "title": "one row per badge, none missing and none invented",
+                          "duration": 1065
+                        },
+                        {
+                          "title": "the summary prints the sources it rests on",
+                          "duration": 548
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:25:06.735Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "efa322d0ce719f36aefe-615f1148707ae1c1af8b",
+              "file": "walkthrough/13-badge-summary.spec.ts",
+              "line": 40,
+              "column": 3
+            },
+            {
+              "title": "a summary row opens the same badge its pill does",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7614,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "reach the summary",
+                          "duration": 5385
+                        },
+                        {
+                          "title": "tap the first row",
+                          "duration": 1092
+                        },
+                        {
+                          "title": "it opened that badge, not another",
+                          "duration": 622
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:25:06.728Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "efa322d0ce719f36aefe-728e5b2acb45e07ae6d4",
+              "file": "walkthrough/13-badge-summary.spec.ts",
+              "line": 83,
+              "column": 3
+            },
+            {
+              "title": "tapping a linked passage navigates to it",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 15733,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open a cross-reference badge",
+                          "duration": 11722
+                        },
+                        {
+                          "title": "the sheet lists the passages it links to",
+                          "duration": 751
+                        },
+                        {
+                          "title": "tapping one goes there",
+                          "duration": 2308
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:25:10.028Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "efa322d0ce719f36aefe-77dc3a771743f4dbbdeb",
+              "file": "walkthrough/13-badge-summary.spec.ts",
+              "line": 117,
+              "column": 3
+            },
+            {
+              "title": "the summary repeats every badge in the chapter",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 6510,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open Acts 16",
+                          "duration": 3786
+                        },
+                        {
+                          "title": "scroll to the foot of the chapter",
+                          "duration": 844
+                        },
+                        {
+                          "title": "one row per badge, none missing and none invented",
+                          "duration": 561
+                        },
+                        {
+                          "title": "the summary prints the sources it rests on",
+                          "duration": 709
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:26:19.392Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "efa322d0ce719f36aefe-a283e000f410f23d0337",
+              "file": "walkthrough/13-badge-summary.spec.ts",
+              "line": 40,
+              "column": 3
+            },
+            {
+              "title": "a summary row opens the same badge its pill does",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 6293,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "reach the summary",
+                          "duration": 4072
+                        },
+                        {
+                          "title": "tap the first row",
+                          "duration": 1119
+                        },
+                        {
+                          "title": "it opened that badge, not another",
+                          "duration": 739
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:26:20.603Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "efa322d0ce719f36aefe-210520a8ee1ca6dfc3e0",
+              "file": "walkthrough/13-badge-summary.spec.ts",
+              "line": 83,
+              "column": 3
+            },
+            {
+              "title": "tapping a linked passage navigates to it",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10605,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open a cross-reference badge",
+                          "duration": 7609
+                        },
+                        {
+                          "title": "the sheet lists the passages it links to",
+                          "duration": 457
+                        },
+                        {
+                          "title": "tapping one goes there",
+                          "duration": 2171
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:26:22.891Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "efa322d0ce719f36aefe-139e5ffea55ce69a13f5",
+              "file": "walkthrough/13-badge-summary.spec.ts",
+              "line": 117,
+              "column": 3
+            },
+            {
+              "title": "the summary repeats every badge in the chapter",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 10939,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open Acts 16",
+                          "duration": 8271
+                        },
+                        {
+                          "title": "scroll to the foot of the chapter",
+                          "duration": 560
+                        },
+                        {
+                          "title": "one row per badge, none missing and none invented",
+                          "duration": 1119
+                        },
+                        {
+                          "title": "the summary prints the sources it rests on",
+                          "duration": 601
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:27:24.356Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "efa322d0ce719f36aefe-1408646b0577beb3712d",
+              "file": "walkthrough/13-badge-summary.spec.ts",
+              "line": 40,
+              "column": 3
+            },
+            {
+              "title": "a summary row opens the same badge its pill does",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 6271,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "reach the summary",
+                          "duration": 4076
+                        },
+                        {
+                          "title": "tap the first row",
+                          "duration": 1360
+                        },
+                        {
+                          "title": "it opened that badge, not another",
+                          "duration": 534
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:27:26.344Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "efa322d0ce719f36aefe-40e1e976b395ec89ffda",
+              "file": "walkthrough/13-badge-summary.spec.ts",
+              "line": 83,
+              "column": 3
+            },
+            {
+              "title": "tapping a linked passage navigates to it",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8571,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open a cross-reference badge",
+                          "duration": 6079
+                        },
+                        {
+                          "title": "the sheet lists the passages it links to",
+                          "duration": 835
+                        },
+                        {
+                          "title": "tapping one goes there",
+                          "duration": 1250
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:27:30.206Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "efa322d0ce719f36aefe-be6a392449bc32fa2dc9",
+              "file": "walkthrough/13-badge-summary.spec.ts",
+              "line": 117,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "walkthrough\\14-badge-surfaces.spec.ts",
+      "file": "walkthrough/14-badge-surfaces.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "14 · badge surfaces",
+          "file": "walkthrough/14-badge-surfaces.spec.ts",
+          "line": 39,
+          "column": 6,
+          "specs": [
+            {
+              "title": "a badge opens into the home its width calls for",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 13204,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open a badge at phone width",
+                          "duration": 10033
+                        },
+                        {
+                          "title": "it opened as a sheet, and only as a sheet",
+                          "duration": 786
+                        },
+                        {
+                          "title": "scripture is still on screen beside or above it",
+                          "duration": 2017
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:25:12.416Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "793cc63f2662614aa942-933c54530bff2f798492",
+              "file": "walkthrough/14-badge-surfaces.spec.ts",
+              "line": 40,
+              "column": 3
+            },
+            {
+              "title": "badges survive the API going away mid-session",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 26818,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "read Acts 16 with the API up",
+                          "duration": 10876
+                        },
+                        {
+                          "title": "cut the API and step to the next chapter",
+                          "duration": 3496
+                        },
+                        {
+                          "title": "no pill claims data the app does not have",
+                          "duration": 1712
+                        },
+                        {
+                          "title": "the reader itself still says something honest",
+                          "duration": 923
+                        },
+                        {
+                          "title": "restoring the API brings the pills back",
+                          "duration": 9252
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:25:14.517Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "793cc63f2662614aa942-2aac731ebf081c296307",
+              "file": "walkthrough/14-badge-surfaces.spec.ts",
+              "line": 103,
+              "column": 3
+            },
+            {
+              "title": "a badge opens into the home its width calls for",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 8898,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open a badge at tablet width",
+                          "duration": 6124
+                        },
+                        {
+                          "title": "it opened as a rail, and only as a rail",
+                          "duration": 1050
+                        },
+                        {
+                          "title": "scripture is still on screen beside or above it",
+                          "duration": 1289
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:26:26.016Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "793cc63f2662614aa942-5ce2cbc62cabbe57e16c",
+              "file": "walkthrough/14-badge-surfaces.spec.ts",
+              "line": 40,
+              "column": 3
+            },
+            {
+              "title": "badges survive the API going away mid-session",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 20835,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "read Acts 16 with the API up",
+                          "duration": 6327
+                        },
+                        {
+                          "title": "cut the API and step to the next chapter",
+                          "duration": 3116
+                        },
+                        {
+                          "title": "no pill claims data the app does not have",
+                          "duration": 1125
+                        },
+                        {
+                          "title": "the reader itself still says something honest",
+                          "duration": 472
+                        },
+                        {
+                          "title": "restoring the API brings the pills back",
+                          "duration": 9292
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:26:27.013Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "793cc63f2662614aa942-b707134339ff9f44d37e",
+              "file": "walkthrough/14-badge-surfaces.spec.ts",
+              "line": 103,
+              "column": 3
+            },
+            {
+              "title": "a badge opens into the home its width calls for",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 7383,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open a badge at desktop width",
+                          "duration": 6036
+                        },
+                        {
+                          "title": "it opened as a rail, and only as a rail",
+                          "duration": 558
+                        },
+                        {
+                          "title": "scripture is still on screen beside or above it",
+                          "duration": 496
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:27:32.705Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "793cc63f2662614aa942-8a205a1c31f6a82e839e",
+              "file": "walkthrough/14-badge-surfaces.spec.ts",
+              "line": 40,
+              "column": 3
+            },
+            {
+              "title": "badges survive the API going away mid-session",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 21170,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "read Acts 16 with the API up",
+                          "duration": 8841
+                        },
+                        {
+                          "title": "cut the API and step to the next chapter",
+                          "duration": 3530
+                        },
+                        {
+                          "title": "no pill claims data the app does not have",
+                          "duration": 616
+                        },
+                        {
+                          "title": "the reader itself still says something honest",
+                          "duration": 890
+                        },
+                        {
+                          "title": "restoring the API brings the pills back",
+                          "duration": 6968
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:27:35.385Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "793cc63f2662614aa942-181f2a61209919458966",
+              "file": "walkthrough/14-badge-surfaces.spec.ts",
+              "line": 103,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "walkthrough\\15-badges-light.spec.ts",
+      "file": "walkthrough/15-badges-light.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "15 · badges in light mode",
+          "file": "walkthrough/15-badges-light.spec.ts",
+          "line": 46,
+          "column": 6,
+          "specs": [
+            {
+              "title": "every badge surface survives the light theme",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 19864,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open Acts 16",
+                          "duration": 11830
+                        },
+                        {
+                          "title": "switch to light",
+                          "duration": 1664
+                        },
+                        {
+                          "title": "the pills are still painted, and still inside the text",
+                          "duration": 244
+                        },
+                        {
+                          "title": "a badge opens and reads in light",
+                          "duration": 2459
+                        },
+                        {
+                          "title": "close it again",
+                          "duration": 1334
+                        },
+                        {
+                          "title": "the chapter-end summary reads in light",
+                          "duration": 1178
+                        },
+                        {
+                          "title": "switch back to dark",
+                          "duration": 918
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:25:18.529Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c7af8c85686136bdf5f8-29c0583528edf7c914d2",
+              "file": "walkthrough/15-badges-light.spec.ts",
+              "line": 47,
+              "column": 3
+            },
+            {
+              "title": "every badge surface survives the light theme",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 11496,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open Acts 16",
+                          "duration": 4800
+                        },
+                        {
+                          "title": "switch to light",
+                          "duration": 1358
+                        },
+                        {
+                          "title": "the pills are still painted, and still inside the text",
+                          "duration": 590
+                        },
+                        {
+                          "title": "a badge opens and reads in light",
+                          "duration": 1911
+                        },
+                        {
+                          "title": "close it again",
+                          "duration": 1106
+                        },
+                        {
+                          "title": "the chapter-end summary reads in light",
+                          "duration": 567
+                        },
+                        {
+                          "title": "switch back to dark",
+                          "duration": 829
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:26:33.626Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c7af8c85686136bdf5f8-4442b68aead1a57f2c7f",
+              "file": "walkthrough/15-badges-light.spec.ts",
+              "line": 47,
+              "column": 3
+            },
+            {
+              "title": "every badge surface survives the light theme",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12423,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open Acts 16",
+                          "duration": 3487
+                        },
+                        {
+                          "title": "switch to light",
+                          "duration": 1871
+                        },
+                        {
+                          "title": "the pills are still painted, and still inside the text",
+                          "duration": 1818
+                        },
+                        {
+                          "title": "a badge opens and reads in light",
+                          "duration": 1597
+                        },
+                        {
+                          "title": "close it again",
+                          "duration": 1041
+                        },
+                        {
+                          "title": "the chapter-end summary reads in light",
+                          "duration": 981
+                        },
+                        {
+                          "title": "switch back to dark",
+                          "duration": 1261
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:27:38.907Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c7af8c85686136bdf5f8-a656237fde296966d846",
+              "file": "walkthrough/15-badges-light.spec.ts",
+              "line": 47,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "walkthrough\\18-translations.spec.ts",
+      "file": "walkthrough/18-translations.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "18 · all four translations",
+          "file": "walkthrough/18-translations.spec.ts",
+          "line": 86,
+          "column": 6,
+          "specs": [
+            {
+              "title": "badges stay anchored to their own words in every translation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "this chapter compares text against the API; the comparison does not vary with width",
+                      "location": {
+                        "file": "W:\\spark-expo\\e2e\\walkthrough\\18-translations.spec.ts",
+                        "line": 87,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "skipped",
+                      "duration": 3,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-29T17:25:25.818Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "this chapter compares text against the API; the comparison does not vary with width",
+                          "location": {
+                            "file": "W:\\spark-expo\\e2e\\walkthrough\\18-translations.spec.ts",
+                            "line": 87,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "67eca37352934de2a755-23e6b44957819f9b5e34",
+              "file": "walkthrough/18-translations.spec.ts",
+              "line": 146,
+              "column": 3
+            },
+            {
+              "title": "badges stay anchored to their own words in every translation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "this chapter compares text against the API; the comparison does not vary with width",
+                      "location": {
+                        "file": "W:\\spark-expo\\e2e\\walkthrough\\18-translations.spec.ts",
+                        "line": 87,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 3,
+                      "status": "skipped",
+                      "duration": 2,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-29T17:26:35.190Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "this chapter compares text against the API; the comparison does not vary with width",
+                          "location": {
+                            "file": "W:\\spark-expo\\e2e\\walkthrough\\18-translations.spec.ts",
+                            "line": 87,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "67eca37352934de2a755-eaea5d6d4b06a657a550",
+              "file": "walkthrough/18-translations.spec.ts",
+              "line": 146,
+              "column": 3
+            },
+            {
+              "title": "badges stay anchored to their own words in every translation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 14753,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open John 3",
+                          "duration": 6158
+                        },
+                        {
+                          "title": "check every pill in John 3 · BSB",
+                          "duration": 2536
+                        },
+                        {
+                          "title": "check every pill in John 3 · KJV",
+                          "duration": 2198
+                        },
+                        {
+                          "title": "check every pill in John 3 · WEB",
+                          "duration": 1923
+                        },
+                        {
+                          "title": "check every pill in John 3 · ASV",
+                          "duration": 1665
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:27:40.207Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "67eca37352934de2a755-8a72a8a2de9d03ff32fb",
+              "file": "walkthrough/18-translations.spec.ts",
+              "line": 146,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "walkthrough\\21-badge-density.spec.ts",
+      "file": "walkthrough/21-badge-density.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "21 · a chapter at the badge cap",
+          "file": "walkthrough/21-badge-density.spec.ts",
+          "line": 46,
+          "column": 6,
+          "specs": [
+            {
+              "title": "John 3 renders every badge the server sent, and not one more",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 11899,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open John 3",
+                          "duration": 8297
+                        },
+                        {
+                          "title": "the chapter cap is honoured on screen",
+                          "duration": 650
+                        },
+                        {
+                          "title": "no badge is rendered twice",
+                          "duration": 1355
+                        },
+                        {
+                          "title": "no verse carries more than two pills",
+                          "duration": 780
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:25:25.989Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "29088684ccc223149c8f-398c7d933b63cd19bfc0",
+              "file": "walkthrough/21-badge-density.spec.ts",
+              "line": 47,
+              "column": 3
+            },
+            {
+              "title": "every pill in John 3 names the word it sits against",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 10293,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open John 3 and read its anchors",
+                          "duration": 9411
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:25:25.975Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "29088684ccc223149c8f-80525e86e66791238af0",
+              "file": "walkthrough/21-badge-density.spec.ts",
+              "line": 118,
+              "column": 3
+            },
+            {
+              "title": "a doubly-badged verse still reads as one line of scripture",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 4598,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open John 3",
+                          "duration": 3651
+                        },
+                        {
+                          "title": "the verse carrying two pills keeps its line rhythm",
+                          "duration": 451
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:25:36.428Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "29088684ccc223149c8f-cee02efb6a9dff42058b",
+              "file": "walkthrough/21-badge-density.spec.ts",
+              "line": 144,
+              "column": 3
+            },
+            {
+              "title": "John 3 renders every badge the server sent, and not one more",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 7984,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open John 3",
+                          "duration": 4903
+                        },
+                        {
+                          "title": "the chapter cap is honoured on screen",
+                          "duration": 751
+                        },
+                        {
+                          "title": "no badge is rendered twice",
+                          "duration": 1354
+                        },
+                        {
+                          "title": "no verse carries more than two pills",
+                          "duration": 548
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:26:35.450Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "29088684ccc223149c8f-71378035199b4b96cc76",
+              "file": "walkthrough/21-badge-density.spec.ts",
+              "line": 47,
+              "column": 3
+            },
+            {
+              "title": "every pill in John 3 names the word it sits against",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 5038,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open John 3 and read its anchors",
+                          "duration": 4730
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:26:43.506Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "29088684ccc223149c8f-afbc7ea148222fe89a2c",
+              "file": "walkthrough/21-badge-density.spec.ts",
+              "line": 118,
+              "column": 3
+            },
+            {
+              "title": "a doubly-badged verse still reads as one line of scripture",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6295,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open John 3",
+                          "duration": 5493
+                        },
+                        {
+                          "title": "the verse carrying two pills keeps its line rhythm",
+                          "duration": 370
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:26:45.244Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "29088684ccc223149c8f-2fa6f54980eeef973b81",
+              "file": "walkthrough/21-badge-density.spec.ts",
+              "line": 144,
+              "column": 3
+            },
+            {
+              "title": "John 3 renders every badge the server sent, and not one more",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 15462,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open John 3",
+                          "duration": 7497
+                        },
+                        {
+                          "title": "the chapter cap is honoured on screen",
+                          "duration": 623
+                        },
+                        {
+                          "title": "no badge is rendered twice",
+                          "duration": 501
+                        },
+                        {
+                          "title": "no verse carries more than two pills",
+                          "duration": 306
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:27:51.436Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "29088684ccc223149c8f-aee1b814ef94a37fe306",
+              "file": "walkthrough/21-badge-density.spec.ts",
+              "line": 47,
+              "column": 3
+            },
+            {
+              "title": "every pill in John 3 names the word it sits against",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 10687,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open John 3 and read its anchors",
+                          "duration": 7843
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:27:55.048Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "29088684ccc223149c8f-42a8b2e5598780843111",
+              "file": "walkthrough/21-badge-density.spec.ts",
+              "line": 118,
+              "column": 3
+            },
+            {
+              "title": "a doubly-badged verse still reads as one line of scripture",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 9594,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open John 3",
+                          "duration": 7700
+                        },
+                        {
+                          "title": "the verse carrying two pills keeps its line rhythm",
+                          "duration": 639
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:27:56.675Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "29088684ccc223149c8f-61cdba08cc54e23a5adc",
+              "file": "walkthrough/21-badge-density.spec.ts",
+              "line": 144,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "walkthrough\\22-hebrew-rtl.spec.ts",
+      "file": "walkthrough/22-hebrew-rtl.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "22 · Hebrew and right-to-left",
+          "file": "walkthrough/22-hebrew-rtl.spec.ts",
+          "line": 71,
+          "column": 6,
+          "specs": [
+            {
+              "title": "a badge with no source shows none of its content",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "the gallery sets its own container widths, so the window width would only repeat it",
+                      "location": {
+                        "file": "W:\\spark-expo\\e2e\\walkthrough\\22-hebrew-rtl.spec.ts",
+                        "line": 72,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "skipped",
+                      "duration": 3,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-29T17:25:38.055Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "the gallery sets its own container widths, so the window width would only repeat it",
+                          "location": {
+                            "file": "W:\\spark-expo\\e2e\\walkthrough\\22-hebrew-rtl.spec.ts",
+                            "line": 72,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "788e8fdb4fef9379ca5c-6df463c8fd6d8290657d",
+              "file": "walkthrough/22-hebrew-rtl.spec.ts",
+              "line": 169,
+              "column": 3
+            },
+            {
+              "title": "a badge with no source shows none of its content",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "the gallery sets its own container widths, so the window width would only repeat it",
+                      "location": {
+                        "file": "W:\\spark-expo\\e2e\\walkthrough\\22-hebrew-rtl.spec.ts",
+                        "line": 72,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 2,
+                      "status": "skipped",
+                      "duration": 2,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-29T17:26:47.969Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "the gallery sets its own container widths, so the window width would only repeat it",
+                          "location": {
+                            "file": "W:\\spark-expo\\e2e\\walkthrough\\22-hebrew-rtl.spec.ts",
+                            "line": 72,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "788e8fdb4fef9379ca5c-49db9376de9fa7bb6fb5",
+              "file": "walkthrough/22-hebrew-rtl.spec.ts",
+              "line": 169,
+              "column": 3
+            },
+            {
+              "title": "a badge with no source shows none of its content",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 2445,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "read the unattributed card, and its attributed twin",
+                          "duration": 2102
+                        }
+                      ],
+                      "startTime": "2026-08-29T17:28:05.833Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "788e8fdb4fef9379ca5c-2ad4f6e418ed6eea17be",
+              "file": "walkthrough/22-hebrew-rtl.spec.ts",
+              "line": 169,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-08-29T17:24:21.620Z",
+    "duration": 229571.07,
+    "expected": 66,
+    "skipped": 4,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

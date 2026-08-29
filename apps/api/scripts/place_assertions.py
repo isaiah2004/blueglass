@@ -31,9 +31,19 @@ import asyncpg
 EXPECTED_PLACES = 1_342
 EXPECTED_LOCATED = 1_335
 EXPECTED_DISPUTED = 777
-EXPECTED_NAMES = 4_346
+#: 4,035 since the primary name row was keyed on the display name instead of
+#: on friendly_id. The 311 rows that went away were keys like "ramah2", which
+#: merged into the "ramah" row that the translation counts already supplied.
+EXPECTED_NAMES = 4_035
 EXPECTED_MENTIONS = 8_742
 EXPECTED_MENTIONED_VERSES = 5_616
+
+#: OpenBible disambiguates homonyms with a trailing ordinal in friendly_id.
+#: 315 of the 1,342 records carry one, and after the split their display names
+#: collapse onto 129 shared labels covering 312 places -- three ordinals turn
+#: out to be spurious ("Carmel 1", "Joktheel 1", "Kadesh 2" have no siblings).
+EXPECTED_INDEXED = 315
+EXPECTED_SHARED_NAME_PLACES = 312
 
 #: Derived, not sourced: one route per chapter that names two or more located
 #: places, ordered by verse and then by position in the BSB text.
@@ -79,6 +89,33 @@ _ORPHAN_NAMES = """
     WHERE p.place_id IS NULL
 """
 
+#: The bug this file now guards against. `places.name` is what a badge prints
+#: beside scripture, and no manuscript calls anywhere "Ramah 2"; a name that
+#: still carries the source's homonym ordinal is an uncited claim (pillar 3).
+#: Deliberately scoped to places.name -- "Feldstein et al Site 43" is a real
+#: modern site name and place_names must keep it.
+_NAMES_CARRYING_AN_INDEX = "SELECT count(*) FROM places WHERE name ~ ' [0-9]+$'"
+
+#: The ordinal was moved, not dropped, so it must still be there to move back.
+_INDEX_RETAINED = "SELECT count(*) FROM places WHERE disambiguation_index IS NOT NULL"
+
+#: A shared name is only honest if the row admits it is shared.
+_SHARED_NAMES = "SELECT count(*) FROM places WHERE homonym_count > 1"
+
+#: homonym_count is written by the loader, not GENERATED, so it can drift.
+#: This recomputes it from the table itself.
+_HOMONYM_COUNT_DISAGREES = """
+    SELECT count(*) FROM places p
+    WHERE p.homonym_count <> (SELECT count(*) FROM places o WHERE o.name = p.name)
+"""
+
+#: A note that still contains markup would render as literal "<a href=..." in
+#: a sheet -- the same failure as the ordinal, one layer along.
+_NOTES_WITH_MARKUP = """
+    SELECT count(*) FROM places
+    WHERE disambiguation IS NOT NULL AND disambiguation LIKE '%<%'
+"""
+
 _CHECKS_SQL: tuple[tuple[str, str, int], ...] = (
     ("places", _PLACES, EXPECTED_PLACES),
     ("places with a coordinate", _LOCATED, EXPECTED_LOCATED),
@@ -92,6 +129,11 @@ _CHECKS_SQL: tuple[tuple[str, str, int], ...] = (
     ("mentions outside books 1-66", _MENTIONS_OUTSIDE_CANON, 0),
     ("routes whose stop_count is a lie", _STOP_COUNT_DISAGREES, 0),
     ("gazetteer names with no place", _ORPHAN_NAMES, 0),
+    ("place names still printing a homonym index", _NAMES_CARRYING_AN_INDEX, 0),
+    ("places whose homonym_count is a lie", _HOMONYM_COUNT_DISAGREES, 0),
+    ("disambiguation notes still holding markup", _NOTES_WITH_MARKUP, 0),
+    ("homonym indexes retained beside the name", _INDEX_RETAINED, EXPECTED_INDEXED),
+    ("places whose name is shared", _SHARED_NAMES, EXPECTED_SHARED_NAME_PLACES),
 )
 
 #: Philippi, transcribed from the retrieved bytes in PROVENANCE.md:
@@ -105,6 +147,18 @@ _ATTRIBUTED = """
     SELECT count(*) FROM data_sources
     WHERE id = $1 AND btrim(attribution) <> '' AND btrim(license) <> ''
       AND retrieved_at IS NOT NULL AND share_alike = false
+"""
+
+#: Antioch of Pisidia, the homonym the gazetteer docstring already names. Its
+#: friendly_id is "Antioch 2" and its slug is "antioch-2", so this row proves
+#: all four halves of the fix at once: the reader-facing name is clean, the
+#: ordinal survived, the row admits the name is shared, and the source's own
+#: note arrived as plain text rather than as the HTML it is published in.
+_ANTIOCH_PISIDIA_ID = "a6c704a"
+_ANTIOCH_PISIDIA = ("Antioch", 2, 2, "in Pisidia")
+_PLACE_NAMING = """
+    SELECT name, disambiguation_index, homonym_count, disambiguation
+    FROM places WHERE place_id = $1
 """
 
 #: The journey of Acts 16:11-12, which is the example the milestone brief names
@@ -179,6 +233,27 @@ async def _spot_check_failures(connection: asyncpg.Connection, source_id: int) -
     return problems
 
 
+async def _naming_failures(connection: asyncpg.Connection) -> list[str]:
+    """Prove one known homonym is described the way a sheet may render it."""
+    row = await connection.fetchrow(_PLACE_NAMING, _ANTIOCH_PISIDIA_ID)
+    if row is None:
+        return [f"Antioch of Pisidia ({_ANTIOCH_PISIDIA_ID}) is missing entirely"]
+    found = (
+        row["name"],
+        row["disambiguation_index"],
+        row["homonym_count"],
+        row["disambiguation"],
+    )
+    if found != _ANTIOCH_PISIDIA:
+        return [
+            f"Antioch of Pisidia reads {found}; it must read "
+            f"{_ANTIOCH_PISIDIA}. The reader sees name, so it may not carry "
+            "the source's homonym ordinal -- and the ordinal must survive "
+            "beside it or the two Antiochs become indistinguishable."
+        ]
+    return []
+
+
 async def _failures(connection: asyncpg.Connection, source_id: int) -> list[str]:
     """Run every check and collect the ones that did not hold."""
     problems = [
@@ -191,6 +266,7 @@ async def _failures(connection: asyncpg.Connection, source_id: int) -> list[str]
     )
     if orphans:
         problems.append(f"places not attributed to source {source_id}: {orphans}")
+    problems += await _naming_failures(connection)
     return problems + await _spot_check_failures(connection, source_id)
 
 

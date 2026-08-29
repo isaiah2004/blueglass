@@ -138,7 +138,7 @@ async def test_the_mockup_sheet_can_be_built_from_the_database(
           FROM verse_word_alignments a
           JOIN verse_words w ON w.id = a.verse_word_id
           JOIN lexicon l ON l.strongs = w.strongs
-          JOIN lexicon_usage u ON u.strongs = l.strongs
+          JOIN lexicon_usage u ON u.simple_strongs = l.simple_strongs
           JOIN verses v ON v.translation = a.translation AND v.verse_key = a.verse_key
          WHERE a.translation = 'BSB' AND a.verse_key = $1 AND a.token = 'worshiper'
         """,
@@ -189,19 +189,57 @@ async def test_every_alignment_points_inside_its_own_verse(
 async def test_usage_counts_agree_with_the_words_they_summarise(
     connection: asyncpg.Connection,
 ) -> None:
-    """The stat strip is pre-computed (AI-07). Pre-computed must not mean stale."""
+    """The stat strip is pre-computed (AI-07). Pre-computed must not mean stale.
+
+    Counted under `simple_strongs`, which is the number the badge prints. The
+    join key is the whole point: keyed on the disambiguated sense instead, this
+    aggregate agreed with itself and still told the reader that Ἰησοῦς occurs
+    once in the New Testament.
+    """
     await _require_loaded(connection)
     disagreements = await _count(
         connection,
         """
         SELECT count(*) FROM lexicon_usage u
-          JOIN (SELECT strongs, count(*) AS n, count(DISTINCT verse_key) AS v
-                  FROM verse_words GROUP BY strongs) actual
-            ON actual.strongs = u.strongs
+          JOIN (SELECT l.simple_strongs AS number,
+                       count(*) AS n,
+                       count(DISTINCT w.verse_key) AS v
+                  FROM verse_words w
+                  JOIN lexicon l ON l.strongs = w.strongs
+                 GROUP BY l.simple_strongs) actual
+            ON actual.number = u.simple_strongs
          WHERE actual.n <> u.occurrence_count OR actual.v <> u.verse_count
         """,
     )
     assert disagreements == 0
+
+
+async def test_no_published_strongs_number_is_counted_as_rarer_than_it_is(
+    connection: asyncpg.Connection,
+) -> None:
+    """Pillar 3, at the row the badge reads.
+
+    A Root badge prints `simple_strongs` beside `occurrence_count` and says in
+    words how rare the word is. If any published number's stored count is below
+    the number of word rows that publish it, some badge asserts a frequency a
+    concordance contradicts -- which is what G2424 (992 occurrences, counted as
+    1) did in Colossians 4:11.
+    """
+    await _require_loaded(connection)
+    understated = await _count(
+        connection,
+        """
+        SELECT count(*)
+          FROM (SELECT l.simple_strongs AS number, count(*) AS occurrences
+                  FROM verse_words w
+                  JOIN lexicon l ON l.strongs = w.strongs
+                 GROUP BY l.simple_strongs) actual
+          LEFT JOIN lexicon_usage u ON u.simple_strongs = actual.number
+         WHERE u.occurrence_count IS NULL
+            OR u.occurrence_count < actual.occurrences
+        """,
+    )
+    assert understated == 0
 
 
 async def test_the_old_testament_has_no_word_anchors(

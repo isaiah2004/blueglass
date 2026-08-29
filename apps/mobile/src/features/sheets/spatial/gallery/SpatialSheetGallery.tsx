@@ -53,13 +53,22 @@ const WIDTH_OPTIONS: readonly SegmentOption<WidthName>[] = [
   { value: 'wide', label: 'Wide rail' },
 ];
 
-/** The Acts 16:11-12 voyage alone — Troas, Samothrace, Neapolis, Philippi. */
+/**
+ * The Acts 16:11-12 voyage alone — Troas, Samothrace, Neapolis, Philippi.
+ *
+ * Selected by NAME, not by index. It used to be `waypoints.slice(14, 18)`, and when 0.17.5
+ * dropped the unsupported names from the route the window slid off the end of the list: the
+ * card silently became a single pin over an empty field. A diagnostic that quietly stops
+ * diagnosing is worse than no diagnostic.
+ */
+const VOYAGE_PLACES: readonly string[] = ['Troas', 'Samothrace', 'Neapolis', 'Philippi'];
+
 const VOYAGE_BADGE: SpatialBadge = {
   sources: [OPENBIBLE_SOURCE],
   payload: {
     ...ACTS_16_ROUTE,
     title: 'Troas to Philippi',
-    waypoints: ACTS_16_ROUTE.waypoints.slice(14, 18),
+    waypoints: ACTS_16_ROUTE.waypoints.filter((waypoint) => VOYAGE_PLACES.includes(waypoint.name)),
     passage: { startKey: 44016011, endKey: 44016012 },
   },
 };

@@ -17,13 +17,39 @@ The three rules
     span_anchor    -- an exact character range a source already computed
                       (verse_word_alignments). Verified against the text, never
                       trusted: a tokeniser drift would silently mis-highlight.
-    name_anchor    -- the first attested spelling of a place, found by folding
-                      both sides to the gazetteer's own normal form.
+    name_anchor    -- the best-attested published spelling of a place that the
+                      verse actually prints, found by folding both sides to the
+                      gazetteer's own normal form.
     tail_anchor    -- the last word of the verse, for a badge whose claim is
                       about the whole verse rather than about one word.
 
+Why name_anchor is driven by the SPELLING and not by the span
+    It used to scan the verse for the longest run of words whose folded form
+    was attested, taking the earliest such run. Two false claims came out of
+    that, and both reached the reader. Acts 28:17 spells "Jerusalem", but "the
+    Jews" occurs earlier and is a weight-1 translation alias of Jerusalem, so
+    the pill tinted a people-word and the sheet asserted it named a city. And
+    the docstring's own example was false: `Most Holy Place` lost to the span
+    `the Most Holy`, because the article was folded away AFTER the span had won
+    on length. Both disappear when the loop runs over the candidate NAMES in
+    rank order and asks where each one occurs -- longest name first, the
+    place's own published name before a translation's variant, better attested
+    before worse. A spelling's length is measured with the article removed, so
+    the sentence's "the Jordan" cannot pull "the" into a span labelled Jordan.
+
+Whose article is it
+    Not always the sentence's. Four published spellings begin with one of their
+    own -- "The Lord Will Provide" (a559399's primary name, and what Genesis
+    22:14 writes), "The Lord Is There", "The Skull", "The Stone Pavement" --
+    and stripping those put "LORD Will Provide" on a pin beside a verse that
+    reads "The LORD Will Provide". So each spelling is tried at both lengths,
+    longest first, and the capitalisation rule already in `_run_spelling`
+    decides: a translation writes the name's own article with a capital and the
+    sentence's without one.
+
 Dependencies
-    Standard library only. Rule 5.1.2.
+    `place_spelling`, which owns the name-folding rules this module compares
+    against. Standard library otherwise. Rule 5.1.2.
 
 Usage
     anchor = tail_anchor(44016001, "Paul came to Derbe...")
@@ -31,25 +57,10 @@ Usage
 
 from __future__ import annotations
 
-import re
-import unicodedata
+from collections.abc import Iterable
 from dataclasses import dataclass
 
-#: A word: letters, plus the internal apostrophes and hyphens English and
-#: transliterated Semitic names carry. Digits are excluded -- a verse number
-#: leaking into the text is not a word a badge should annotate.
-_WORD = re.compile(r"[^\W\d_]+(?:['\u2019\u02bc-][^\W\d_]+)*", re.UNICODE)
-
-#: Longest place name, in words, the gazetteer publishes ("Alexandria Troas").
-_MAX_NAME_WORDS = 3
-
-#: Articles the gazetteer strips before indexing. Repeated rather than imported
-#: because `scripts/` is a loader, not a dependency the domain may take.
-_LEADING_ARTICLES = ("the ", "el-", "el ", "al-", "al ")
-
-#: The gazetteer truncates its index key. Matching that exactly is what makes a
-#: lookup here hit a row the loader wrote.
-_MAX_NORMALISED_LENGTH = 64
+from .place_spelling import PlaceSpelling, normalise_name, word_spans
 
 
 @dataclass(frozen=True, slots=True)
@@ -65,36 +76,6 @@ class BadgeAnchor:
     def span(self) -> tuple[int, int]:
         """The range, for comparing two anchors for collision."""
         return (self.start_offset, self.end_offset)
-
-
-def normalise_name(name: str) -> str:
-    """Fold a spelling to the gazetteer's index key.
-
-    Reimplements `scripts/place_gazetteer.normalise_place_name`. Accents are
-    stripped because the same place is published as "Beth-shan" here and
-    "Bethshan" elsewhere; punctuation is dropped because hyphen placement in a
-    transliterated name is a house style, not a fact.
-
-    @param name: Any spelling, from the text or from the gazetteer.
-    @returns The folded key, capped at the loader's length. Side effects: none.
-    """
-    stripped = name.strip().lower()
-    for article in _LEADING_ARTICLES:
-        if stripped.startswith(article):
-            stripped = stripped[len(article) :]
-            break
-    decomposed = unicodedata.normalize("NFKD", stripped)
-    folded = "".join(
-        character
-        for character in decomposed
-        if character.isalnum() and not unicodedata.combining(character)
-    )
-    return folded[:_MAX_NORMALISED_LENGTH]
-
-
-def word_spans(verse_text: str) -> tuple[tuple[int, int], ...]:
-    """Every word in the verse as a (start, end) pair, in reading order."""
-    return tuple((match.start(), match.end()) for match in _WORD.finditer(verse_text))
 
 
 def span_anchor(verse_key: int, verse_text: str, start: int, end: int) -> BadgeAnchor | None:
@@ -116,41 +97,100 @@ def span_anchor(verse_key: int, verse_text: str, start: int, end: int) -> BadgeA
 
 
 def name_anchor(
-    verse_key: int, verse_text: str, spellings: frozenset[str]
+    verse_key: int, verse_text: str, spellings: Iterable[PlaceSpelling]
 ) -> BadgeAnchor | None:
-    """Anchor on the first attested spelling of a name in the verse.
+    """Anchor on the best published spelling of a name the verse prints.
 
-    Longest phrase first, then earliest position: "Alexandria Troas" must not be
-    anchored as "Troas" when both are attested for the same place.
+    Longest name first, so "Alexandria Troas" is not anchored as "Troas" when
+    both are attested for the same place; then the place's own name before a
+    translation's variant, so Acts 28:17 tints "Jerusalem" and not the alias
+    that happens to occur earlier in the verse; then the better attested of two
+    variants; then the folded key, so the choice is total and reproducible.
 
     @param verse_key: The verse being scanned.
     @param verse_text: Its text.
-    @param spellings: Already-normalised keys from `place_names`.
-    @returns The anchor over the first match, or None when no spelling occurs.
-        Side effects: none.
+    @param spellings: The spellings a badge is allowed to claim. Filter them
+        with `spellings.anchorable` first -- this function asks only where a
+        name occurs, never whether it may be shown.
+    @returns The anchor over the first occurrence of the best spelling, or None
+        when the verse prints none of them. The span never begins lower-case,
+        and includes a leading article only when the name owns one and the text
+        capitalises it. Side effects: none.
     """
-    if not spellings:
-        return None
     spans = word_spans(verse_text)
-    for length in range(_MAX_NAME_WORDS, 0, -1):
-        hit = _first_phrase(verse_text, spans, spellings, length)
+    for spelling in sorted(spellings, key=_spelling_order):
+        hit = _first_occurrence(verse_text, spans, spelling)
         if hit is not None:
             return BadgeAnchor(verse_key, verse_text[hit[0] : hit[1]], hit[0], hit[1])
     return None
 
 
-def _first_phrase(
+def _spelling_order(spelling: PlaceSpelling) -> tuple[int, int, int, str]:
+    """The order candidate spellings are tried in. See `name_anchor`."""
+    return (
+        -spelling.words,
+        0 if spelling.is_primary else 1,
+        -spelling.attestation,
+        spelling.normalised,
+    )
+
+
+def _first_occurrence(
     verse_text: str,
     spans: tuple[tuple[int, int], ...],
-    spellings: frozenset[str],
+    spelling: PlaceSpelling,
+) -> tuple[int, int] | None:
+    """The earliest run of words that spells this name, or None.
+
+    Tried at the name's full length first, then without its own article, so an
+    article that belongs to the NAME survives into the span and one that
+    belongs to the SENTENCE does not. The text decides which it is: Genesis
+    22:14 writes "The LORD Will Provide" and John 19:13 writes "at a place
+    called the Stone Pavement", and only the first is the place spelling its
+    own article.
+    """
+    for length in _candidate_lengths(spelling):
+        found = _run_spelling(verse_text, spans, spelling.normalised, length)
+        if found is not None:
+            return found
+    return None
+
+
+def _candidate_lengths(spelling: PlaceSpelling) -> tuple[int, ...]:
+    """How many words to try matching, longest first.
+
+    One length for a name with no article of its own; two for the four that
+    have one, so neither reading is assumed.
+    """
+    bare = spelling.words
+    full = spelling.article_words
+    return (full, bare) if full > bare else (bare,)
+
+
+def _run_spelling(
+    verse_text: str,
+    spans: tuple[tuple[int, int], ...],
+    normalised: str,
     length: int,
 ) -> tuple[int, int] | None:
-    """The earliest run of `length` words whose folded form is attested."""
+    """The earliest run of `length` words folding to `normalised`, or None.
+
+    A lower-case run is refused: every English translation capitalises a place
+    name, and "toward the south" names a direction where "toward the Negev"
+    names a place -- only the second is a claim a badge may make (`Negeb`
+    publishes "South" as a spelling, weight 39). That same rule is what tells
+    the name's article from the sentence's.
+    """
+    if length < 1 or length > len(spans):
+        return None
     for index in range(len(spans) - length + 1):
         start = spans[index][0]
         end = spans[index + length - 1][1]
-        if normalise_name(verse_text[start:end]) in spellings:
-            return (start, end)
+        if normalise_name(verse_text[start:end]) != normalised:
+            continue
+        if not verse_text[start : start + 1].isupper():
+            continue
+        return (start, end)
     return None
 
 

@@ -1,0 +1,25 @@
+{
+  "runId": "2026-08-29T15-20-16-989Z",
+  "startedAt": "2026-08-29T15:20:17.056Z",
+  "baseURL": "http://localhost:8081",
+  "viewports": [
+    {
+      "name": "phone",
+      "width": 375,
+      "height": 812,
+      "regime": "below both breakpoints: bottom tab bar, no rail, no split pane"
+    },
+    {
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "regime": "above the 600 dp rail breakpoint, below the 1100 dp split breakpoint"
+    },
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 800,
+      "regime": "above both breakpoints: rail plus two-pane split"
+    }
+  ]
+}

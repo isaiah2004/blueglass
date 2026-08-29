@@ -22,7 +22,7 @@ def _place(
     name: str,
     modern_name: str | None,
     *,
-    verse_count: int = 12,
+    named_verse_count: int = 12,
     candidate_count: int = 1,
 ) -> PlaceRecord:
     """A located settlement, with only the fields the teaser reads varying."""
@@ -33,7 +33,7 @@ def _place(
         lat=31.77,
         lng=35.23,
         feature_type="settlement",
-        verse_count=verse_count,
+        named_verse_count=named_verse_count,
         candidate_count=candidate_count,
         precision_type="site",
         source_key="openbible_geocoding",
@@ -47,21 +47,23 @@ class TestCityTeaser:
         assert _city_teaser(_place("Lystra", "Tel Lystra")) == "Lystra - today Tel Lystra"
 
     def test_an_unchanged_name_falls_back_to_how_much_of_the_canon_names_it(self) -> None:
-        teaser = _city_teaser(_place("Jerusalem", "Jerusalem", verse_count=955))
+        # 766 is Jerusalem's real figure: the verses whose English spells the name.
+        # The gazetteer records 955 mentions of it, and the sentence says "named in".
+        teaser = _city_teaser(_place("Jerusalem", "Jerusalem", named_verse_count=766))
 
         assert "today Jerusalem" not in teaser
-        assert teaser == "Jerusalem - named in 955 verses of scripture"
+        assert teaser == "Jerusalem - named in 766 verses of scripture"
 
     def test_case_and_padding_are_not_a_rename(self) -> None:
         assert "today" not in _city_teaser(_place("Jerusalem", " jerusalem "))
 
     def test_a_missing_modern_name_still_falls_back(self) -> None:
-        assert _city_teaser(_place("Derbe", None, verse_count=4)) == (
+        assert _city_teaser(_place("Derbe", None, named_verse_count=4)) == (
             "Derbe - named in 4 verses of scripture"
         )
 
     def test_one_verse_is_singular(self) -> None:
-        assert _city_teaser(_place("Adramyttium", None, verse_count=1)).endswith(
+        assert _city_teaser(_place("Adramyttium", None, named_verse_count=1)).endswith(
             "1 verse of scripture"
         )
 

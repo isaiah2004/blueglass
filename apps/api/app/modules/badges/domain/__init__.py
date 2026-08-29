@@ -1,6 +1,6 @@
 """Public API of the badge domain. Zero infrastructure imports, by rule 5.1.2."""
 
-from .anchor import BadgeAnchor, name_anchor, normalise_name, span_anchor, tail_anchor
+from .anchor import BadgeAnchor, name_anchor, span_anchor, tail_anchor
 from .badge import BadgeId, InlineBadge, parse_badge_id
 from .badge_kind import M2_BADGE_KINDS, BadgeKind, parse_badge_kind, priority_of
 from .builders import (
@@ -27,6 +27,7 @@ from .payloads import (
     TimelineEvent,
     VerseRange,
 )
+from .place_spelling import PlaceSpelling, normalise_name
 from .provenance import Citation, SourceAttribution, all_renderable, source_citation
 from .records import (
     AlignedWordRecord,
@@ -48,6 +49,7 @@ from .selection import (
     MAX_BADGES_PER_VERSE,
     select_chapter_badges,
 )
+from .spellings import anchorable, names_a_people
 from .surface import bare_surface
 
 __all__ = [
@@ -78,6 +80,7 @@ __all__ = [
     "MappedLocation",
     "PlaceMentionRecord",
     "PlaceRecord",
+    "PlaceSpelling",
     "RootPayload",
     "RoutePayload",
     "RouteRecord",
@@ -88,6 +91,7 @@ __all__ = [
     "VerseRange",
     "VerseText",
     "all_renderable",
+    "anchorable",
     "bare_surface",
     "build_city_badges",
     "build_cross_ref_badges",
@@ -96,6 +100,7 @@ __all__ = [
     "build_route_badges",
     "frame",
     "name_anchor",
+    "names_a_people",
     "normalise_name",
     "parse_badge_id",
     "parse_badge_kind",

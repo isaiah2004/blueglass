@@ -26,6 +26,7 @@ from ..domain import (
     CrossRefPayload,
     HistoryPayload,
     InlineBadge,
+    MappedLocation,
     RootPayload,
     RoutePayload,
     SourceAttribution,
@@ -120,20 +121,29 @@ def to_payload(payload: BadgePayload) -> PayloadOut:
     return mapper(payload)
 
 
+def _location_out(point: MappedLocation) -> MappedLocationOut:
+    """One pin, with both of its DECISIONS #10 caveats.
+
+    Written once rather than at each of the two call sites: the caveats were
+    added because a pin that omits them reads as certainty, and a second copy
+    is how one of them would come to omit them again.
+    """
+    return MappedLocationOut(
+        name=point.name,
+        coordinates=point.coordinates,
+        role=point.role,
+        feature_type=point.feature_type,
+        place_id=point.place_id,
+        verse_key=point.verse_key,
+        shared_name_count=point.shared_name_count,
+        candidate_count=point.candidate_count,
+    )
+
+
 def _route_out(payload: RoutePayload) -> RoutePayloadOut:
     return RoutePayloadOut(
         title=payload.title,
-        waypoints=[
-            MappedLocationOut(
-                name=point.name,
-                coordinates=point.coordinates,
-                role=point.role,
-                feature_type=point.feature_type,
-                place_id=point.place_id,
-                verse_key=point.verse_key,
-            )
-            for point in payload.waypoints
-        ],
+        waypoints=[_location_out(point) for point in payload.waypoints],
         camera=MapCameraOut(
             center=payload.camera.center, zoom_level=payload.camera.zoom_level
         ),
@@ -146,18 +156,11 @@ def _route_out(payload: RoutePayload) -> RoutePayloadOut:
 
 def _city_out(payload: City3dPayload) -> City3dPayloadOut:
     return City3dPayloadOut(
-        location=MappedLocationOut(
-            name=payload.location.name,
-            coordinates=payload.location.coordinates,
-            role=payload.location.role,
-            feature_type=payload.location.feature_type,
-            place_id=payload.location.place_id,
-            verse_key=payload.location.verse_key,
-        ),
+        location=_location_out(payload.location),
         modern_name=payload.modern_name,
         identification_count=payload.identification_count,
         precision_type=payload.precision_type,
-        canon_verse_count=payload.canon_verse_count,
+        named_verse_count=payload.named_verse_count,
         mentioned_at=list(payload.mentioned_at),
         has_reconstruction=payload.has_reconstruction,
     )

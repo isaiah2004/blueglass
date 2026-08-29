@@ -38,6 +38,16 @@ EXPECTED_ACTS_EVENTS = 81
 FIRST_NT_BOOK = 40
 ACTS_BOOK = 44
 
+#: The one office in the acquired files whose Wikidata label names no
+#: territory. Its rows must carry no realm: Antipas held Galilee and Peraea,
+#: Philip Iturea and Trachonitis, and the ingest used to write "Judaea" for
+#: both. See `scripts/wikidata_rulers.OFFICES`.
+BARE_OFFICE_TITLE = "Tetrarch"
+
+#: 4 BC, as every reference work prints it. Wikidata serialises it `-0003`,
+#: and reading that as 3 BC is the off-by-one this proves is not there.
+PHILIP_ACCESSION_YEAR = -4
+
 #: (year, lane, value, person). "lane" picks which of the two spot-check
 #: queries below runs. Every person here is named in the New Testament, and
 #: they come from both acquired files, so together they prove each one loaded.
@@ -126,6 +136,18 @@ def _provenance_checks() -> tuple[Check, ...]:
             "rulers with neither a start nor an end year (must be none)",
             "SELECT count(*) FROM rulers WHERE start_year IS NULL AND end_year IS NULL",
             0,
+        ),
+        Check(
+            "tetrarchs given a territory their source does not name (must be none)",
+            "SELECT count(*) FROM rulers WHERE title = $1 AND realm IS NOT NULL",
+            0,
+            (BARE_OFFICE_TITLE,),
+        ),
+        Check(
+            "Philip the Tetrarch's reign not starting in 4 BC (must be none)",
+            "SELECT count(*) FROM rulers WHERE name = $1 AND start_year <> $2",
+            0,
+            ("Philip the Tetrarch", PHILIP_ACCESSION_YEAR),
         ),
     )
 

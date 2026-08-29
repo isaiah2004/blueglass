@@ -2,8 +2,8 @@
 
 CLAUDE.md's definition of done for a feature is not "tests pass". It is: design a
 high-coverage walkthrough of the app, run it, find bugs, fix them, repeat until a full pass
-is clean. This is that walkthrough — fifteen chapters that drive the real UI in a real browser
-at three widths, photograph every step, and audit each screen for the things a reader
+is clean. This is that walkthrough — twenty-two chapters that drive the real UI in a real
+browser at three widths, photograph every step, and audit each screen for the things a reader
 notices and a unit test cannot see.
 
 | | |
@@ -11,6 +11,8 @@ notices and a unit test cannot see.
 | Target | The Expo **web** build (`Q-04`: the web build in a headless browser, continuously) |
 | Browser | The **installed Chrome**, via `channel: 'chrome'`. Nothing is downloaded (`A-8`) |
 | Widths | phone 375×812 · tablet 768×1024 · desktop 1280×800 (`Q-006`) |
+| Scripture | Nine passages across eight books, in all four shipped translations — §2 says why each one |
+| Size | 237 tests · 517 screenshots · **10.4 minutes** at four workers |
 | Evidence | `docs/qa/walkthroughs/<run>/` — one PNG per step, plus `RESULTS.md` |
 | Entry point | `pnpm walkthrough` |
 
@@ -62,8 +64,9 @@ old runs instead of `.gitignore`-ing them.
 
 ## 2 · What it covers
 
-Fifteen chapters, run at all three widths unless noted. Chapters 1–10 are the M1 reading
-canvas; 11–15 are the M2 inline badge system.
+Twenty-two chapters, run at all three widths unless noted. Chapters 1–10 are the M1 reading
+canvas; 11–15 are the M2 inline badge system; 16–22 are the breadth pass that took the suite
+off Acts.
 
 | Chapter | Journey | The questions it answers |
 |---|---|---|
@@ -82,6 +85,51 @@ canvas; 11–15 are the M2 inline badge system.
 | `13-badge-summary` | Scroll to the chapter foot, tap a row, follow a cross-reference | Is every badge repeated as pill, teaser and chevron (`design-language.md` §5), does a row open the same badge its pill does, are the summary's sources printed, and does tapping a linked passage actually navigate? |
 | `14-badge-surfaces` | Open a badge at each width; cut the API mid-session | Half sheet below 600 dp and rail at or above it, never both (`Q-006`); is the sheet really half, does the rail really not overlap the canvas; and with the API gone, are there no pills claiming data the app does not have, and do they come back when it returns? |
 | `15-badges-light` | Toggle to light and revisit every badge surface | `D-01`: are the pills still painted, does a badge still open and read, does the summary still read, and does the toggle travel back? |
+| `16-canon-breadth` | Genesis 1, Psalm 119, Psalm 117, Leviticus 13 | Does the reader work outside Acts at all: does the most-read chapter in the canon render whole, does the longest one (176 verses) render whole and scroll to its end, does the shortest one (2 verses) leave the chrome sane, and does a chapter with no enrichment simply read? Plus: does `support/passages.ts` still describe the corpus? |
+| `17-book-boundaries` | Genesis 1, Revelation 22, Jude 1, Obadiah 1 · phone only | Is there no Previous at the head of the canon and no Next at its tail, does a one-chapter book page into its neighbours rather than to a chapter that does not exist, and does the picker's chapter grid offer exactly one tile for a one-chapter book? |
+| `18-translations` | Psalm 119 and John 3 in BSB, KJV, WEB and ASV · desktop only | Is the text on screen **the text the API returned for that code**, or the previous translation's under a new label? Does every translation hold the whole chapter? And do the badges re-anchor per translation, or keep offsets computed against another one? |
+| `19-deep-links` | Land on a chapter URL cold, reload, walk Back and Forward through three chapters | Does a shared link open the chapter it names or the one the store remembers, does the shell mount around it, does a reload keep the reader's place, does the pager read the route rather than a stored address, and does history hold up over more than one press? |
+| `20-sheet-continuity` | Follow a cross-reference out of an open sheet and come back; switch translation three times with a rail open; scroll Psalm 119 to verse 176 with a badge open | Does a surface outlive the chapter that produced it (a correct citation about a passage no longer on screen), does a race between three translation switches leave pills the server never sent, is the phone bottom sheet genuinely modal, and can a 176-verse chapter still be read to its end with a badge open? |
+| `21-badge-density` | John 3, the chapter at the selection cap | Are the server's caps — 12 per chapter, 2 per verse — still true of what the reader sees, is any badge rendered twice, does every pill sit against the word it names, and does a verse carrying two pills keep its line rhythm? |
+| `22-hebrew-rtl` | `/spike/textual-sheets` · desktop only | Does `writingDirection: 'rtl'` reach the browser, are the Hebrew glyphs actually drawn rather than substitution boxes, is Greek still left-to-right, does it hold at all three container widths and in both themes — and does a badge with its provenance removed show none of its content (`AI-05`)? |
+
+### Why these passages, and not more of Acts
+
+Chapters 1–15 drive **Acts 16 and Acts 1**, with John 3 and Leviticus 13 touched once each.
+That is a walkthrough of one book. Everything below was chosen because it stresses a
+different code path, not because it is more scripture. The table lives in
+`e2e/support/passages.ts` with the same reasons on each entry, and chapter 16 re-measures
+every row against the live API before any chapter reasons from it.
+
+| Passage | Why it is in the suite |
+|---|---|
+| **Genesis 1** (31 v) | The most-read chapter in the canon, and book 1 — a book-number lookup that works for Acts (44) and not for Genesis is the exact bug `DECISIONS.md` §4 records the prototype shipping. Also the only place `previousChapter` is `undefined`. |
+| **Psalm 119** (176 v) | The longest chapter in the Bible. Twenty-six verses fit inside almost any wrong assumption about a list; 176 fit inside none of them. Poetry, so line rhythm is at its most visible. |
+| **Psalm 117** (2 v) | The shortest chapter. Nothing to scroll, so every piece of fixed chrome has to fit the viewport at once. |
+| **Leviticus 13** (0 badges) | The state most of the canon is in. A pill here is enrichment the server never sent. |
+| **Obadiah 1**, **Jude 1** | One-chapter books, one in each testament. Five exist; their pagers must roll into the neighbouring book, and their chapter grids must hold exactly one tile. |
+| **Revelation 22** | The last chapter of the last book — the only place `nextChapter` is `undefined`. |
+| **John 3** (12 badges) | At `MAX_BADGES_PER_CHAPTER` exactly, with two verses at `MAX_BADGES_PER_VERSE`. The densest reading the selection rules permit, reached from a different mix of kinds than Acts 16 — so the caps are evidence rather than a repeat of the chapter they were tuned on. |
+| **All four translations** | BSB, KJV, WEB and ASV, compared verse by verse against the API. Chapter 4 only ever opened KJV, and only checked that the words *changed*. |
+
+### Two probes the breadth pass added
+
+Both exist because the DOM alone cannot answer the question.
+
+- **`support/scripture-api.ts`** reads the API *from Node*, so a chapter can compare what
+  the reader shows against what the server said. Issued from the test process rather than
+  the page, so chapter 10's staged outage cannot cut it off and make a correct app look
+  like a liar.
+- **`support/anchor-integrity.ts`** compares the text immediately before each pill against
+  the anchor its badge declares. `anchor.start_offset` indexes into the verse text of **one
+  translation**; a reader that keeps badges across a translation change anchors every pill
+  to whatever word now sits at that offset. Nothing errors, every sheet still cites its
+  source, and every claim is now about the wrong word. This is the only check in the suite
+  that can see it.
+- **`support/script-rendering.ts`** measures a word's advance against the same number of
+  Private Use code points in the element's own resolved font. `toHaveText('שָׁלוֹם')`
+  passes on a row of substitution boxes, because `textContent` is what was written, not
+  what was painted.
 
 ### The standing audit — run after **every** step of every chapter
 
@@ -135,6 +183,7 @@ agents renaming forty props.
 | Split layout | `reader-context-rail` · `reader-rail-handle` · `reader-split-pane` |
 | **Badges (M2)** | `inline-badge-{badgeId}` · `badge-sheet` · `reader-context-badge` · `badge-rail-close` · `badge-detail-{badgeId}` · `badge-detail-teaser` · `badge-sources-{badgeId}` · `chapter-badge-summary` · `chapter-badge-sources` · `badge-summary-row-{badgeId}` |
 | **Badge bodies (M2)** | `spatial-route-map` · `spatial-city-map` · `history-axes` · `root-lemma` · `cross-ref-targets` · `cross-ref-row-{verseKey}` · `history-murai-note` |
+| **Diagnostic route** (`/spike/textual-sheets`) | `textual-sheet-gallery` · `gallery-width` · `gallery-width-{phone\|rail\|wide}` · `gallery-sheet-{root\|root-hebrew\|history\|cross-ref\|unattributed}` · `root-lemma` · `root-transliteration` · `root-strongs` · `root-surface` |
 
 ### Two contracts, not one
 
@@ -226,11 +275,27 @@ Stated plainly, because an unwritten gap gets mistaken for a passing check.
   Manuscript, Structure, Cultural, Context, Meditate and Lineage have no wire spelling yet
   and therefore nothing to walk through. The badge spike has its own spec
   (`e2e/inline-badge-spike.spec.ts`), which is deleted with the spike route.
-- **Hebrew, and right-to-left layout.** `L-06`: the word layer covers books 40-66, so no
-  Root badge in scripture is Hebrew. RTL is exercised only by the synthetic probe at
-  `/spike/textual-sheets`, which this harness does not drive.
+- **Hebrew *in scripture*.** `L-06`: the word layer covers books 40-66 only — 142,096 rows,
+  all Greek — so no Root badge a reader can reach is Hebrew, while the lexicon already holds
+  8,021 Hebrew and 653 Aramaic headwords. Chapter 22 now drives right-to-left rendering
+  through the synthetic probe at `/spike/textual-sheets`, which is the only place it exists.
+  **That is a probe, not the product**: the day Hebrew verse words land, chapter 22 moves to
+  the reader and its assertions come with it unchanged.
 - **The Discover, Studio and Journal tabs beyond "it renders and is sound".** Their content
   is not built. Chapter 2 audits them; it does not exercise them.
+- **The settings screen and the reader's display sheet.** `nav-settings` and the display
+  controls are shipped and reachable, and no chapter opens either. This is the surface the
+  `SegmentedControl` tap-target defect actually shipped on — fixed in `0.19.0` — and chapter
+  22 caught it only because a diagnostic route happens to mount the same component. That is
+  luck, not coverage: the component now carries its own test
+  (`components/controls/SegmentedControl.test.tsx`), which is where a control's own rule
+  belongs.
+- **Verse-level and word-level selection inside a long chapter.** Chapter 6 taps a verse in
+  Acts 1; nothing taps verse 140 of Psalm 119, where a sheet opening near the foot of a very
+  long scroll is a different layout problem.
+- **The remaining 57 books.** The suite drives nine passages across eight books by design —
+  each chosen for a code path (see §2, "Why these passages"). Coverage of the canon is by
+  *shape*, not by enumeration: a tenth narrative chapter would add run time and no new path.
 - **Audio.** Stubbed by `AU-01`, so there is nothing behaving to walk through.
 - **Journal encryption (`J-01`) and cross-device sync (`A-03`).** Both need a second client
   to be meaningful; a single browser cannot observe a sync conflict.
@@ -261,6 +326,25 @@ Stated plainly, because an unwritten gap gets mistaken for a passing check.
   so short verses fail by two pixels. That is a real tension between the reading rhythm and
   the touch minimum, and it is surfaced rather than exempted: the product owner should
   decide whether verse rows get extra vertical padding or their own smaller minimum.
+- **One defect can fail several tests.** The standing audit runs after every step, so a
+  small control anywhere on a route fails every test that visits it. Chapter 22 reported the
+  `SegmentedControl` tap-target defect five times for one cause before `0.19.0` fixed it;
+  `RESULTS.md` groups failures by cause, which is what makes that readable rather than
+  misleading.
+
+### Run cost, and what was traded to keep it
+
+The breadth pass roughly doubles the chapter count. Three deliberate trades keep the run
+usable rather than letting it grow to match:
+
+| Trade | Why |
+|---|---|
+| **Chapters 17, 18 and 22 run at one width.** 17 is arithmetic plus one row of chrome, tightest at 375 px; 18 compares text against the API, which does not vary with the window; 22 sets its own container widths inside the page. Running each at three would triple the run and re-prove chapter 8's breakpoint work. | Costs three-width coverage of journeys that are not about width. |
+| **Chapter 18 samples six verses of a 176-verse chapter**, evenly spaced and always including the first and the last, rather than comparing all 176 in four translations. | 704 DOM reads per chapter would dominate the run. Six catches a wholesale wrong translation, which is the failure; it would miss a single corrupted verse in the middle, which nothing else would catch either. |
+| **Chapter 22's tests are one step each.** | The standing audit used to fail on that route (see above), and a chapter split into four steps would have aborted at the first one and measured no Hebrew at all. One step per test means the chapter's own subject is always evaluated before the audit fires — worth keeping now that the audit passes, because the next defect on that route would otherwise hide the Hebrew again. It costs the per-step screenshot trail on that chapter. |
+
+What was **not** traded: `retries` is still 0, no assertion was relaxed to fit the budget,
+and every new step still photographs itself and runs the full standing audit.
 
 ---
 
@@ -279,6 +363,14 @@ thing.
 | **The first painted verse of a chapter** | 30 s (`support/journeys.ts`) | An HTTP round trip behind a bundle that may still be compiling. Measured at 7-9 s with four workers and past 10 s with six. |
 | A step as a whole | 90 s (`timeout`) | Absorbs all of the above and still fails a genuinely hung run. |
 
+The budget nobody should need is the one for **compiling a route**. Metro compiles per
+route, and `support/global-setup.ts` warmed only `/`, so a diagnostic spike — a route
+nothing else in the app imports — was compiled inside a chapter's own 90 s and
+`inline-badge-spike.spec.ts` duly failed run after run at desktop with 1.6 minutes burned
+in a `beforeEach`. `0.19.0` warms `/spike/badges` and `/spike/textual-sheets` in the setup
+alongside `/`. The budget was deliberately **not** raised: a longer timeout would have
+moved the cost into the number this harness reports rather than out of it.
+
 None of these changes an **assertion**. Verse 1 must still be on screen; the pill must still
 be tappable; a badge with no provenance must still not render. What they change is how long
 the harness waits for the machine, which is not the thing under test.
@@ -291,4 +383,4 @@ the harness waits for the machine, which is not the thing under test.
 |---|---|
 | `e2e/walkthrough/*.spec.ts` | The walkthrough. This document. |
 | `e2e/shell.spec.ts` | The original routing scaffold check — five routes, `+not-found`, no missing-icon placeholder. It asserts on placeholder copy (`Today's Drop`, `Acts 1:1`), so it is expected to go red as the real screens land, and should be deleted when the last `PlaceholderScreen` does. |
-| `e2e/inline-badge-spike.spec.ts` | Drives `/spike/badges`. Delete it with the spike route once the reader renders badges for real. |
+| `e2e/inline-badge-spike.spec.ts` | Drives `/spike/badges`, which `global-setup.ts` now warms so the compile is not charged to this spec. Delete both with the spike route once the reader renders badges for real. |

@@ -8,18 +8,36 @@ Purpose
 
 Key responsibilities
     - Read the two saved SPARQL result files.
-    - Map each office to a display title and a timeline lane (its realm).
+    - Map each office to a display title, and to a timeline lane where the
+      source names one -- see "The realm is the source's, or it is absent".
     - Convert Wikidata's XSD dates to years, and record how precise they are.
 
 Two things worth knowing about these dates
-    1. Wikidata numbers years astronomically, so ``-0026`` is 26 BC by the
-       convention the acquisition note used and 27 BC by strict ISO 8601 where
-       year zero exists. The badge shows a reign band on a timeline, so a
-       possible one-year offset on the BC end is recorded here rather than
-       silently "fixed" by arithmetic no source supports.
+    1. Wikidata serialises years astronomically -- year zero exists and is
+       1 BC -- so ``-0003`` is **4 BC**, not 3 BC. The offset is not a
+       theory: all four BC bounds in the acquired files check out against
+       every reference work when it is applied and against none when it is
+       not. Herod the Great's death (``-0003``) is 4 BC, Herod Archelaus's
+       accession (``-0003``) is 4 BC, Philip the Tetrarch's accession
+       (``-0003``) is 4 BC, and Augustus's principate (``-0026``) begins in
+       27 BC. ``_parse_xsd_date`` converts once, at the boundary, so every
+       row downstream carries the year a reader would look up and the badge
+       needs no era arithmetic of its own. 10 of the 43 loaded rulers carry a
+       BC bound.
     2. A date of 1 January is Wikidata's way of writing a year with no
        finer detail -- Nerva's real accession was in September. Such rows are
        marked ``date_precision = 'year'`` so the UI never renders a false day.
+
+The realm is the source's, or it is absent
+    An office label sometimes carries its territory ("prefect of Judea") and
+    sometimes does not ("tetrarch"). Filling the blank in was a badge asserting
+    what its own citation does not say: "Herod Antipas, Tetrarch of Judaea" ran
+    on 188 history badges and "Philip the Tetrarch, Tetrarch of Judaea" on 181,
+    and neither man ruled Judaea -- Antipas held Galilee and Peraea, Philip
+    Iturea and Trachonitis, which is exactly the distinction Luke 3:1 draws by
+    listing them apart from Pilate. ``realm`` is therefore ``None`` for a bare
+    office, and the timeline groups those rulers under no lane rather than
+    under a wrong one.
 
 Dependencies
     Standard library and ``raw_datasets``. No network.
@@ -46,10 +64,14 @@ class RulerDataError(ValueError):
 
 @dataclass(frozen=True, slots=True)
 class Office:
-    """How one Wikidata office is presented on the timeline."""
+    """How one Wikidata office is presented on the timeline.
+
+    ``realm`` is None when the office label names no territory. Nothing citing
+    Wikidata may say more than Wikidata says.
+    """
 
     title: str
-    realm: str
+    realm: str | None
 
 
 #: Every office present in the two acquired files. A ``None`` value means the
@@ -60,7 +82,9 @@ OFFICES: dict[str, Office | None] = {
     "Roman emperor": Office(title="Emperor", realm="Roman Empire"),
     "King of Judea": Office(title="King", realm="Judaea"),
     "ethnarch": Office(title="Ethnarch", realm="Judaea"),
-    "tetrarch": Office(title="Tetrarch", realm="Judaea"),
+    # No territory. Wikidata gives these rows the bare office label, and the
+    # three men who hold it in the acquired file ruled three different places.
+    "tetrarch": Office(title="Tetrarch", realm=None),
     "prefect of Judea": Office(title="Prefect", realm="Judaea"),
     "procurator of Judea": Office(title="Procurator", realm="Judaea"),
     # Wikidata carries no English label for this item; the Latin is
@@ -78,7 +102,9 @@ class RulerRow:
 
     external_id: str
     name: str
-    realm: str
+    #: The territory the SOURCE names, or None when the office label carries
+    #: none. Never inferred from the person.
+    realm: str | None
     title: str
     start_year: int | None
     end_year: int | None
@@ -100,6 +126,12 @@ def _parse_xsd_date(value: str | None) -> tuple[int, date | None] | None:
     day-of-year detail we would need to build one, so BC rows keep the year and
     drop the date. That is a real limit of the type, recorded rather than
     worked around with a fake positive year.
+
+    BC years are converted out of Wikidata's astronomical numbering here and
+    nowhere else: ``-0003`` becomes ``-4``, which is the 4 BC every reference
+    work prints. Converting at the boundary is what lets the ruler years and
+    Theographic's event years -- which are plain BC already -- be compared as
+    integers without either side knowing about the other's convention.
     """
     if not value:
         return None
@@ -110,7 +142,7 @@ def _parse_xsd_date(value: str | None) -> tuple[int, date | None] | None:
     except ValueError as error:
         raise RulerDataError(f"unreadable Wikidata date: {value!r}") from error
     if negative:
-        return -year, None
+        return -(year + 1), None
     return year, date(year, month, day)
 
 
@@ -129,8 +161,9 @@ def _row_from(binding: dict[str, dict[str, str]]) -> RulerRow | None:
         raise RulerDataError("a SPARQL row carried no office label")
     if office_label not in OFFICES:
         raise RulerDataError(
-            f"unknown office {office_label!r}. Add it to OFFICES with a title and "
-            "realm, or map it to None to exclude it deliberately."
+            f"unknown office {office_label!r}. Add it to OFFICES with a title, "
+            "and a realm only if the label names one; or map it to None to "
+            "exclude the office deliberately."
         )
     office = OFFICES[office_label]
     if office is None:

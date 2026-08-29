@@ -154,14 +154,30 @@ Both were previously "the loader must remember". They are now constraints.
    sixteenth fails the load.
 5. **Only 2,970 of 10,085 nodes keep an English gloss** (99 of 344 in Acts) after the
    copyright filter. The legend carries the reading; the per-node summary is a bonus.
-6. **BC years may be off by one.** Wikidata numbers years astronomically (year zero
-   exists); Theographic documents negatives as plain BC. For the New Testament the only
-   affected rows are Herod's death and the nativity. Recorded rather than "fixed" by
-   arithmetic no source supports.
+6. **BC years are converted at ingest, not left astronomical.** *(Closed in 0.19.1;
+   this entry previously read "may be off by one" and scoped the risk to "Herod's death
+   and the nativity", which was measurably wrong — **10 of the 43 loaded rulers carry a
+   BC bound**, roughly 380 badge renders.)* Wikidata numbers years astronomically, where
+   year zero exists and is 1 BC, so `-0003` is **4 BC**. `wikidata_rulers._parse_xsd_date`
+   subtracts the year zero once, at the boundary. It is not arithmetic no source
+   supports: all four BC bounds in the acquired files agree with every reference work
+   with the offset applied and with none without it — Herod the Great died 4 BC, Herod
+   Archelaus acceded 4 BC, Philip the Tetrarch acceded 4 BC, Augustus's principate began
+   27 BC. Theographic's negatives are plain BC already, so this is also what makes the
+   two axes of one timeline comparable as integers.
 7. **Theographic's day precision is not used.** `startDate` sometimes reads `0030-05-01`,
    but that precision is Ussher-derived and not defensible at day resolution, so the badge
    shows the year.
-8. **Murai's Psalms versification differs from the KJV** (superscriptions counted as
+8. **A ruler's realm can be absent, and often is.** Wikidata gives an office label that
+   sometimes carries its territory ("prefect of Judea") and sometimes does not
+   ("tetrarch"). `rulers.realm` is nullable and NULL for the bare office, so the History
+   badge groups those reigns under no lane rather than a wrong one. Filling it in with
+   "Judaea" put "Herod Antipas, Tetrarch of Judaea" on 188 badges and "Philip the
+   Tetrarch, Tetrarch of Judaea" on 181 — a CC0 citation for a claim Wikidata does not
+   make, and a false one: Antipas held Galilee and Peraea, Philip Iturea and
+   Trachonitis, which is the distinction Luke 3:1 draws by listing them apart from
+   Pilate.
+9. **Murai's Psalms versification differs from the KJV** (superscriptions counted as
    verse 1). Not a problem for the New Testament; it will need TVTMS mapping before the
    Old Testament structure badge ships.
 

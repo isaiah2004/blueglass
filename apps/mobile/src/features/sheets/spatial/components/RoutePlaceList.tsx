@@ -31,6 +31,7 @@ import { Text, View } from 'react-native';
 import { borderWidth, metadataText, radius, spacing, uiText, type Theme } from '@/theme';
 import { createThemedStyles, useTheme } from '@/theme/runtime';
 
+import { identificationLine } from '../model/identification';
 import type { RoutePlace } from '../model/route-view';
 
 /** Inputs to {@link RoutePlaceList}. */
@@ -57,7 +58,7 @@ export function RoutePlaceList({ places }: RoutePlaceListProps): JSX.Element {
           <Text style={styles.position}>{String(place.position).padStart(2, '0')}</Text>
           <View style={styles.body}>
             <Text style={styles.name}>{place.location.name}</Text>
-            <Text style={styles.meta}>{place.location.featureType}</Text>
+            <Text style={styles.meta}>{metaLine(place)}</Text>
           </View>
           <Text style={styles.verse}>{place.verseLabel ?? ''}</Text>
         </View>
@@ -66,10 +67,32 @@ export function RoutePlaceList({ places }: RoutePlaceListProps): JSX.Element {
   );
 }
 
+/**
+ * The row's second line: what kind of place it is, and every way it is not the only one.
+ *
+ * `DECISIONS.md` #10. Nine ancient places are called Ramah and 1,122 of the canon's
+ * waypoints carry a shared name; a row that printed only `settlement` presented one of
+ * them as the settled identification.
+ *
+ * The last clause is the other half of the same honesty. 1 Samuel 1 teases "3 places named
+ * in this chapter" and the gazetteer pins Ramathaim-zophim and Ramah at one coordinate, so
+ * the map has two marks on it. Saying which two names share a site is what makes the count
+ * and the picture agree.
+ */
+function metaLine(place: RoutePlace): string {
+  const base = identificationLine(
+    place.location.featureType,
+    place.location.sharedNameCount,
+    place.location.candidateCount,
+  );
+  if (place.coLocatedWith.length === 0) return base;
+  return `${base} · Same site as ${place.coLocatedWith.join(', ')}`;
+}
+
 /** One row, read out as a sentence. */
 function rowLabel(place: RoutePlace): string {
   const verse = place.verseLabel === null ? '' : `, named in ${place.verseLabel}`;
-  return `Place ${String(place.position)}, ${place.location.name}${verse}`;
+  return `Place ${String(place.position)}, ${place.location.name}${verse}. ${metaLine(place)}`;
 }
 
 const useStyles = createThemedStyles((theme: Theme) => ({

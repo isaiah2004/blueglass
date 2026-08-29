@@ -80,6 +80,17 @@ describe.each(BOTH_THEMES)('the Route sheet in the %s theme', (theme: ThemeName)
     view.unmount();
   });
 
+  it('says a pin is one of several rival sites rather than presenting it as settled', () => {
+    // DECISIONS #10. Derbe is one of the 777 ancient places with more than one proposed
+    // modern site, and the list row is where a reader of the map meets that fact.
+    const view = renderSpatial(
+      <SpatialSheet badge={{ payload: ACTS_16_ROUTE, sources: [OPENBIBLE_SOURCE] }} />,
+      theme,
+    );
+    expect(view.text()).toContain('3 proposed sites');
+    view.unmount();
+  });
+
   it('prints the source notice verbatim, and its licence exactly once — AI-05', () => {
     const view = renderSpatial(
       <SpatialSheet badge={{ payload: ACTS_16_ROUTE, sources: [OPENBIBLE_SOURCE] }} />,
@@ -129,7 +140,7 @@ describe.each(BOTH_THEMES)('the Route sheet in the %s theme', (theme: ThemeName)
 });
 
 describe.each(SHEET_WIDTHS)('the Route map at %s width', (_name: string, width: number) => {
-  it('draws the coastline and the mention-order trace once the container is measured', () => {
+  it('draws the coastline and NO line between the pins, once the container is measured', () => {
     const view = renderSpatial(
       <SpatialSheet badge={{ payload: ACTS_16_ROUTE, sources: [OPENBIBLE_SOURCE] }} />,
       'dark',
@@ -139,13 +150,15 @@ describe.each(SHEET_WIDTHS)('the Route map at %s width', (_name: string, width: 
     layoutTo(frame!, width);
 
     expect(view.byTestId('spatial-map-coastline')).not.toBeNull();
-    // A dashed hairline, not §6's glowing progressive route line: the pins are the places
-    // the chapter names, in the order it names them, and a drawn route through them reads
-    // as a voyage. `RouteLine`'s header has the reasoning; the `route` variant is still
-    // there for a scheme that can establish one.
-    expect(view.byTestId('spatial-mention-trace')).not.toBeNull();
+    // Pillar 3, drawn: the pins are the places the chapter NAMES, in the order it names
+    // them, so no line may join them — a line between two pins asserts a journey, and Acts
+    // 16 names Jerusalem, where Paul does not go. Not a dashed one either: a dashed line is
+    // still a line. `MapKey` says on the drawing what the dots are instead.
     expect(view.byTestId('spatial-route-line')).toBeNull();
     expect(view.byTestId('spatial-route-glow')).toBeNull();
+    expect(view.container.querySelector('[data-testid="spatial-mention-trace"]')).toBeNull();
+    expect(view.byTestId('spatial-route-key')).not.toBeNull();
+    expect(view.text()).toContain('Places named, not a journey');
     view.unmount();
   });
 

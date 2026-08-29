@@ -3,6 +3,656 @@
 Versioning is `MAJOR.FEATURE.PATCH` (CLAUDE.md, "Versioning"): one FEATURE bump per
 feature, one PATCH bump per fix. The current version lives in the root `package.json`.
 
+## 0.19.1 — 2026-08-29
+
+**A number a reader can check must be a number of the thing beside it.** Four of this
+round's five findings are one shape: a figure printed next to an identifier it is not a
+figure of. A Strong's number beside the frequency of one sense of it. "Named in N verses"
+where N counted verses that name nothing. A territory beside an office whose source names
+none. A BC year one short of every reference work. Pillar 3 says a claim carries a
+citation or is not shown, and a claim whose citation does not support it is the worse
+half of that sentence.
+
+### Fixed — the Root badge counted one sense and printed the number for all of them (blocker, pillar 3)
+
+`lexicon` is keyed on STEPBible's DISAMBIGUATED Strong's number, so Ἰησοῦς is five rows,
+G2424G through G2424K. `lexicon_usage` was keyed the same way; the payload published
+`simple_strongs`, which is the number a concordance carries. **26 of 1,035 Root badges
+therefore paired a checkable number with the frequency of one sense of it.** Colossians
+4:11 opened a sheet reading "Ἰησοῦς / STRONG'S G2424 / 1 USE, 1 VERSE, 1 BOOK / _This
+word occurs once in the whole of the Greek New Testament_" while Colossians 4:12, visible
+in the same screenshot, read "a servant of Christ Jesus". G2424 occurs 992 times. Romans
+9:20 said the same of ποιέω / G4160 (579). Acts 4 printed "John: the Baptist, the
+apostle, a member of the Sanhedrin, or John Mark" directly above "used once in the
+corpus".
+
+- **`lexicon_usage` is re-keyed on `simple_strongs`** (revision `0009_simple_usage`;
+  5,417 rows, not 5,580). The number shown and the number counted are now one number.
+  Aggregated at write time rather than summed at read time, because summing the per-sense
+  rows would count a verse once per sense it contains.
+- **The 88 sense-split lexemes now measure above the twelve-occurrence rarity bar and
+  earn no badge**, which is the honest outcome: they are not rare words. The sense is not
+  lost — the gloss still comes from the disambiguated row, so a badge on Ἰησοῦς would
+  still read "Joshua" where the sense is Joshua. Only the counts are simple-level,
+  because only the counts are printed beside the simple number.
+- **The defect selected for itself.** `_rarity_key` sorts rarest first, so the
+  artificially rare split was preferentially chosen as the verse's badge. Colossians 4:11
+  now shows παρηγορία, "comfort" — a genuine hapax legomenon.
+- **The loader refuses to commit an aggregate grouped any other way**
+  (`scripts/lexicon/assertions.py`), and an integration test walks the three reported
+  chapters through the shipped builder.
+
+**Measured through the shipped pipeline over all 1,189 chapters: 4,704 Root badges, 0
+whose printed count differs from the true corpus frequency of the number on the chip.**
+
+### Fixed — "named in N verses" counted verses that name nothing (major, pillar 3)
+
+0.19.0 closed this seam for LABELS — a badge may only tint a word that names the place it
+is about — and left it open on the COUNT. `place_mentions` classifies every row (name
+7,333 · people_group 458 · no_translation 390 · common_noun 321 · helper 138 · partial
+101 · person 1) and `places.verse_count` summed all of them, so **280 of 922 3D City
+badges teased "X - named in N verses of scripture" with an N that counted verses not
+naming X.** Jerusalem read 955 where 766 spell it; 2 Samuel 11:22 — "So the messenger set
+out and reported to David all that Joab had sent him to say" — was among the 189
+difference, and names no place at all. Nineveh 30/20 · Tyre 64/55 · Rome 15/9 · Corinth
+11/6 · Nazareth 32/29 · Ephesus 20/17 · Damascus 58/55 · Cyrene 7/6 · Athens 6/5.
+
+- **The count is `mention_kind = 'name'` only, and the column says so**: `verse_count`
+  becomes `named_verse_count` (revision `0010_named_verses`). The old name invited exactly
+  the reading that was wrong. The rename reaches the wire — `canon_verse_count` becomes
+  `named_verse_count` — because a client caching the old field would keep rendering the
+  old claim under the old name.
+- **`_city_score` is re-derived from the number that ships**, so the badge a chapter shows
+  and the sentence under it are ranked by the same evidence.
+- **The sheet's stat caption changes with it**: `VERSES IN CANON` becomes
+  `VERSES NAMING IT`.
+- One string, `name`, is now stated once per layer (`place_rows.NAMED_MENTION_KIND` and
+  `place_support.ANCHORABLE_MENTION`) with a test pinning them together, since neither
+  layer may import the other.
+
+**Measured over all 1,189 chapters: 2,644 3D City badges, 0 whose teaser count differs
+from the verses that spell the place.**
+
+### Fixed — a realm the citation does not carry, on 369 History badges (major, pillar 3)
+
+`data/raw/wikidata-rulers/nt-era-officials.json` gives Herod Antipas and Philip the
+Tetrarch the office label `tetrarch` and **no territory**. The ingest hard-coded
+`realm="Judaea"` for the bare office and the builder composed it into a sentence: "Herod
+Antipas, Tetrarch of Judaea" on 188 badges, "Philip the Tetrarch, Tetrarch of Judaea" on 181. Neither ruled Judaea — Antipas held Galilee and Peraea, Philip Iturea and
+Trachonitis — which is precisely the distinction Luke 3:1 draws by listing them apart
+from Pilate. The badge carried a Wikidata CC0 citation for a claim Wikidata does not make.
+
+- **`Office.realm` and `rulers.realm` are nullable, and NULL for the bare office**
+  (revision `0011_ruler_realm`). Absent, not guessed: dropping it only from the label
+  would have surfaced it again as the node's detail line.
+- **A title already inside the name is not repeated.** "Philip the Tetrarch, Tetrarch of
+  Judaea" stuttered twice over; the label now reads "Philip the Tetrarch".
+- Two post-load assertions refuse a tetrarch carrying a realm, and a Philip not acceding
+  in 4 BC.
+
+### Fixed — every BC year was one year late, with no caveat shown (minor)
+
+Wikidata serialises XSD dateTime astronomically — year zero exists and is 1 BC — so
+`-0003` is **4 BC**. `_year_label` printed `abs(year)`, so Philip's band read "3 BC to AD
+34" for a reign that began in 4 BC; likewise Herod Archelaus (4 BC as "3 BC to AD 6"),
+Herod the Great's death (4 BC as "unrecorded to 3 BC") and Augustus (27 BC as "26 BC to
+AD 14"). **10 of the 43 loaded rulers carry a BC bound; roughly 380 badge renders.**
+
+- **Converted once, at the boundary** (`wikidata_rulers._parse_xsd_date`), so nothing
+  downstream needs era arithmetic and Theographic's event years — plain BC already — are
+  comparable as integers.
+- Not arithmetic no source supports: all four BC bounds in the acquired files agree with
+  every reference work with the offset applied and with none without it.
+- `history-and-structure-ingest.md` §4.6 recorded the risk but scoped it to "Herod's
+  death and the nativity". That was measurably wrong and is corrected: it was 10 rulers.
+- The unit test that asserted `-26` for Augustus asserted the number in the file rather
+  than the year of the event. It now asserts `-27`, and says why.
+
+**All BC bands rendered canon-wide: "27 BC to AD 14", "4 BC to AD 34", "4 BC to AD 6",
+"unrecorded to 4 BC".**
+
+### Fixed — an article that is part of the name was stripped from the pin (polish)
+
+0.19.0's article-stripping correctly fixed "the Jordan" tinted beside a pin reading
+"Jordan", and also took the first word off two places whose primary name begins with an
+article: Genesis 22:14 pinned "LORD Will Provide" where the gazetteer and the verse both
+read "The LORD Will Provide", and Ezekiel 48:35 pinned "LORD IS THERE".
+
+- **Each spelling is now tried at both lengths, longest first**, and the capitalisation
+  rule already in the anchor decides which article it is: a translation writes the name's
+  own with a capital and the sentence's without one. Genesis 22:14 and Ezekiel 48:35 keep
+  their article; Luke 23:33 gains "The Skull"; John 19:13 keeps "Stone Pavement", because
+  BSB writes "at a place called the Stone Pavement" and that "the" is the sentence's.
+- `domain/anchor.py` reached 315 lines with the change, so the name-folding rules and the
+  `PlaceSpelling` record moved to `domain/place_spelling.py` — offsets in one file,
+  what-counts-as-a-name in the other.
+
+**4,298 waypoint labels canon-wide, unchanged in number; every one is a spelling its own
+place publishes.**
+
+### Also
+
+- **The captured Acts 16 fixture was stale.** `acts16.sample.json` still carried "Derbe to
+  Thyatira - 20 stops on this journey", a route title the server retracted when it turned
+  out no dataset says Paul made that journey. Two component assertions were keeping the
+  retracted claim alive. Re-captured from the running API by its own documented recipe.
+- **Walkthrough, clean run:** 237 tests · **202 passed, 0 failed**, 35 skipped, 517
+  screenshots, all three viewports and both themes
+  (`docs/qa/walkthroughs/repair-r2-clean/`).
+- **ESLint now ignores agent worktree checkouts.** A scratch checkout under
+  `.claude/worktrees/` holds a copy of the workspace, so `pnpm lint` was reporting 1,280
+  errors against a tsconfig that does not contain those files and none about code that
+  ships.
+
+## 0.19.0 — 2026-08-29
+
+**A badge may only tint a word that names the place it is about.** Pillar 3 says every
+claim carries a citation or is not rendered, and three of this pass's findings were the
+same violation seen from three angles: 20 spatial badges tinted a people-word or an
+epithet, 44 map pins carried the published name of a _different_ place and were plotted
+25–1,423 km from it, and 45 waypoints on a sheet headed "places named in this chapter"
+were labelled with a people or a person. All three came out of one seam, and it is closed
+in one place.
+
+### Fixed — the seam: `place_names` is a resolver index, not a list of names (blocker ×3)
+
+`place_names` exists so a name emitted anywhere can be turned into a coordinate, and for
+that job "Ammonites → Ammon" and "Bethelite → Bethel" are useful rows. A badge does the
+opposite job: it takes a place and puts a tinted word on the page with a pill asserting
+that the word names it. Every row of the resolver index was being read as if it were a
+name of the place.
+
+- **`domain/spellings.py` is new — the gate between the two jobs.** Four rules, each
+  measured against the loaded gazetteer, and `place_names` itself is untouched so the
+  resolver keeps its wide net:
+  - **Attestation.** OpenBible counts how often each spelling is used across ten
+    translations. Below one mention in ten it is a stray reading, not a name. Jerusalem
+    publishes "Jerusalem" 7,819 times and "Jews" once; Babylon publishes "Babylon" 2,480
+    times and "Tyre" once, which is how Ezekiel 26:7 pinned Babylon and labelled it Tyre.
+  - **Another place's name.** "Galilee" is a weight-2 alias of Judea, so Luke 2:4 drew two
+    pins both reading "Galilee" and never named Judea, which the verse spells.
+  - **People-words.** An English gentilic ending, exempted for anything a place publishes
+    as its own name — which is what keeps Lachish, Tarshish, Carchemish and Midian intact.
+    Attestation alone cannot do this: OpenBible counts "Ammonites" 584 times against
+    "Ammon"'s 360, so the demonym is the _more_ common string.
+  - **Bare generic terms.** "Sea" is a published spelling of both Great Sea and Salt Sea.
+- **`anchor.name_anchor` now iterates the candidate NAMES, not the spans.** It scanned for
+  the longest run of words whose folded form was attested and took the earliest such run,
+  which is why Acts 28:17 tinted "the Jews" eleven words before the "Jerusalem" the verse
+  spells. The loop now runs over spellings in rank order — longest name, then the place's
+  own published name, then better attested — and asks where each one occurs.
+- **`place_support` has one anchor function instead of two halves.** `spelling_in_verse`
+  stripped a leading article from the pin label and `anchor_on_first_named` did not, so 63
+  badges tinted "the Jordan" beside a pin reading "Jordan". A spelling's length is now
+  measured with the article already removed, so the tinted span and the printed label are
+  the same characters by construction. (minor)
+- **The docstring's own contract is now true.** `Most Holy Place` lost to the span `the
+Most Holy`, because the article was folded away _after_ the span had won on length;
+  seven pins read "Most Holy". (minor)
+
+**Measured through the shipped pipeline, all 682 derived routes:** 4,298 waypoints on 632
+badges, from 4,399. None names a people, a person, or another place. Acts 27 lost a second
+name and the loss is the point — 27:2 "an Adramyttian ship" and 27:6 "an Alexandrian ship"
+are the same English construction, and only the second used to be dropped, because
+OpenBible classifies one mention `name` and the other `people_group`.
+
+### Fixed — `homonym_count` reached the database and nothing read it (major)
+
+Nine ancient places are called Ramah, four Gilgal, three Babylon; 1,122 waypoints carry a
+name two to nine places share. Revision `0008` added the column and specified the
+replacement signal in its own table, and the label went from "Ramah 2" — an ordinal no
+manuscript contains — to nothing at all, which reads as certainty.
+
+- `PlaceRecord.homonym_count` and `MappedLocation.shared_name_count` / `candidate_count`
+  now carry both DECISIONS #10 caveats to the wire, required rather than optional: a pin
+  that silently defaulted them to 1 is the failure.
+- `model/identification.ts` phrases them; the Route place list and the Site sheet print
+  them. The 3D City teaser leads with the shared name, because a shared name is the caveat
+  a reader cannot even suspect.
+
+### Fixed — the caveat that was the least readable text on the map (major)
+
+"Places named, not a journey" is the sentence that stops the route map being read as a
+journey, and it shipped at **4.33:1** in dark and **3.57:1** in light while the pin labels
+beside it measured 16–17:1. `Q-017` resolved conflict `C-3` on `ink.secondary` for small
+metadata; `furnitureLabel` took that token and then cut it with a 0.72 alpha. The alpha is
+gone, the plate under it is opaque (`keyPlate`), and `map-palette.test.ts` — which asserted
+land, sea and coastline and never the words — now holds both themes above 4.5:1.
+
+### Fixed — a 32 px tap target in the reader's display sheet (major)
+
+`theme/spacing.ts` states the rule on the token itself: _"a control shorter than this pads
+its hit area up to it"_. `SegmentedControl` set `minHeight: size.control` and added no
+padding, measuring 103×32, 87×32 and 80×32. `hitSlop` is not the fix — react-native-web
+does not implement it and web is first-class (`T-01`) — so the pressable is now a
+transparent 44 dp row and the tinted pill is a 32 dp child of it. The control looks
+unchanged and the touch area is the one the token promised. Reported in 0.18.0 and left
+unfixed; it accounted for five of the six walkthrough failures.
+
+### Fixed — the key covered a mark the sheet counts (polish)
+
+The Jerusalem pin was drawn under the "Places named, not a journey" plate at tablet width,
+so a place the sheet counts, lists and cites had no visible mark. The plate was reserved
+against the label declutterer but not against the pins. `hooks/use-map-key` now puts it in
+whichever bottom corner hides the fewest pins, and the key is drawn _under_ the pin layer
+so a mark that still lands on it is drawn on top. The graticule no longer bleeds through,
+because the plate is opaque.
+
+### Fixed — three claimed places, two visible dots (polish)
+
+1 Samuel 1 teases "3 places named in this chapter" and the gazetteer pins
+Ramathaim-zophim and Ramah at the identical coordinate. Deduplication is by `place_id`,
+which cannot see that two rows resolve to one site. The map now draws one mark per
+_point_, named for every place pinned there, and each list row says which other names
+share its site — so the count and the picture agree instead of the count quietly losing.
+
+### Fixed — 1.6 minutes burned inside a test's own timeout (minor)
+
+`inline-badge-spike.spec.ts` failed run over run at desktop with "Test timeout of 90000ms
+exceeded while running beforeEach hook". Metro compiles per route and `global-setup.ts`
+warmed only `/`, so a diagnostic spike route that nothing else imports was compiled inside
+a chapter's budget. The setup — whose whole stated purpose is keeping that cost out of a
+test's own timeout — now warms `/spike/badges` and `/spike/textual-sheets` too. No budget
+was raised: raising one would have hidden the cost in the number the harness reports.
+
+### Also
+
+- **`init_connection` is public**, and the integration fixture uses it. A test opening its
+  own connection to prove the SQL parses was proving it against a driver configuration
+  that decodes jsonb as text — not the one that serves requests.
+- **New tests.** `test_badge_spellings.py` (31 cases, one per defect that shipped); two
+  canon-wide sweeps in `test_route_names_live.py` — no waypoint names a people, a person
+  or another place, and every pin carries the gazetteer's own counts; a constant-agreement
+  test between `badge_sql.PRIMARY_NAME_WEIGHT` and the loader's; `SegmentedControl.test.tsx`;
+  `identification.test.ts`; `use-map-key.test.ts`; and the co-location cases in
+  `route-view.test.ts`.
+
+### Run result
+
+**1,799 JS tests · 639 backend tests · walkthrough 237 tests — 202 passed, 0 failed, 35
+skipped, 517 screenshots.** The suite goes green for the first time since the breadth pass:
+five of the six previous failures were the `SegmentedControl` tap target and the sixth was
+the spike navigation timeout. Verified live against the loaded database — Acts 28:17 tints
+"Jerusalem", 1 Kings 16 lists Tirzah, Gibbethon, Samaria and Jericho with no Bethel,
+Ezekiel 26:7 labels Babylon "Babylon" and Tyre "Tyre", Luke 2 names Judea, 2 Samuel 8 pins
+Zobah rather than Hadadezer, and the `[Site]` sheet reads "Ramah — one of 9 places of that
+name".
+
+## 0.18.0 — 2026-08-29
+
+**The walkthrough leaves Acts.** Fifteen chapters, 153 tests and 377 screenshots drove
+**two chapters of one book** — Acts 16 and Acts 1, with John 3 and Leviticus 13 touched
+once each. Everything else in the canon, and three of the four shipped translations, were
+unexercised: a bug in Genesis 1 or in the KJV would have shipped unseen. Seven new chapters
+take the suite to **237 tests, 517 screenshots, 10.4 minutes** — nine passages across eight
+books, in all four translations, and the first coverage right-to-left rendering has ever had.
+
+### Added — seven chapters, each chosen for a code path
+
+Passages are chosen for what they stress, not for being more scripture. The reasons live on
+each entry in the new `e2e/support/passages.ts`, and chapter 16 re-measures the whole table
+against the live API before any chapter reasons from it — a hard-coded verse count that
+drifts turns a data regression into a green run.
+
+- **`16-canon-breadth`** — Genesis 1 (the most-read chapter, and book 1 where the prototype's
+  `book_number: 0` bug lived), Psalm 119 (**176 verses**; twenty-six fit inside almost any
+  wrong assumption about a list, 176 fit inside none of them), Psalm 117 (two verses, so every
+  piece of fixed chrome must fit the viewport at once), Leviticus 13 (no enrichment at all).
+- **`17-book-boundaries`** — no Previous at Genesis 1, no Next at Revelation 22, and a
+  one-chapter book (Jude, Obadiah) paging into its _neighbours_ rather than to a chapter that
+  does not exist. Five books in the canon behave this way and none was driven.
+- **`18-translations`** — Psalm 119 and John 3 read in BSB, KJV, WEB **and** ASV, each verse
+  compared against what the API returned for that code. Chapter 4 only ever opened KJV, and
+  only checked that the words _changed_ — a reader served BSB text under a KJV label passed it.
+- **`19-deep-links`** — landing on a chapter URL cold, reloading on it, and walking Back and
+  Forward through three chapters. Chapter 5 presses Back once, which an app that unwinds its
+  own state can satisfy; three presses cannot be.
+- **`20-sheet-continuity`** — following a cross-reference out of an open sheet and coming
+  back, switching translation three times with a rail open, and scrolling Psalm 119 to verse
+  176 with a badge open.
+- **`21-badge-density`** — John 3, at `MAX_BADGES_PER_CHAPTER` exactly with two verses at
+  `MAX_BADGES_PER_VERSE`. The caps are asserted against the DOM, not the server.
+- **`22-hebrew-rtl`** — right-to-left layout, Hebrew glyph coverage, and the `AI-05` refusal
+  path, driven at `/spike/textual-sheets` because that is the only place any of them exist.
+
+### Added — three probes, because the DOM alone cannot answer the question
+
+- **`support/anchor-integrity.ts` — the pillar-3 probe.** `anchor.start_offset` indexes into
+  the verse text of **one translation**. A reader that keeps badges across a translation
+  change anchors every pill to whatever word now sits at that offset: `[Route]` on "Derbe"
+  attaches to "and", every sheet still opens, every citation is still correct, and every claim
+  is now about the wrong word. Nothing errors and no screenshot looks wrong. This compares the
+  text immediately before each pill against the anchor the API declared, in all four
+  translations. **It passes today** — every pill of John 3 in
+  BSB, KJV, WEB and ASV sits against the word its badge names — which is a fact the suite
+  could not previously state at all.
+- **`support/scripture-api.ts`** reads the API from Node, so a chapter can compare the screen
+  against what the server actually said. Deliberately not issued from the page: chapter 10's
+  staged outage would cut it off and make a correct app look like a liar.
+- **`support/script-rendering.ts`** measures a word's advance against the same number of
+  Private Use code points in the element's own resolved font. `toHaveText('שָׁלוֹם')` passes
+  on a row of substitution boxes, because `textContent` is what was written, not what was
+  painted.
+
+### Found — one defect, reported and not fixed here
+
+- **`SegmentedControl` ships 32 px segments with no hit-area padding.** `theme/spacing.ts`
+  states the rule on the token itself — _"44 — the minimum touchable area … a control shorter
+  than this pads its hit area up to it"_ — and the component sets `minHeight: size.control`
+  (32) and adds no vertical padding. It is caught at `/spike/textual-sheets`, which is the only
+  route this suite drives that mounts the component, but it ships in the **reader's display
+  sheet** and the **settings theme switcher**, neither of which any chapter opens. Chapter 22
+  names it explicitly rather than leaving it to the standing audit, so the finding reads as a
+  component defect and not as a diagnostic-route quirk. Not fixed here: this pass owns `e2e/`
+  and `docs/qa/`, and `SegmentedControl` belongs to the components package.
+
+### Run result
+
+**237 tests — 196 passed, 6 failed, 35 skipped.** Five of the six failures are the
+`SegmentedControl` defect above, reported once per chapter-22 test because the standing audit
+runs after every step; the sixth is the pre-existing `inline-badge-spike.spec.ts` navigation
+timeout, unchanged from the previous run. Of the **55 new tests that run** (84 entries, 29
+skipped by an explicit width gate), **50 pass and 5 fail — all five on the one defect above**.
+No assertion was relaxed and `retries` is still 0.
+
+### Traded, deliberately
+
+The chapter count roughly doubled; the run did not. Chapters 17, 18 and 22 run at **one
+width** each — 17 is arithmetic plus one row of chrome, tightest at 375 px; 18 compares text,
+which does not vary with the window; 22 sets its own container widths inside the page.
+Chapter 18 samples six verses of a 176-verse chapter, evenly spaced and always including the
+first and the last, rather than 704 DOM reads per chapter. Chapter 22's tests are one step
+each, so the audit failure above lands _after_ the Hebrew measurements rather than instead of
+them. All four trades are written down in `docs/qa/WALKTHROUGH.md` §6, next to what is still
+not covered — which now names the settings screen, the reader's display sheet, verse selection
+inside a long chapter, and Hebrew _in scripture_ as opposed to in the probe.
+
+## 0.17.7 — 2026-08-29
+
+**Two headlines the reader could not finish reading, and a 93-line function.** A layout and
+rule-compliance pass over the badge package and the badge sheet shells, driven in Chrome at
+375 / 768 / 1280 dp in both themes across every badge of six chapters.
+
+### Fixed — text that was clipped mid-word
+
+- **A Greek headword was silently shortened into a different word.** `[Root]` sets the lemma
+  at the display step, and a flex item's `min-width` defaults to `auto` — its min-content
+  width, which for one unbroken word is the whole word. So `προευαγγελίζομαι` (Galatians 3:8)
+  laid out **266 dp inside the 231 dp tablet rail** and an ancestor clipped it to
+  `προευαγγελίζομα`. No ellipsis, no scrollbar: the reader is shown a word that is not the
+  word in the text, on the one surface whose whole job is to say which word that is.
+  `LemmaHeader`'s lemma and surface form now stretch to the column and carry `minWidth: 0`,
+  so a too-wide headword wraps and stays complete. A wrapped headword is ugly at the worst
+  width; a truncated one is wrong.
+
+- **A cross-reference's vote count was clipped to `42 VOT`.** `ReferenceRow` put the strength
+  meter straight into its header row, and React Native defaults `flexShrink` to 0, so the
+  meter kept its intrinsic 109 dp whatever the row was given. With `1 Thessalonians 5:16-18`
+  wrapping to two lines the meter was pushed **13 dp past the tablet rail** and cut to
+  `STRONG CONSENS` / `42 VOT`. A vote count the reader cannot read is a claim they cannot
+  check. `trailing` is now rendered into a slot that shrinks and wraps; the prop documents
+  that a fixed-width child will still overflow.
+
+- **The chapter-end summary lost the last word of its longest teasers.** At two lines the
+  343 dp phone column cut `used once in the corpus` to `used once in th…` on Galatians 3 and
+  on two of Acts 16's Root rows — a counted claim stopping mid-word. The clamp is now three
+  lines, which holds the longest teaser the corpus has (64 characters, measured across 91
+  chapters) at every width, and is still a clamp.
+
+### Fixed — rule compliance
+
+- **`fixture_chapter` was 93 lines, against rule 5.4.3's 50.** It was the only function over
+  the cap in `apps/api`. Its rows are now module constants — one per badge input — and the
+  Acts 16 fixture moved to `tests/contract/badge_fixture.py`, leaving `badge_doubles.py` as
+  the repository double it is named for. Behaviour is byte-identical: **604 backend tests
+  pass against live Postgres**, none of them changed.
+
+### Verified, not changed
+
+- **Evidence chips already wrap.** The reported defect was closed in the M2 repair round and
+  is confirmed closed here by measurement: every badge of Acts 16, Galatians 3, 1 Corinthians
+  4, 1 Timothy 4, 2 Peter 1 and Matthew 1, at 375 / 768 / 1280 dp in both themes, has nothing
+  past its surface's right edge and nothing clipped by its own box. Forcing a 110-character
+  label into a chip in the live page wraps it inside the sheet.
+- **`pnpm format:check` exits 0 and `pnpm format` rewrites nothing.** QA's 144 unformatted
+  files were CRLF checkouts, which `.gitattributes` (`* text=auto eol=lf`) already fixed; the
+  tree was clean before this change and is clean after it.
+
+## 0.17.6 — 2026-08-29
+
+**The spatial maps stop drawing claims the data does not support, and start reading as maps.**
+Three reported defects in `features/sheets/spatial`, two of them pillar 3 in graphical form.
+
+### Fixed — the route map asserted a journey nobody took
+
+- **No line is drawn between pins under a scheme that cannot establish travel.** The wording
+  had been fixed twice and the picture was left saying the old thing: a cyan polyline joined
+  the pins in mention order, softened in an earlier pass to a dashed hairline at 42 %
+  strength, and in the desktop rail it still ran from Derbe across the Mediterranean to
+  Jerusalem. Acts 16 names Jerusalem, where Paul does not go (16:4), Bithynia, which the
+  Spirit "would not permit" them to enter (16:7), and Thyatira, which is Lydia's home town
+  (16:14). A line between two pins asserts that somebody went from one to the other, and
+  thinning it does not change what it asserts.
+
+  Under `mentionOrder` the places are now points and nothing joins them. `RouteLine` is
+  unchanged and still mounted for a scheme that can attest an order — `design-language.md`
+  §6's glowing progressive line — so the two are unmistakably different pictures. Which one
+  a reader is looking at is stated _on the drawing_ by a new `MapKey`: `Places named, not a
+journey` beside a gold dot, or `Attested journey` beside a cyan line. On the drawing,
+  because a map cropped into a rail or screenshotted carries none of the sheet copy with it,
+  and `index.ts` exports `RouteMap` for a Discover card that has no sheet copy at all.
+  `TRAVEL_SCHEMES` is the list that switches them and is empty today, so nothing shipping
+  draws a line.
+
+### Fixed — an inland site read as a rendering bug
+
+- **A map frame is now measured by how much water is in it, not by counting coastline
+  vertices.** Lystra opened on a frame that was **3 % water**: a near-empty grid with a
+  corner of Lake Tuz and a corner of the Gulf of Antalya intruding from the edges. Two
+  earlier rules had both passed that picture — "is a coastline ring visible?" says yes for
+  every inland site, because the ring carrying Asia overlaps every viewport; and "are twelve
+  of its vertices in frame?" says yes for two corners of twelve points each. Spreading the
+  vertices apart scores no better, because two opposite corners span the whole diagonal.
+
+  `geo/frame-geography.ts` samples a 9 x 7 grid across the visible degrees and ray-casts each
+  point against the same even-odd rings the basemap draws with, at **0.21 ms** per call over
+  the whole basemap. `geo/map-framing.ts` (was `site-framing.ts`) steps the camera out until
+  the water share is between 0.18 and 0.82. Measured at all four container widths: Jerusalem
+  (0.25–0.30) and Samothrace (0.43–0.59) keep the framing they had; Lystra (0.00–0.11)
+  widens one to one-and-a-half zoom levels, which is what puts the Anatolian coast and the
+  lakes in frame together.
+
+- **The route map's fitted camera gets the same floor.** A bounding box says how far apart
+  the pins are and nothing about what is around them: **Mark 11** names Jerusalem,
+  Bethphage, Bethany and the Mount of Olives, spanning **0.022 degrees**, and fitted to a
+  flat field with four dots on it — the reported defect, on the other map, with shipped
+  data. `framedTransform` widens such a fit about its own centre and **only ever widens**,
+  so every pin the fit included is still included and Acts 21 (nine degrees across) is
+  returned untouched.
+
+- **Land and sea can now be told apart.** At `LAND_ALPHA = 0.30` land measured **1.31:1**
+  against the sea in the dark palette and **1.35:1** in the light one — a difference no
+  reader can see, which is why the coastline in the report read as unexplained black wedges.
+  Land is now 0.55 (**1.84:1** and **1.77:1**) and the coastline stroke is `ink.secondary` at
+  full strength, measuring **4.1:1** against land and **7.6:1** against sea (3.9 and 6.9 in
+  the light palette) — both clear of WCAG 1.4.11's 3:1 bar for a graphic that carries
+  meaning. All five figures are held to a floor by `theme/map-palette.test.ts`, in both
+  palettes, because a fill tuned for a near-black canvas can come out invisible on warm paper
+  and no dark-theme screenshot would show it.
+
+- **A frame no zoom can balance says so.** Babylon, Nineveh and Susa are measurably
+  landlocked at every zoom the rule will open. Those maps label **every** graticule line
+  rather than the usual two — with no coast the grid is the only geography there is — and
+  print `Inland — widest view` above the scale bar. A frame that draws no coastline at
+  all says `No coastline in view`.
+
+- **A pin label that would land under the map's key is dropped rather than hidden by it.**
+  The desktop rail printed "Jerusalem" under an opaque plate. The key's rectangle is handed
+  to the label declutterer as reserved space, so the same rule that drops a name colliding
+  with another name drops this one; the pin is still drawn and the place is still in the list
+  beneath.
+
+### Fixed — the gallery had stopped diagnosing
+
+- **`/spike/spatial-sheets` selects the Acts 16:11-12 voyage by name, not by index.** It was
+  `waypoints.slice(14, 18)`, and when 0.17.5 dropped the unsupported names the window slid
+  off the end of the list: the card had quietly become a single pin over an empty field.
+
+### Verified, not fixed — the mid-word wrapping report
+
+- **No token in either spatial sheet breaks mid-word at any breakpoint, in either theme.**
+  The `STRAIGHT LINE` caption and the `CC-BY-4.0` chip were both already fixed — the caption
+  is gone with the summed-legs figure it labelled (0.17.x), the chip is suppressed when the
+  notice already names its licence and carries U+2011 hyphens when it does not
+  (`packages/shared/src/licence-notice.ts`), and `StatRow` drops to fewer columns rather than
+  narrowing a cell below `size.statCell`. This pass confirmed it by measurement rather than
+  by reading the code: a Range-based detector walked every text node of the gallery and of
+  the Acts 16 reader at 375 / 834 / 1280 px, in both themes, across all three gallery
+  container widths, and reported **zero** tokens spanning more than one line box. The one
+  token that does break is the Theographic source URL in the reader's own attribution strip,
+  which breaks after a hyphen in `theographic-bible-metadata` — conventional for a URL, and
+  in `features/reader/badges`, not here.
+
+## 0.17.5 — 2026-08-29
+
+**The Route badge stops asserting places the chapter does not name.** The third report of
+the same class of defect, and the first fix that checks the claim instead of rewording it.
+Round 2 relabelled the sheet to "16 places named in this chapter · Listed in the order this
+chapter names them" — which made a vague sentence into a precise, checkable, and false one:
+Acts 16 listed Greece, and Acts 16 never says Greece.
+
+### Fixed — the claim
+
+- **Every place the badge lists is now spelled in the chapter it is listed under, and the
+  pin carries the words the chapter uses.** Measured across all **682 derived routes**:
+  before, **5,083** names listed of which **752 (14.8%) do not occur in their chapter**;
+  after, **4,399** names listed and **0** unsupported. On the five reported chapters, 10 of
+  49 were unsupported before and 0 after. Nothing in the pipeline had ever compared a listed
+  name with the text, and three separate steps each assumed a previous one had:
+
+  1. **`route_stops` is every located mention** — correctly, because one route row serves
+     all four loaded translations and `place_routes.py` cannot know which will be rendered.
+     Both candidate filters were tried and rejected on measurement: `mention_kind` is a vote
+     across the ten translations OpenBible surveys rather than a fact about one text (Greece
+     at Acts 16:9 is `{"name": 1, "no_translation": 9}`; 8,649 of the 8,742 mentions carry a
+     non-zero `name` count, so "contains name" keeps everything), and pruning on the BSB the
+     loader reads for ordering would delete, from the KJV reader's map, a place the KJV
+     names — BSB has "an Adramyttian ship" at Acts 27:2 where the KJV has "a ship of
+     Adramyttium". The loader is now documented as deliberately not deciding this.
+  2. **The builder filtered stops only on having a coordinate.** It now requires the
+     gazetteer's `name` mention kind — the rule the anchor and `[Site]` already used, worth
+     **367 of 4,776** waypoints, all of them demonyms and peoples ("Chaldeans" for Chaldea,
+     "Canaanite" for Canaan) — and then verifies the place against the verse it is
+     attributed to. A stop that fails does not consume the place: a later verse that does
+     name it still gets to, and then that verse is what the sheet cites. A chapter left with
+     fewer than two verifiable places builds no badge at all; **47 of 682 routes** are
+     withheld on that rule, which is pillar 3 choosing silence over a claim.
+  3. **The waypoint printed `places.name`**, OpenBible's headword, which is often a string no
+     translation contains — the homonym ordinal fixed in 0.17.4 ("Moreh 1", "Bethlehem 1"),
+     and its own preferred transliteration ("Negeb" where the BSB prints "Negev"). The pin
+     is now labelled with the exact substring of the verse, longest attested phrase first,
+     so Genesis 12 reads _Haran, Canaan, Oak of Moreh, Shechem, Bethel, Ai, Negev, Egypt_.
+     A leading "the" is trimmed, and a match is refused unless the translation set it as a
+     proper name — "toward the Negev" names a place, "toward the south" names a direction,
+     and "South" is a published spelling of Negeb.
+
+  The invariant is now a test, three ways: fixtures reproducing each of the three causes; the
+  nine-chapter live check; and a sweep over **every** derived route asserting zero
+  unsupported names and a floor of 4,179 listed, so no future change can quietly empty the
+  badge instead of fixing it. The Acts 16 client fixture — captured verbatim from the wire —
+  lost Greece with the wire.
+
+  Residual, queued as `Q-029` and recorded as assumption `S-09`: ~41 of 4,399 waypoints are
+  labelled with a demonym, because the only spelling the BSB uses there is one — Acts 27:2's
+  "Adramyttian", and elsewhere "Ninevites", "Medes", "Jews". The word is on the reader's page
+  and the pin is at the right city, so it is a different class from Greece; but no dataset we
+  hold separates a demonym from a name (OpenBible publishes "Alexandria", "Alexandrian" and
+  "Alexandrians" as three undifferentiated rows, and Crete's spellings include "Philistines"),
+  and every morphological rule tried also deleted genuine variants — Beth-shean for
+  Beth-shan, Azotus for Ashdod, Euphrates for River.
+
+### Fixed — the word
+
+- **"AS WRITTEN HERE" no longer prints the paragraph mark, or the full stop hiding behind
+  it.** The earlier fix trimmed clause marks from both ends of an aligned word, and the
+  reported example — Acts 16:11's `Σαμοθράκην,` — was genuinely clean. But TAGNT sets its
+  structural marks _outside_ the clause mark at a paragraph end, and `str.strip` gives up at
+  the first character it does not recognise: with the pilcrow missing from the list, the full
+  stop in front of it survived too. Matthew 27:5 shipped `ἀπήγξατο.¶`. Measured: **2,240 word
+  rows across 1,246 distinct surfaces**. The pilcrow and the not sign are now listed, the
+  koronis TAGNT elides with is deliberately kept — `κατ᾽` is a word — and a new integration
+  test walks all **25,079** distinct loaded surfaces asserting that none starts or ends in
+  anything but a letter, an accent or that koronis. A hand-written list of marks fails on the
+  one nobody thought of; this is the test that notices.
+
+### Changed
+
+- `builders/spatial.py` split into `builders/route.py` and `builders/spatial.py` (3D City).
+  The shared gazetteer rules stay in `place_support.py`. The 300-line limit forced the split
+  and the file was already two badges wearing one docstring.
+
+1,736 JS tests and 602 backend tests pass; `pnpm lint`, `pnpm typecheck`, `ruff check` and
+`ruff format --check` are clean.
+
+## 0.17.4 — 2026-08-29
+
+**The reader is no longer shown OpenBible's homonym index as part of a place name.**
+A pillar-3 fix: a badge that prints "Ramah 2" beside scripture is asserting a name no
+manuscript uses, and unlike a crash, a false claim is believed.
+
+### Fixed
+
+- **315 of 1,342 loaded place names carried a database artefact.** QA sampled 519 and found
+  99; measured against the live database the real figures are **315 of 1,342 places (23.5%)**,
+  reaching the reader through **2,305 place mentions across 1,983 verses** and **1,827 stops
+  on 485 routes**. The cause: `places.name` was loaded straight from OpenBible's
+  `friendly_id`, which is an _identifier_. Where several places share a name the source
+  disambiguates them with a trailing ordinal — "Ramah 1" … "Ramah 9", "Achzib 2",
+  "Bethsaida 2", "Gath-rimmon 2". After the fix the count is **0**, asserted inside the
+  loading transaction.
+
+- **The ordinal was moved, not stripped.** Deleting it would have merged nine different towns
+  into nine identical labels — a worse bug than showing it, and the one this fix was most at
+  risk of introducing. Three new columns on `places` carry the disambiguation as structured
+  data (migration `0008_place_names`):
+
+  | Column                 | Holds                                                                                                                                                                                                          |
+  | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | `disambiguation_index` | OpenBible's ordinal, verbatim. With `slug` ("ramah-2") this makes name + index a lossless round-trip back to `friendly_id` — proven by the migration's own `downgrade()`.                                      |
+  | `homonym_count`        | How many places carry this exact name. **129 names are shared, covering 312 places.** Above 1 the sheet must say the name is shared rather than silently present one of them as _the_ Ramah (`DECISIONS #10`). |
+  | `disambiguation`       | OpenBible's own note — "in Judah" against "in Asher" for the two Achzibs — for the 275 places that have one. `NULL`, never invented, for the rest.                                                             |
+
+- **The note is stored as text, not as the HTML it is published in.** 141 of the 275 comments
+  contain markup (`<ancient id="…">Syria</ancient>`, `<a href>`); rendering one raw would be
+  the same class of failure as the ordinal, one layer along. Tags are removed and entities
+  resolved at parse time; an assertion refuses to commit a note still containing `<`.
+
+- **Nothing was stripped by character rule.** `place_names.name` and `places.modern_name` are
+  deliberately untouched: **"Feldstein et al Site 43" is a real archaeological site name** in
+  `modern.jsonl`, and a blanket digit-strip would have renamed it. The `places_name_carries_no_index`
+  CHECK constraint is scoped to the one column a reader reads, and both halves have a test.
+
+- **The gazetteer is keyed on a spelling that exists.** The primary `place_names` row was
+  keyed on `friendly_id`, producing index-shaped keys like `ramah2` — a spelling that appears
+  in no Bible and that no model will ever emit — so for 315 places the highest-weighted name
+  row pointed at nothing usable. Primary rows are now keyed on the display name, which merges
+  them into the plain spelling the translation counts already supplied: **4,346 → 4,035
+  gazetteer rows**, and `resolve("Ramah")` now returns all nine, ranked, with
+  `is_ambiguous` true instead of missing eight of them. Ties are broken by translation
+  attestation rather than by place id, so the default pin is the best-attested Ramah instead
+  of the alphabetically luckiest one.
+
+### Changed
+
+- `apps/api/scripts/place_disambiguation.py` — new. The split rule, the homonym count and the
+  HTML-to-text reduction, as pure functions with no I/O.
+- `apps/api/scripts/place_assertions.py` — five new post-load checks, all inside the loading
+  transaction: no name carries an index, every one of the 315 ordinals survived, 312 rows
+  admit their name is shared, `homonym_count` recomputes to itself, and no note holds markup.
+  Plus a spot check on Antioch of Pisidia, which proves all four halves at once.
+- `apps/api/tests/unit/test_place_disambiguation.py`, `apps/api/tests/integration/test_place_display_names.py`
+  — new, plus eight cases added to `test_place_rows.py`: 30 unit and 10 integration tests.
+
 ## 0.17.3 — 2026-08-29
 
 **`pnpm format:check` exits 0 again.** A standalone formatting fix, owned separately from the

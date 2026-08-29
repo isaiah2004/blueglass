@@ -217,3 +217,60 @@ async def test_an_absent_chapter_loads_empty_rather_than_raising(
 
     assert data.is_empty
     assert assemble_chapter_badges(data) == []
+
+
+#: (label, book, chapter) for the three chapters the sense-split defect was
+#: reported on. Colossians 4:11 read "Ἰησοῦς · STRONG'S G2424 · 1 USE ... This
+#: word occurs once in the whole of the Greek New Testament" while Colossians
+#: 4:12 on the same screen read "a servant of Christ Jesus"; Romans 9:20 said
+#: the same of ποιέω / G4160; Acts 4 printed "John: the Baptist, the apostle, a
+#: member of the Sanhedrin, or John Mark" above "used once in the corpus".
+_SENSE_SPLIT_CHAPTERS: tuple[tuple[str, int, int], ...] = (
+    ("Colossians 4", 51, 4),
+    ("Romans 9", 45, 9),
+    ("Acts 4", 44, 4),
+)
+
+
+@pytest.mark.parametrize(
+    ("label", "book", "chapter"),
+    _SENSE_SPLIT_CHAPTERS,
+    ids=[row[0] for row in _SENSE_SPLIT_CHAPTERS],
+)
+async def test_a_root_badge_counts_the_strongs_number_it_prints(
+    connection: asyncpg.Connection, label: str, book: int, chapter: int
+) -> None:
+    """Pillar 3, at the sentence a reader actually reads.
+
+    The chip prints `simple_strongs` and the stat strip prints
+    `occurrence_count`. If those describe different keys the sheet asserts a
+    frequency any concordance contradicts -- and because the builder picks the
+    RAREST word in a verse, the artificially rare sense was preferentially
+    chosen: the defect selected for itself.
+    """
+    from app.modules.badges.domain.builders import build_root_badges
+
+    data = await _load(connection, book, chapter)
+    if data.is_empty:
+        pytest.skip("Scripture is not loaded; run scripts.ingest_scripture.")
+    truth = {
+        row["number"]: row["occurrences"]
+        for row in await connection.fetch(
+            """
+            SELECT l.simple_strongs AS number, count(*) AS occurrences
+              FROM verse_words w
+              JOIN lexicon l ON l.strongs = w.strongs
+             GROUP BY l.simple_strongs
+            """
+        )
+    }
+    if not truth:
+        pytest.skip("The word layer is not loaded; run scripts.ingest_lexicon.")
+
+    for badge in build_root_badges(data):
+        payload = badge.payload
+        assert payload.occurrence_count == truth[payload.strongs_number], (
+            f"{label}: {payload.lemma} / {payload.strongs_number} is shown as "
+            f"{payload.occurrence_count} uses, and occurs "
+            f"{truth[payload.strongs_number]} times"
+        )

@@ -62,7 +62,7 @@ const decodeCityWire = decodeObject<{
   modern_name: string | null;
   identification_count: number;
   precision_type: string | null;
-  canon_verse_count: number;
+  named_verse_count: number;
   mentioned_at: readonly string[];
   has_reconstruction: boolean;
 }>({
@@ -70,7 +70,7 @@ const decodeCityWire = decodeObject<{
   modern_name: decodeNullable(decodeString),
   identification_count: decodeNumber,
   precision_type: decodeNullable(decodeString),
-  canon_verse_count: decodeNumber,
+  named_verse_count: decodeNumber,
   mentioned_at: decodeArray(decodeString),
   has_reconstruction: decodeBoolean,
 });
@@ -84,7 +84,7 @@ export const decodeCityPayload: Decoder<CitySheetPayload> = (raw, path) => {
     kind: '3d-city',
     location: wire.value.location,
     identificationCount: wire.value.identification_count,
-    canonVerseCount: wire.value.canon_verse_count,
+    namedVerseCount: wire.value.named_verse_count,
     mentionedAt: wire.value.mentioned_at,
     hasReconstruction: wire.value.has_reconstruction,
     ...present('modernName', wire.value.modern_name),

@@ -32,6 +32,11 @@ export default tseslint.config(
       '**/playwright-report/**',
       '**/test-results/**',
       '**/expo-env.d.ts',
+      // Agent scratch checkouts. They hold a COPY of the workspace, so linting them
+      // reports every finding twice and does it against a tsconfig that does not
+      // contain them -- 1,280 "type that cannot be resolved" errors, none about the
+      // code that ships.
+      '**/.claude/worktrees/**',
     ],
   },
 

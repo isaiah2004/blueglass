@@ -22,7 +22,7 @@ is packages only (`docs/decisions/DECISIONS.md` §1.3).
 | Path                         | What it is                                                                                                                                                                                                              |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `run-walkthrough.mjs`        | The entry point behind `pnpm walkthrough`. Starts the web build if nobody else has, waits on a real HTTP response, runs the suite, and kills the whole process tree afterwards — on success, on failure, and on Ctrl-C. |
-| `walkthrough/*.spec.ts`      | The walkthrough itself: ten numbered chapters, launch through error states.                                                                                                                                             |
+| `walkthrough/*.spec.ts`      | The walkthrough itself: twenty-two numbered chapters. 1-10 the reading canvas, 11-15 the inline badges, 16-22 the canon outside Acts.                                                                                   |
 | `support/`                   | The harness. Test-id contract, page probes, standing audits, the step recorder, diagnostics, and the staged API outage.                                                                                                 |
 | `shell.spec.ts`              | The original routing scaffold check. It asserts on placeholder copy, so it is expected to go red as the real screens land; delete it with the last `PlaceholderScreen`.                                                 |
 | `inline-badge-spike.spec.ts` | Drives `/spike/badges`. Delete it with the spike route once the reader renders badges for real.                                                                                                                         |
@@ -39,6 +39,12 @@ is packages only (`docs/decisions/DECISIONS.md` §1.3).
 | `diagnostics.ts`                                          | Console errors and failed requests, with a narrow, justified allowlist.                             |
 | `api-outage.ts`                                           | Cuts the page off from the API deterministically, instead of stopping a container.                  |
 | `journeys.ts`                                             | The shared moves — launch, open a tab, open the reader — and the facts every chapter agrees on.     |
+| `badge-journeys.ts`                                       | The same, for the badge chapters: open a badged chapter, read its pills, open one, close it.        |
+| `passages.ts`                                             | Which passages the suite drives and why each one is there. Pure data; re-measured by chapter 16.    |
+| `scripture-api.ts`                                        | Reads the API from Node, so a chapter can compare the screen against what the server actually said. |
+| `anchor-integrity.ts`                                     | Does each pill sit against the word its badge claims? The pillar-3 probe.                           |
+| `verse-prose.ts`                                          | A verse's words with the badge labels taken back out, for comparing against the API verbatim.       |
+| `script-rendering.ts`                                     | Direction and glyph coverage for Hebrew and Greek — tofu is invisible to `toHaveText`.              |
 | `viewports.ts`                                            | The three widths and the two breakpoints they straddle.                                             |
 | `run-id.ts`                                               | One run id shared by the main process and every worker, and where its evidence goes.                |
 | `global-setup.ts`                                         | Warms the first cold Metro bundle so no chapter absorbs it, and writes `run.json`.                  |

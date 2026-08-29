@@ -9,6 +9,13 @@ Purpose
     the sentence, not about the lexeme the reader is being invited to compare
     with, so it is trimmed before the badge is built.
 
+    Paragraph marks are the same fact about the page rather than about the word,
+    and they sit OUTSIDE the clause mark: Matthew 27:5 stores `apengxato.` with a
+    pilcrow after the full stop. Because `str.strip` gives up at the first
+    character it does not recognise, missing the pilcrow left the full stop in
+    place too -- 2,240 aligned words across the NT, and the Root badge for
+    Matthew 27:5 rendered `apengxato.<pilcrow>` under "AS WRITTEN HERE".
+
 What is deliberately NOT trimmed
     The apostrophe. Greek elides before a vowel and writes the elision with a
     right single quote -- `di'`, `kat'`, `ap'` -- and that mark is part of the
@@ -28,9 +35,18 @@ from __future__ import annotations
 #: and so each mark is named. Greek adds two the Latin alphabet does not use:
 #: the ano teleia, which is a semicolon, and the erotimatiko, which is a
 #: question mark; both appear in TAGNT.
-_ASCII_MARKS = ",.;:!?-\"()[]{}"
+#:
+#: TAGNT also sets its structural marks against the last word of a paragraph --
+#: `apengxato.<pilcrow>` at Matthew 27:5, `orkhesasthe,<pilcrow><not sign>` at
+#: Matthew 14:6. Those two must be listed here or `str.strip` stops at the
+#: outermost one and leaves the comma or full stop behind it in place, which is
+#: how 2,240 aligned words kept punctuation the earlier fix believed it had
+#: removed. A set of marks is only as complete as its rarest member.
+_ASCII_MARKS = ',.;:!?-"()[]{}'
 _UNICODE_MARKS = (
-    chr(0x00AB)  # left guillemet
+    chr(0x00AC)  # not sign, TAGNT's section mark
+    + chr(0x00B6)  # pilcrow, TAGNT's paragraph mark
+    + chr(0x00AB)  # left guillemet
     + chr(0x00BB)  # right guillemet
     + chr(0x00B7)  # middle dot
     + chr(0x0387)  # Greek ano teleia

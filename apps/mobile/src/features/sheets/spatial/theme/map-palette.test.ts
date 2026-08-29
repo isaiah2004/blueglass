@@ -10,6 +10,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  contrastRatio,
   darkTheme,
   flattenOver,
   lightTheme,
@@ -24,6 +25,32 @@ import { mapPalette } from './map-palette';
 function seenOver(color: Color, background: HexColor): number {
   return relativeLuminance(flattenOver(color, background));
 }
+
+/**
+ * The floor land must clear against the sea.
+ *
+ * The reported Lystra screenshot measured **1.31:1** in the dark palette and **1.35:1** in
+ * the light one — a difference no reader can see, which is why a coastline read as two
+ * unexplained black wedges. WCAG's 3:1 non-text bar is not reachable here without painting
+ * a slab over a near-black canvas; the coastline stroke carries that bar instead. 1.7 is
+ * the floor the fill has to clear for the two materials to be told apart at a glance.
+ */
+const MIN_LAND_SEA_RATIO = 1.7;
+
+/** WCAG 1.4.11: a graphic that carries meaning needs 3:1. The coastline is one. */
+const MIN_COAST_RATIO = 3;
+
+/**
+ * WCAG AA for text, and the bar `Q-017` resolved conflict `C-3` on.
+ *
+ * The map key's caption -- "Places named, not a journey" -- is the sentence that stops the
+ * route map being read as a journey, and it is the whole reason `MapKey` exists. It shipped
+ * at 4.33:1 in dark and 3.57:1 in light while the pin labels beside it measured 16-17:1,
+ * because `furnitureLabel` took `ink.secondary` and then cut it with a 0.72 alpha. Nothing
+ * here tested it: the file asserted land, sea and coastline and never the words. An
+ * illegible caveat is a caveat that is not made.
+ */
+const MIN_TEXT_RATIO = 4.5;
 
 describe('mapPalette', () => {
   it('paints the route in the Route badge hue, so the mark and its map agree', () => {
@@ -48,6 +75,24 @@ describe('mapPalette', () => {
     expect(seenOver(palette.land, lightTheme.background.canvas)).toBeLessThan(sea);
   });
 
+  it('keeps land and sea far enough apart to be told apart, in both themes', () => {
+    for (const theme of [darkTheme, lightTheme]) {
+      const canvas = theme.background.canvas as HexColor;
+      const land = flattenOver(mapPalette(theme).land, canvas);
+      expect(contrastRatio(land, canvas)).toBeGreaterThanOrEqual(MIN_LAND_SEA_RATIO);
+    }
+  });
+
+  it('draws the coastline at the 3:1 bar against both the land and the sea it divides', () => {
+    for (const theme of [darkTheme, lightTheme]) {
+      const palette = mapPalette(theme);
+      const canvas = theme.background.canvas as HexColor;
+      const land = flattenOver(palette.land, canvas);
+      expect(contrastRatio(palette.coast, canvas)).toBeGreaterThanOrEqual(MIN_COAST_RATIO);
+      expect(contrastRatio(palette.coast, land)).toBeGreaterThanOrEqual(MIN_COAST_RATIO);
+    }
+  });
+
   it('draws the coastline more strongly than the land it bounds, in both themes', () => {
     for (const theme of [darkTheme, lightTheme]) {
       const palette = mapPalette(theme);
@@ -55,6 +100,29 @@ describe('mapPalette', () => {
       const landStep = Math.abs(seenOver(palette.land, canvas) - relativeLuminance(canvas));
       const coastStep = Math.abs(seenOver(palette.coast, canvas) - relativeLuminance(canvas));
       expect(coastStep).toBeGreaterThan(landStep);
+    }
+  });
+
+  it('sets the key caption above the AA bar in both themes — the pillar-3 caveat', () => {
+    for (const theme of [darkTheme, lightTheme]) {
+      const palette = mapPalette(theme);
+      const plate = flattenOver(palette.keyPlate, theme.background.canvas);
+      expect(contrastRatio(palette.furnitureLabel, plate)).toBeGreaterThanOrEqual(MIN_TEXT_RATIO);
+    }
+  });
+
+  it('draws furniture on an opaque plate, so the map cannot show through the words', () => {
+    // The "30 N" graticule label bled through the translucent plate on the tablet
+    // screenshot. A plate with an alpha also makes the caption's contrast depend on
+    // whether the key happens to sit over land or over sea, which is untestable.
+    for (const theme of [darkTheme, lightTheme]) {
+      expect(mapPalette(theme).keyPlate).not.toContain('rgba(');
+    }
+  });
+
+  it('keeps a place label plate translucent, because a label is ON the map', () => {
+    for (const theme of [darkTheme, lightTheme]) {
+      expect(mapPalette(theme).labelPlate).toContain('rgba(');
     }
   });
 
@@ -74,6 +142,7 @@ describe('mapPalette', () => {
       darkTheme.badge.route.tint,
       darkTheme.badge.city3d.tint,
       darkTheme.ink.primary,
+      darkTheme.ink.secondary,
     ]);
     const values: readonly Color[] = Object.values(palette);
     for (const value of values) {

@@ -74,15 +74,9 @@ const EYEBROW = 'ROUTE';
 export function RouteSheet({ payload, sources, chrome = 'full' }: RouteSheetProps): JSX.Element {
   const styles = useStyles(useTheme());
   const view = useMemo(() => toRouteView(payload), [payload]);
-  const pins = useMemo(
-    () =>
-      view.places.map((place) => ({
-        key: place.key,
-        name: place.location.name,
-        coordinates: place.location.coordinates,
-      })),
-    [view.places],
-  );
+  // `view.mapPins`, not `view.places`: two places at one coordinate are one dot, and the
+  // mark carries both names rather than the second being painted invisibly over the first.
+  const pins = view.mapPins;
 
   return (
     <View style={styles.sheet} testID="spatial-route-sheet">

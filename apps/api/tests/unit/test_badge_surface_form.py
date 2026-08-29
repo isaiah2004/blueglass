@@ -28,6 +28,12 @@ ANO_TELEIA = chr(0x387)
 EROTIMATIKO = chr(0x37E)
 LEFT_QUOTE = chr(0x201C)
 RIGHT_QUOTE = chr(0x201D)
+#: TAGNT's structural marks, set OUTSIDE the clause mark at a paragraph end.
+PILCROW = chr(0xB6)
+NOT_SIGN = chr(0xAC)
+#: The koronis TAGNT writes an elision with. Distinct from the right single
+#: quote above, and just as much part of the spelling.
+KORONIS_ELIDED = "".join(chr(code) for code in (0x3BA, 0x3B1, 0x3C4, 0x1FBD))
 
 
 class TestBareSurface:
@@ -48,6 +54,25 @@ class TestBareSurface:
 
     def test_keeps_an_elision_mark_because_it_spells_the_word(self) -> None:
         assert bare_surface(ELIDED) == ELIDED
+
+    def test_keeps_the_koronis_tagnt_actually_elides_with(self) -> None:
+        """22 distinct surfaces end in one. `kat'`, `di'`, `ap'` are words."""
+        assert bare_surface(KORONIS_ELIDED) == KORONIS_ELIDED
+
+    def test_strips_a_paragraph_mark_and_the_stop_it_hides(self) -> None:
+        """Matthew 27:5 shipped `apengxato.<pilcrow>` under "AS WRITTEN HERE".
+
+        The pilcrow sits outside the full stop, and `str.strip` stops at the
+        first character it does not recognise -- so omitting one mark from the
+        list left the other in place on 2,240 aligned words.
+        """
+        assert bare_surface(f"{SAMOTHRACE}.{PILCROW}") == SAMOTHRACE
+        assert bare_surface(f"{SAMOTHRACE},{PILCROW}{NOT_SIGN}") == SAMOTHRACE
+
+    def test_no_loaded_surface_still_ends_in_punctuation(self) -> None:
+        """The invariant, over every mark TAGNT was measured to carry."""
+        for tail in (".", ",", PILCROW, NOT_SIGN, ANO_TELEIA, EROTIMATIKO):
+            assert bare_surface(f"{SAMOTHRACE}{tail}") == SAMOTHRACE
 
     def test_leaves_a_clean_token_alone(self) -> None:
         assert bare_surface(SAMOTHRACE) == SAMOTHRACE

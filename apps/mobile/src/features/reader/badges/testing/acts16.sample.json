@@ -13,7 +13,7 @@
         "start_offset": 13,
         "end_offset": 18
       },
-      "teaser": "Derbe to Thyatira - 20 stops on this journey",
+      "teaser": "15 places named in this chapter",
       "citations": [
         {
           "id": "route-0",
@@ -38,15 +38,17 @@
       ],
       "payload": {
         "kind": "route",
-        "title": "Derbe to Thyatira",
+        "title": "Places named in this chapter",
         "waypoints": [
           {
             "name": "Derbe",
             "coordinates": [33.361453, 37.348569],
-            "role": "departure",
+            "role": "waypoint",
             "feature_type": "settlement",
             "place_id": "aa401a9",
-            "verse_key": 44016001
+            "verse_key": 44016001,
+            "shared_name_count": 1,
+            "candidate_count": 3
           },
           {
             "name": "Lystra",
@@ -54,7 +56,9 @@
             "role": "waypoint",
             "feature_type": "settlement",
             "place_id": "af0719d",
-            "verse_key": 44016001
+            "verse_key": 44016001,
+            "shared_name_count": 1,
+            "candidate_count": 1
           },
           {
             "name": "Iconium",
@@ -62,7 +66,9 @@
             "role": "waypoint",
             "feature_type": "settlement",
             "place_id": "ae425aa",
-            "verse_key": 44016002
+            "verse_key": 44016002,
+            "shared_name_count": 1,
+            "candidate_count": 1
           }
         ],
         "camera": {
@@ -116,12 +122,14 @@
           "role": "waypoint",
           "feature_type": "settlement",
           "place_id": "af0719d",
-          "verse_key": 44016001
+          "verse_key": 44016001,
+          "shared_name_count": 1,
+          "candidate_count": 1
         },
         "modern_name": "Tel Lystra",
         "identification_count": 1,
         "precision_type": "tel",
-        "canon_verse_count": 6,
+        "named_verse_count": 6,
         "mentioned_at": ["Acts.16.1", "Acts.16.2"],
         "has_reconstruction": false
       }
@@ -203,15 +211,43 @@
         },
         "biblical_axis": [
           {
-            "id": "event-2809",
+            "id": "event-3467",
             "label": "Timothy Joins Paul and Silas",
             "year_label": "AD 47",
             "sort_year": 47,
             "detail": "Second Missionary Journey"
           },
           {
-            "id": "event-2810",
+            "id": "event-3468",
             "label": "Mission to Phrygia, Galatia and Asia",
+            "year_label": "AD 47",
+            "sort_year": 47,
+            "detail": "Second Missionary Journey"
+          },
+          {
+            "id": "event-3469",
+            "label": "Call to Macedonia",
+            "year_label": "AD 47",
+            "sort_year": 47,
+            "detail": "Second Missionary Journey"
+          },
+          {
+            "id": "event-3470",
+            "label": "Lydia's Conversion",
+            "year_label": "AD 47",
+            "sort_year": 47,
+            "detail": "Second Missionary Journey"
+          },
+          {
+            "id": "event-3471",
+            "label": "Paul casts demon out of soothsayer",
+            "year_label": "AD 47",
+            "sort_year": 47,
+            "detail": "Second Missionary Journey"
+          },
+          {
+            "id": "event-3472",
+            "label": "Paul and Silas imprisoned",
             "year_label": "AD 47",
             "sort_year": 47,
             "detail": "Second Missionary Journey"
@@ -219,11 +255,18 @@
         ],
         "world_axis": [
           {
-            "id": "ruler-348",
+            "id": "ruler-434",
             "label": "Claudius, Emperor of Roman Empire",
             "year_label": "AD 41 to AD 54",
             "sort_year": 41,
             "detail": "Roman Empire"
+          },
+          {
+            "id": "ruler-465",
+            "label": "Tiberius Julius Alexander, Procurator of Judaea",
+            "year_label": "AD 46 to AD 48",
+            "sort_year": 46,
+            "detail": "Judaea"
           }
         ],
         "rationale": "Dated from the Theographic event Mission to Phrygia, Galatia and Asia (AD 47), which narrates about 60% of this passage.",
@@ -328,7 +371,7 @@
         "transliteration": "Samothrakē",
         "strongs_number": "G4543",
         "gloss": "Samothrace",
-        "surface": "Σαμοθρᾴκην,",
+        "surface": "Σαμοθρᾴκην",
         "occurrence_count": 1,
         "verse_count": 1,
         "book_count": 1,

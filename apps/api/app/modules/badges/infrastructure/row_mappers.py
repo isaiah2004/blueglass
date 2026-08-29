@@ -18,6 +18,8 @@ Dependencies
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 import asyncpg
 
 from ...scripture.domain import BY_NUMBER, split_verse_key
@@ -34,7 +36,7 @@ from ..domain import (
     SourceAttribution,
     VerseText,
 )
-from ..domain.anchor import normalise_name
+from ..domain.place_spelling import PlaceSpelling, normalise_name
 
 
 def to_verse(row: asyncpg.Record) -> VerseText:
@@ -62,13 +64,7 @@ def to_source(row: asyncpg.Record) -> SourceAttribution:
 
 
 def to_place(row: asyncpg.Record) -> PlaceRecord:
-    """One gazetteer place, with its spellings folded to the index form.
-
-    The stored `normalised` column was written by the loader's folding rule;
-    folding it again here is a no-op for well-formed rows and a repair for any
-    row written before that rule settled, so the anchor lookup cannot miss on a
-    formatting difference alone.
-    """
+    """One gazetteer place, with every spelling the badge domain may weigh."""
     return PlaceRecord(
         place_id=row["place_id"],
         name=row["name"],
@@ -76,13 +72,29 @@ def to_place(row: asyncpg.Record) -> PlaceRecord:
         lat=row["lat"],
         lng=row["lng"],
         feature_type=row["feature_type"],
-        verse_count=row["verse_count"],
+        named_verse_count=row["named_verse_count"],
         candidate_count=row["candidate_count"],
+        homonym_count=row["homonym_count"],
         precision_type=row["precision_type"],
         source_key=row["source_key"],
-        spellings=frozenset(
-            normalise_name(spelling) for spelling in (row["spellings"] or ()) if spelling
-        ),
+        spellings=tuple(to_spelling(entry) for entry in (row["spellings"] or ())),
+    )
+
+
+def to_spelling(entry: Mapping[str, object]) -> PlaceSpelling:
+    """One `place_names` row, as the domain's record.
+
+    The stored `normalised` column was written by the loader's folding rule;
+    folding it again here is a no-op for well-formed rows and a repair for any
+    row written before that rule settled, so the anchor lookup cannot miss on a
+    formatting difference alone.
+    """
+    return PlaceSpelling(
+        normalised=normalise_name(str(entry["normalised"])),
+        name=str(entry["name"]),
+        kind=str(entry["kind"]),
+        attestation=int(str(entry["attestation"])),
+        names_another_place=bool(entry["names_another_place"]),
     )
 
 

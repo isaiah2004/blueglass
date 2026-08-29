@@ -10,7 +10,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { Viewport } from '../geo/projection';
 
-import { placeLabel, plateWidth } from './map-label-geometry';
+import { cornerPlate, placeLabel, plateWidth } from './map-label-geometry';
 
 const SHEET: Viewport = { width: 360, height: 240 };
 const FONT = 11;
@@ -87,5 +87,65 @@ describe('placeLabel', () => {
     const placement = placeLabel({ x: 20, y: 120 }, 'Caesarea Philippi', FONT, narrow);
     expect(placement.x).toBe(0);
     expect(Number.isFinite(placement.width)).toBe(true);
+  });
+});
+
+describe('cornerPlate', () => {
+  const INSET = { x: 12, y: 12 };
+  const MARK = 9;
+
+  it('sits in the bottom-left corner, inset by the margin the scale bar uses', () => {
+    const key = cornerPlate('Places named, not a journey', FONT, SHEET, 'bottomLeft', MARK, INSET);
+    expect(key.x).toBe(INSET.x);
+    expect(key.y + key.height).toBeCloseTo(SHEET.height - INSET.y, 9);
+  });
+
+  it('sits flush to the bottom-right corner with the same inset', () => {
+    const key = cornerPlate('No coastline in this view', FONT, SHEET, 'bottomRight', 0, INSET);
+    expect(key.x + key.width).toBeCloseTo(SHEET.width - INSET.x, 9);
+  });
+
+  it('reserves the mark space before the text rather than under it', () => {
+    const caption = 'Attested journey';
+    const withMark = cornerPlate(caption, FONT, SHEET, 'bottomLeft', MARK, INSET);
+    const without = cornerPlate(caption, FONT, SHEET, 'bottomLeft', 0, INSET);
+
+    expect(withMark.width - without.width).toBeCloseTo(MARK, 9);
+    expect(withMark.textX - without.textX).toBeCloseTo(MARK, 9);
+    expect(withMark.markX).toBeLessThan(withMark.textX);
+    expect(withMark.markX).toBeGreaterThan(withMark.x);
+  });
+
+  it('keeps the mark and the baseline inside the plate', () => {
+    const key = cornerPlate('Attested journey', FONT, SHEET, 'bottomLeft', MARK, INSET);
+    expect(key.markY).toBeGreaterThan(key.y);
+    expect(key.markY).toBeLessThan(key.y + key.height);
+    expect(key.textY).toBeGreaterThan(key.y);
+    expect(key.textY).toBeLessThan(key.y + key.height);
+  });
+
+  it('stacks above whatever already sits in the corner when the y inset grows', () => {
+    const low = cornerPlate('Attested journey', FONT, SHEET, 'bottomLeft', MARK, INSET);
+    const stacked = cornerPlate('Attested journey', FONT, SHEET, 'bottomLeft', MARK, {
+      x: INSET.x,
+      y: INSET.y + 30,
+    });
+
+    expect(stacked.y).toBeCloseTo(low.y - 30, 9);
+    expect(stacked.x).toBe(low.x);
+  });
+
+  it('sets a caption wider than the map flush left rather than off the edge', () => {
+    const narrow: Viewport = { width: 60, height: 200 };
+    const key = cornerPlate(
+      'Places named, not a journey',
+      FONT,
+      narrow,
+      'bottomRight',
+      MARK,
+      INSET,
+    );
+    expect(key.x).toBe(0);
+    expect(Number.isFinite(key.width)).toBe(true);
   });
 });

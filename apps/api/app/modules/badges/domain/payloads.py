@@ -47,7 +47,26 @@ CrossReferenceRelation = Literal["quotation", "allusion", "fulfilment", "paralle
 
 @dataclass(frozen=True, slots=True)
 class MappedLocation:
-    """A named place with a pin, as the spatial sheets render it."""
+    """A named place with a pin, and the two ways that pin can be unsettled.
+
+    DECISIONS #10 -- "a sheet showing one pin for a shared or disputed
+    identification says the identification is shared" -- has two distinct
+    cases, and a pin that carries only one of them is still presenting a guess
+    as a fact:
+
+    `candidate_count` is how many modern dig sites scholarship proposes for
+    THIS place. 777 of the 1,342 ancient places have more than one.
+
+    `shared_name_count` is how many different ancient places carry this same
+    name. Nine are called Ramah, four Gilgal, three Babylon, and 1,153 of the
+    4,399 route waypoints canon-wide are one of them. Before this field the
+    label read "Ramah 2", which asserted an ordinal no manuscript contains;
+    dropping the ordinal without adding this replaced a wrong signal with no
+    signal, which reads as certainty.
+
+    Both default to 1 -- one site, one place of that name -- so a payload built
+    without them claims nothing rather than claiming a dispute.
+    """
 
     name: str
     coordinates: GeoCoordinates
@@ -55,6 +74,8 @@ class MappedLocation:
     feature_type: str
     place_id: str
     verse_key: int
+    shared_name_count: int = 1
+    candidate_count: int = 1
 
 
 @dataclass(frozen=True, slots=True)
@@ -97,7 +118,7 @@ class City3dPayload:
     modern_name: str | None
     identification_count: int
     precision_type: str | None
-    canon_verse_count: int
+    named_verse_count: int
     mentioned_at: tuple[str, ...]
     has_reconstruction: bool = False
 

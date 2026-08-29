@@ -133,3 +133,29 @@ async def test_a_study_row_must_name_its_author(
             "INSERT INTO chapter_studies (book_number, chapter, content) "
             "VALUES (20, 1, '{}'::jsonb)"
         )
+
+
+async def test_the_badge_sql_and_the_loader_agree_on_the_primary_name_offset(
+    connection: asyncpg.Connection,
+) -> None:
+    """One constant, written down twice, and the failure would be silent.
+
+    The loader adds `PRIMARY_NAME_WEIGHT` to a primary spelling's weight so a
+    place's own name outranks a variant; `CHAPTER_PLACES` subtracts it back out
+    to recover the raw translation count the admissibility gates divide by. If
+    the two drift, every primary spelling's attestation becomes a nine-figure
+    number, every variant falls under the share threshold, and the Route badge
+    quietly loses its variants without erroring.
+    """
+    from app.modules.badges.infrastructure.badge_sql import PRIMARY_NAME_WEIGHT
+    from scripts.place_rows import PRIMARY_NAME_WEIGHT as LOADER_WEIGHT
+
+    assert PRIMARY_NAME_WEIGHT == LOADER_WEIGHT
+
+    highest = await connection.fetchval(
+        "SELECT max(weight) FROM place_names WHERE kind = 'translation'"
+    )
+    if highest is None:
+        pytest.skip("The gazetteer is not loaded; run scripts.ingest_places.")
+    # And the offset really is an offset, not a value a variant could reach.
+    assert highest < PRIMARY_NAME_WEIGHT

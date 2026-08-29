@@ -12,6 +12,15 @@
  *   line. Here there is no such constraint, so the row is the button and it is a full
  *   `size.tapTarget` tall.
  *
+ * The teaser is clamped, and three is the number that stops it clipping mid-word
+ *   `design-language.md` §5 asks for a one-line teaser and `image9.png` shows one, which is
+ *   what a 632 dp desktop column gives. A 375 dp phone gives the teaser 199 dp beside the
+ *   fixed pill column, and at two lines the longest live teasers lost their last word inside
+ *   it. Galatians 3 printed `used once in th…`, cutting a counted claim mid-word; Acts 16 did
+ *   the same to two Root rows. Three lines holds the longest teaser the corpus has — 64
+ *   characters, measured across 91 chapters — at every width, and is still a clamp, so the
+ *   row cannot grow without bound on a teaser nobody has seen yet.
+ *
  * Q-015 travels with the teaser
  *   A `[History]` teaser carries Hajime Murai's title for the passage, which is one scholar's
  *   reading and not a heading in the text. It is attributed here for the same reason it is
@@ -72,7 +81,7 @@ export function BadgeSummaryRow({ badge, onOpen }: BadgeSummaryRowProps): JSX.El
         <BadgePill kind={hue} />
       </View>
       <View style={styles.claim}>
-        <Text numberOfLines={2} style={[styles.teaser, { color: theme.ink.secondary }]}>
+        <Text numberOfLines={3} style={[styles.teaser, { color: theme.ink.secondary }]}>
           {badge.teaser}
         </Text>
         {claim === undefined ? null : (

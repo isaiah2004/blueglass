@@ -46,6 +46,15 @@ const MAX_BAR_FRACTION = 0.34;
 /** How far the two end ticks rise above the rule. */
 const TICK_HEIGHT = spacing.sm;
 
+/**
+ * How much of the map's bottom-left corner the bar occupies, above the margin it sits on.
+ *
+ * Exported so a second piece of furniture can stack above it instead of on it: `MapKey`'s
+ * inland note is drawn in the same corner, and two plates overlapping is exactly the kind
+ * of artefact the bar itself was redrawn to stop being.
+ */
+export const SCALE_BAR_HEIGHT = TICK_HEIGHT + metadataSize.xs + spacing.sm;
+
 /** What {@link ScaleRule} draws. */
 interface ScaleRuleProps {
   readonly left: number;
@@ -83,7 +92,7 @@ export function MapScaleBar({
         width={bar.widthPx + spacing.sm}
         height={baseline - capTop + spacing.sm}
         rx={radius.control}
-        fill={palette.labelPlate}
+        fill={palette.keyPlate}
       />
       <ScaleRule left={left} baseline={baseline} width={bar.widthPx} stroke={palette.furniture} />
       <Text

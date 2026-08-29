@@ -39,8 +39,17 @@ CERTAIN_SCORE = 1000
 #: Zion, Assyria) had their primary row displaced by their own variant row.
 PRIMARY_NAME_WEIGHT = 1_000_000
 
+#: The one mention kind whose place name appears verbatim in the English text.
+#: Every count and every anchor a badge publishes is restricted to it; the
+#: other six kinds (people_group, no_translation, common_noun, helper, partial,
+#: person) mean the verse refers to the place some other way.
+#: `badges.domain.builders.place_support.ANCHORABLE_MENTION` is the domain's
+#: copy -- the loader may not import the domain, nor the domain the loader --
+#: and `tests/unit/test_place_rows.py` pins the two together.
+NAMED_MENTION_KIND = "name"
+
 #: Used when a verse record carries no instance_types at all.
-UNKNOWN_MENTION_KIND = "name"
+UNKNOWN_MENTION_KIND = NAMED_MENTION_KIND
 
 #: Used when an ancient record carries no types. Never observed in the acquired
 #: file (all 1,342 rows have at least one), but the column is NOT NULL.
@@ -86,7 +95,14 @@ class Candidate:
 
 @dataclass(frozen=True, slots=True)
 class PlaceRow:
-    """One row destined for the places table."""
+    """One row destined for the places table.
+
+    ``name`` is the label a reader sees and nothing else. OpenBible's homonym
+    ordinal, which used to travel inside it as "Ramah 2", lives in
+    ``disambiguation_index``; ``homonym_count`` says whether the label needs
+    disambiguating at all, and ``disambiguation`` carries the source's own note
+    when it published one. See place_disambiguation for why they were split.
+    """
 
     place_id: str
     name: str
@@ -100,12 +116,24 @@ class PlaceRow:
     precision_meters: int | None
     precision_type: str | None
     candidates: tuple[Candidate, ...]
-    verse_count: int
+    named_verse_count: int
+    disambiguation_index: int | None = None
+    homonym_count: int = 1
+    disambiguation: str | None = None
 
     @property
     def is_located(self) -> bool:
         """True when this place has a coordinate to draw."""
         return self.lat is not None
+
+    @property
+    def is_ambiguous(self) -> bool:
+        """True when another place in the gazetteer carries the same name.
+
+        A sheet that renders an ambiguous name without saying so is asserting
+        an identification the data does not make (DECISIONS #10).
+        """
+        return self.homonym_count > 1
 
 
 @dataclass(frozen=True, slots=True)

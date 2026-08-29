@@ -111,8 +111,17 @@ function boxOf(ring: FlatRing): GeoBounds {
   return box;
 }
 
-/** True when a ring's degrees overlap the visible degrees, with a margin. */
-function overlaps(ring: FlatRing, view: GeoBounds): boolean {
+/**
+ * True when a ring's degrees overlap the visible degrees, with a margin.
+ *
+ * Exported for `./coastline-extent`, which asks the same cheap question before paying for
+ * a projection. Keeping one implementation keeps one cull margin.
+ *
+ * @param ring - One flat ring.
+ * @param view - The visible degrees, from `visibleBounds`.
+ * @returns True when the ring could touch the view. Side effects: none.
+ */
+export function ringOverlapsView(ring: FlatRing, view: GeoBounds): boolean {
   const box = boxOf(ring);
   return (
     box.maxLon >= view.minLon - GEO_CULL_MARGIN &&
@@ -194,57 +203,12 @@ export function ringsToPath(
   if (view === null) return '';
   let path = '';
   for (const ring of rings) {
-    if (!overlaps(ring, view)) continue;
+    if (!ringOverlapsView(ring, view)) continue;
     const points = projectRing(ring, transform);
     if (points.length < 3 || !intersects(points, viewport)) continue;
     path += ringToSubPath(points);
   }
   return path;
-}
-
-/**
- * Whether enough coastline is drawn inside the frame for the map to read as a map.
- *
- * NOT the same question as `visibleRingCount`, and the difference is the whole reason this
- * exists. A ring counts as "visible" when its bounding box overlaps the viewport — and the
- * single ring carrying the whole of Asia overlaps the viewport for every inland site in the
- * gazetteer. Lystra therefore had a "visible" coastline while showing none: the frame sat
- * entirely inside that ring, so the map drew one flat land fill from edge to edge and read
- * as a grey blob.
- *
- * Why a count and not a boolean
- *   One vertex in a corner is not a coastline either — measured, Lystra's first step out
- *   put exactly one point of a lake in frame, which draws a mark a reader would take for a
- *   rendering artefact. The threshold is what separates "a coast crosses this view" from "a
- *   coast grazes it".
- *
- * @param rings - `basemap.land` or `basemap.lakes`, or both.
- * @param transform - Where the map currently sits.
- * @param viewport - The pixel box.
- * @param minPoints - How many ring vertices must land inside the viewport.
- * @returns True at or above the threshold. Short-circuits on the point that reaches it, so
- *   a well-framed map costs a fraction of a projection pass. Side effects: none.
- */
-export function hasCoastlineInFrame(
-  rings: readonly FlatRing[],
-  transform: MapTransform,
-  viewport: Viewport,
-  minPoints: number,
-): boolean {
-  const view = visibleBounds(transform, viewport);
-  if (view === null) return false;
-  let found = 0;
-  for (const ring of rings) {
-    if (!overlaps(ring, view)) continue;
-    for (let index = 0; index + 1 < ring.length; index += 2) {
-      const point = project(transform, [ring[index]!, ring[index + 1]!]);
-      if (point.x >= 0 && point.x <= viewport.width && point.y >= 0 && point.y <= viewport.height) {
-        found += 1;
-        if (found >= minPoints) return true;
-      }
-    }
-  }
-  return false;
 }
 
 /**
@@ -268,7 +232,7 @@ export function visibleRingCount(
   if (view === null) return 0;
   let count = 0;
   for (const ring of rings) {
-    if (!overlaps(ring, view)) continue;
+    if (!ringOverlapsView(ring, view)) continue;
     const points = projectRing(ring, transform);
     if (points.length >= 3 && intersects(points, viewport)) count += 1;
   }
