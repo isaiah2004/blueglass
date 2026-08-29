@@ -1,0 +1,14 @@
+# The comms branch carries messages and nothing else.
+#
+# This branch is an orphan, so switching to it removes main's tracked files — including
+# main's .gitignore. Everything left in the working tree (build output, node_modules, and
+# critically `.env`) becomes untracked and therefore stageable. A careless `git add -A`
+# here would commit secrets to a public repo.
+#
+# So: ignore everything, then allow back exactly the four things that belong.
+*
+!.gitignore
+!README.md
+!OPEN.md
+!threads/
+!threads/**
