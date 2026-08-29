@@ -132,13 +132,36 @@ function resultState(ref, tip) {
   let testedTip = false;
   for (const file of files) {
     const body = fileAtRef(ref, file);
-    // Results record the sha they tested; a prefix match is enough and tolerates short shas.
-    if (body && (body.includes(tip) || body.includes(tip.slice(0, 7)))) {
+    if (body && declaredCommit(body) === tip) {
       testedTip = true;
       break;
     }
   }
   return { count: files.length, testedTip };
+}
+
+/**
+ * The commit a result declares it tested.
+ *
+ * Reads the machine-readable marker `report.mjs` emits, and falls back to the prose line for
+ * results written before that marker existed.
+ *
+ * This used to be `body.includes(sha)` — a substring search over the whole document — and
+ * that was wrong in a way real use exposed within minutes. A result that quotes scanner
+ * output, a `git log`, or a diff will contain other shas incidentally, and any one of them
+ * could match the tip and mark the branch tested when it was not. Runs would then be
+ * silently skipped, which is the worst failure this tool has: it looks exactly like "nothing
+ * to do".
+ *
+ * @param body - Full text of a result file.
+ * @returns The declared 40-character sha, or null when the file declares none.
+ */
+function declaredCommit(body) {
+  const marker = /<!--\s*tested-commit:\s*([0-9a-f]{40})\s*-->/i.exec(body);
+  if (marker) return marker[1].toLowerCase();
+
+  const prose = /Ran against commit `([0-9a-f]{40})`/i.exec(body);
+  return prose ? prose[1].toLowerCase() : null;
 }
 
 /**

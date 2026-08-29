@@ -64,6 +64,12 @@ function assertValid(input) {
   if (!input.branch.startsWith('test/')) {
     throw new Error('refusing to write to "' + input.branch + '" — only test/* branches are in scope');
   }
+  // A result's whole value is naming the code it tested. A malformed sha — a shell variable
+  // that did not expand, a truncated paste — produces a result that looks authoritative and
+  // attributes itself to nothing. Caught here, loudly, rather than shipped.
+  if (!/^[0-9a-f]{40}$/i.test(input.commit)) {
+    throw new Error('commit must be a full 40-character sha, got: "' + input.commit + '"');
+  }
   if (!VERDICTS.includes(input.verdict)) {
     throw new Error('verdict must be one of: ' + VERDICTS.join(', '));
   }
@@ -93,6 +99,11 @@ function renderResult(input, seq, shotNames) {
   const passed = checks.filter((c) => c.result === 'pass').length;
 
   const lines = [
+    // Machine-readable and invisible when rendered. The scanner reads THIS to decide whether
+    // a commit has been tested — never a substring search of the body, which would match a
+    // sha quoted incidentally in pasted command output.
+    '<!-- tested-commit: ' + input.commit.toLowerCase() + ' -->',
+    '',
     '# Result ' + seq + ' · ' + input.id,
     '',
     '**Verdict: ' + input.verdict + '**' +
@@ -179,9 +190,17 @@ if (!arg) {
   process.exit(1);
 }
 
-const raw = arg === '--stdin' ? await readStdin() : await readFile(resolve(arg), 'utf8');
-const input = JSON.parse(raw);
-assertValid(input);
+let input;
+try {
+  const raw = arg === '--stdin' ? await readStdin() : await readFile(resolve(arg), 'utf8');
+  input = JSON.parse(raw);
+  assertValid(input);
+} catch (err) {
+  // A stack trace here helps nobody: the caller mis-shaped their input, and the useful
+  // information is which field and why.
+  console.error('[report] invalid result: ' + err.message);
+  process.exit(1);
+}
 
 const startingBranch = git(['rev-parse', '--abbrev-ref', 'HEAD']);
 const dirty = git(['status', '--porcelain'], true);
