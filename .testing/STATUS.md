@@ -3,13 +3,13 @@
 | | |
 |---|---|
 | **Verdict** | PASS |
-| Commit tested | `$TIP` |
-| Run | 002 |
-| When | 2026-08-29T20:06:01Z |
-| Checks passed | 2 of 2 |
+| Commit tested | `743e481944f8c1e5204b43d10acfe96f86f750df` |
+| Run | 003 |
+| When | 2026-08-29T20:08:59Z |
+| Checks passed | 4 of 4 |
 
-The watcher fired within ten seconds of the push, without anyone asking it to. The branch went back to waiting, and this is result 002 sitting alongside 001 rather than replacing it — so a re-run always shows whether a fix actually moved anything.
+Result 002 was written with an unexpanded shell variable as its commit, and the scanner accepted the branch as tested anyway because it substring-searched the body. Both ends are fixed and this run proves it. 002 is left in place, wrong, as evidence — results are append-only.
 
-Full detail: [`.testing/results/002-protocol-smoke-test.md`](results/002-protocol-smoke-test.md)
+Full detail: [`.testing/results/003-protocol-smoke-test.md`](results/003-protocol-smoke-test.md)
 
 Push again to request a re-run. See `docs/testing/TESTING-BRANCH-PROTOCOL.md`.
