@@ -322,6 +322,7 @@ infrastructure. Enforced by tests that parse the AST, not by convention.
 | [docs/decisions/DECISIONS.md](docs/decisions/DECISIONS.md) | What was decided and why |
 | [docs/decisions/ANSWERS.md](docs/decisions/ANSWERS.md) | All 104 raw answers |
 | [docs/decisions/ASSUMPTIONS.md](docs/decisions/ASSUMPTIONS.md) | Calls taken without an answer |
+| [docs/decisions/MERGING-COLLEAGUE-BRANCH.md](docs/decisions/MERGING-COLLEAGUE-BRANCH.md) | **Parallel work on another branch that merges clean but does not compile — read before merging it** |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Twelve milestones, riskiest first |
 | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Local dev, database reset, troubleshooting |
 | [docs/product/prd.md](docs/product/prd.md) | The product spec |
