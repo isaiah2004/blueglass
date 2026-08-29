@@ -71,6 +71,8 @@ const PALETTE = {
   badgeBlue: '#2A55C4',
   /** The violet owned by the Meditate badge. */
   badgeViolet: '#6742C1',
+  /** The rose owned by the Lineage badge, darkened for AA contrast on warm paper. */
+  badgeRose: '#B03863',
   /** Pure black, the source of every translucent line and the scrim. */
   black: '#000000',
 } as const satisfies Record<string, HexColor>;
@@ -159,6 +161,7 @@ export const lightTheme = {
     manuscript: badgeColorsFor(PALETTE.cyan),
     crossRef: badgeColorsFor(PALETTE.gold),
     root: badgeColorsFor(PALETTE.cyan),
+    lineage: badgeColorsFor(PALETTE.badgeRose),
     structure: badgeColorsFor(PALETTE.badgeBlue),
     cultural: badgeColorsFor(PALETTE.gold),
     context: badgeColorsFor(PALETTE.cyan),

@@ -13,12 +13,12 @@ This is the source of truth for the visual system until the token module superse
 | File | Screen | What it establishes |
 |---|---|---|
 | `image1.png` | Reader + Spatial sheet | Inline badges in scripture; glass sheet with 3D route map, segmented tabs, stat strip, sub-nav |
-| `image2.png` | *(see file)* | — |
+| `image2.png` | Reader + History sheet | "Parallel World History" glass sheet: dual-axis timeline (gold Biblical track above, cyan Roman Empire track below), a highlighted shared-year node, a sourced legal/cultural callout card, a "Connection" strip tying the two tracks together, and two footer CTAs (`Explore Full Timeline`, `View on Map`) |
 | `image3.png` | Three-up: Home / Reader / Audio player | Tab bar, Today's Drop hero, 3-step checklist, Atmosphere Mixer |
-| `image4.png` | *(see file)* | — |
+| `image4.png` | Reader + Lineage sheet | "Genealogy" glass sheet: vertical node-tree (Abraham → Boaz/Ruth → David → Solomon → Mary → Jesus) with per-node reference citation, an attached "Prophetic Fulfillment" card showing promise → fulfillment verse pairs with checkmarks, a callout bubble on the King David node, and a segmented footer (`Tree View` / `Timeline` / `List View` / `Show All`) |
 | `image5.png` | Discover | Search bar, 3D Travel Routes card, dual-axis Empire Timeline, Literary Patterns node graph |
 | `image6.png` | Reader + Word Root sheet | Greek lemma, Strong's number, pronunciation, usage stats, examples, Save as Flashcard |
-| `image7.png` | *(see file)* | — |
+| `image7.png` | Journal tab | Header with user level badge (`Level 3 Scholar`); "This Week" 7-day streak ring + day-of-week checkmark row; "Milestone Reward" card (locked 3D asset preview + days-to-go progress bar); "My Reflections" feed of serif note cards tagged with a verse badge, timestamp, like/save counts and topic pills; "My Saved Resources" horizontal carousel of flashcard/study-brief cards |
 | `image8.png` | Reader + Manuscript sheet | Codex photo, translation-comparison cards, variant notes, provenance strip |
 | `image9.png` | Reader (full) | **All 10 badge types in one view** + a badge summary list at the bottom of the chapter |
 | `image10.png` | Home | Today's Drop, 3-step loop, quick-access media cards, progress sparkline + ring |
@@ -61,6 +61,7 @@ for the system's intelligence (AI, sources, analysis, navigation).
 | Manuscript | cyan |
 | Cross-Ref | gold |
 | Root | cyan |
+| Lineage | rose `#E8749C` (`#B03863` light) — resolves `Q-018`; distinct from gold/cyan/blue/violet so the family-tree sheet is never mistaken for a devotional or analytical one |
 | Structure | blue |
 | Cultural | gold |
 | Context | cyan |

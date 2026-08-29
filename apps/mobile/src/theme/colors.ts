@@ -67,6 +67,9 @@ const PALETTE = {
   badgeBlue: '#5B8DEF',
   /** The violet owned by the Meditate badge. */
   badgeViolet: '#A78BFA',
+  /** The rose owned by the Lineage badge — distinct from gold, cyan, blue and violet so a
+   * family-tree sheet is never mistaken for a devotional or an analytical one (`Q-018`). */
+  badgeRose: '#E8749C',
   /** Pure white, used only as the source of the translucent border tokens. */
   white: '#FFFFFF',
   /** Pure black, used only as the source of the sheet scrim. */
@@ -161,6 +164,7 @@ export const darkTheme = {
     manuscript: badgeColorsFor(PALETTE.cyan),
     crossRef: badgeColorsFor(PALETTE.gold),
     root: badgeColorsFor(PALETTE.cyan),
+    lineage: badgeColorsFor(PALETTE.badgeRose),
     structure: badgeColorsFor(PALETTE.badgeBlue),
     cultural: badgeColorsFor(PALETTE.gold),
     context: badgeColorsFor(PALETTE.cyan),
