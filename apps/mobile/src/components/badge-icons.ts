@@ -91,6 +91,14 @@ export const badgeIconPaths = {
     'M12 13.6C12 10.1 9.5 7.6 6 7.6c0 3.5 2.5 6 6 6z',
     'M12 13.6c0-3.1 2.2-5.6 5.6-5.6 0 3.1-2.5 5.6-5.6 5.6z',
   ],
+  /** Lineage — a small family tree, three generations wide. */
+  lineage: [
+    'M12 5.2a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+    'M6.4 13.2a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17.6 13.2a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+    'M6.4 21.2a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17.6 21.2a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+    'M12 5.2v3M12 8.2 6.4 9.2M12 8.2l5.6 1',
+    'M6.4 13.2v4M17.6 13.2v4',
+  ],
   /** Structure — a three-node graph, for literary structure. */
   structure: [
     'M12 6.6a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8z',

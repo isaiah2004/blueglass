@@ -4,7 +4,8 @@
  * Purpose
  *   A real, wrapping passage to render the badge strategies against, so the spike measures
  *   text flow rather than a one-line demo. `docs/product/mockups/image9.png` uses this exact
- *   passage and shows nine of the ten badge kinds in one screen.
+ *   passage and shows nine of the ten badge kinds in one screen; Lineage was added afterward
+ *   per `Q-018` and is exercised here too, even though the mockup predates it.
  *
  * Translation and copyright
  *   The mockup renders the ESV, which is under copyright. This fixture uses the **World
@@ -108,7 +109,10 @@ export const actsSixteenPassage: readonly PassageVerse[] = [
   {
     number: 15,
     segments: [
-      { type: 'text', text: 'When she and her household were ' },
+      { type: 'text', text: 'When she and her ' },
+      { type: 'tinted', text: 'household', kind: 'lineage' },
+      { type: 'badge', kind: 'lineage' },
+      { type: 'text', text: ' were ' },
       { type: 'tinted', text: 'baptized', kind: 'cultural' },
       { type: 'badge', kind: 'cultural' },
       {

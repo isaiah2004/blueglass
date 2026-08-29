@@ -52,6 +52,7 @@ export const badgeLabel = {
   cultural: 'Cultural',
   context: 'Context',
   meditate: 'Meditate',
+  lineage: 'Lineage',
 } as const satisfies Record<BadgeKind, string>;
 
 /** Opening bracket of the mark (`design-language.md` §5). */

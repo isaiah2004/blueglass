@@ -8,7 +8,7 @@
  *   title the same badge differently.
  *
  * Key responsibilities
- *   - Name each of the three badges the way the design language names them.
+ *   - Name each of the nine badges the way the design language names them.
  *   - Answer whether a badge kind belongs to this folder at all, so a host can route
  *     without a `switch` it has to keep in step with three files.
  *
@@ -18,21 +18,38 @@
 
 import type { TextualBadge, TextualBadgeKind } from './textual-payloads';
 
-/** The three kinds this folder renders. */
-const TEXTUAL_KINDS: readonly TextualBadgeKind[] = ['root', 'history', 'cross-ref'];
+/** The nine kinds this folder renders. */
+const TEXTUAL_KINDS: readonly TextualBadgeKind[] = [
+  'root',
+  'history',
+  'cross-ref',
+  'lineage',
+  'manuscript',
+  'structure',
+  'cultural',
+  'meditate',
+  'context',
+];
 
 /** How each badge is titled in the sheet's chrome. */
 const SHEET_TITLE: Record<TextualBadgeKind, string> = {
   root: 'Word root',
   history: 'History',
   'cross-ref': 'Cross-references',
+  lineage: 'Lineage',
+  manuscript: 'Manuscript',
+  structure: 'Structure',
+  cultural: 'Cultural',
+  meditate: 'Meditate',
+  context: 'Context',
 };
 
 /**
  * Whether a badge kind is one this folder renders.
  *
  * @param kind - Any badge kind from the chapter payload.
- * @returns True for `root`, `history` and `cross-ref`. Side effects: none.
+ * @returns True for `root`, `history`, `cross-ref`, `lineage`, `manuscript`, `structure`,
+ *   `cultural`, `meditate` and `context`. Side effects: none.
  */
 export function isTextualBadgeKind(kind: string): kind is TextualBadgeKind {
   return (TEXTUAL_KINDS as readonly string[]).includes(kind);

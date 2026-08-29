@@ -39,13 +39,21 @@ export const badgeKinds = [
   'manuscript',
   'crossRef',
   'root',
+  'lineage',
   'structure',
   'cultural',
   'context',
   'meditate',
 ] as const;
 
-/** One of the ten inline-badge types. */
+/**
+ * One of the eleven inline-badge types.
+ *
+ * `Q-018` (recorded in `docs/product/design-language.md` §2) noted that Lineage had a
+ * sheet in the spec but no hue here — this tuple gaining an eleventh entry, and the
+ * compile errors that followed in `colors.ts`, `light-colors.ts` and `badge-icons.ts`
+ * until each gave it one, is that gap closed.
+ */
 export type BadgeKind = (typeof badgeKinds)[number];
 
 /** Background surfaces, darkest first. */

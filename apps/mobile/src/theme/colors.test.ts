@@ -147,7 +147,7 @@ describe('darkTheme values', () => {
 });
 
 describe('badge colours', () => {
-  it('covers all ten badge types', () => {
+  it('covers all eleven badge types (Q-018: the spec lists eleven marks, not ten)', () => {
     expect(Object.keys(darkTheme.badge).sort()).toEqual([...badgeKinds].sort());
   });
 
@@ -174,6 +174,7 @@ describe('badge colours', () => {
       cultural: darkTheme.accent.gold,
       context: darkTheme.accent.cyan,
       meditate: '#A78BFA',
+      lineage: '#E8749C',
     };
 
     for (const kind of badgeKinds) {

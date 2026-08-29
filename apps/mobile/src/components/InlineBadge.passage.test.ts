@@ -3,7 +3,7 @@
  *
  * Purpose
  *   The fixture only earns its place if it actually stresses what the spike is testing: all
- *   ten badge kinds, badges deep enough into long verses that one lands on a wrap, and a word
+ *   eleven badge kinds, badges deep enough into long verses that one lands on a wrap, and a word
  *   expansion that neither drops text nor splits a pill.
  */
 
@@ -41,7 +41,7 @@ describe('the fixture passage', () => {
     expect(actsSixteenPassage.map((verse) => verse.number)).toStrictEqual([11, 12, 13, 14, 15]);
   });
 
-  it('exercises all ten badge kinds, as the reference mockup does', () => {
+  it('exercises all eleven badge kinds, as the reference mockup does plus Lineage (Q-018)', () => {
     const used = usedKinds();
     for (const kind of badgeKinds) {
       expect(used.has(kind)).toBe(true);

@@ -474,6 +474,14 @@ Entries store the full response envelope plus `usage`, so cost analytics stay ac
 
 ## 5. Budget projection
 
+> **Note added `2026-08-29` (`Q-024`).** Everything below prices a *third-party API pipeline*
+> generating enrichment content. That is not the near-term plan: the coding agent authors the
+> four dataset-less badges (Structure, Cultural, Meditate, History rationale) directly, the same
+> way it writes source code, at zero incremental cost. These numbers stay useful as (a) the
+> reference cost if an automated pipeline ever replaces hand-authoring at higher volume, and
+> (b) the basis for the Studio Assistant's live-chat metering, which remains a real, ongoing
+> per-call cost — see the "product decision" and §6 below.
+
 ### Token assumptions — derived from measurement
 
 | Assumption | Value | Basis |
