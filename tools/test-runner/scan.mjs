@@ -95,12 +95,35 @@ function fileAtRef(ref, path) {
   return git(['show', ref + ':' + path], true);
 }
 
+/** Author name `report.mjs` commits under. Its own commits must not look like new work. */
+const MACHINE_AUTHOR = 'Atlas Test Machine';
+
+/**
+ * The newest commit on a branch that the collaborator actually wrote.
+ *
+ * Writing a result moves the branch tip, so comparing results against the raw tip makes a
+ * branch look permanently un-tested and the runner loops on it forever. This was found by
+ * the protocol's own smoke test. Skipping the machine's commits gives a stable answer to
+ * "which code is waiting", however many results have been stacked on top.
+ *
+ * @param ref - The remote ref to inspect.
+ * @returns Sha of the newest non-machine commit, or the raw tip if the branch is all machine.
+ */
+function codeTip(ref) {
+  const log = git(['log', '--format=%H%x09%an', '-40', ref], true);
+  for (const line of log.split(/\r?\n/)) {
+    const [sha, author] = line.split('\t');
+    if (sha && author !== MACHINE_AUTHOR) return sha;
+  }
+  return git(['rev-parse', ref], true);
+}
+
 /**
  * Highest result number already recorded on a branch, and whether the tip was tested.
  *
  * @param ref - The remote ref to inspect.
- * @param tip - Tip commit sha of that ref.
- * @returns Result count, and whether a result already names the tip commit.
+ * @param tip - Commit sha the run should be attributed to.
+ * @returns Result count, and whether a result already names that commit.
  */
 function resultState(ref, tip) {
   const listing = git(['ls-tree', '--name-only', ref, RESULTS_DIR + '/'], true);
@@ -132,8 +155,10 @@ export function scanBranches() {
   const branches = [];
   for (const line of raw.split(/\r?\n/)) {
     if (line.trim() === '') continue;
-    const [ref, tip, committed] = line.split('\t');
+    const [ref, , committed] = line.split('\t');
     const branch = ref.replace(/^origin\//, '');
+    // The commit a run is attributed to is the newest one THEY wrote, never a result commit.
+    const tip = codeTip(ref);
 
     const source = fileAtRef(ref, REQUEST_PATH);
     if (source === '') {
