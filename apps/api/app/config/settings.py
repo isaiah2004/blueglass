@@ -102,6 +102,44 @@ class Settings(BaseSettings):
         "process should not import each other.",
     )
 
+    # ── Studio Assistant grounded chat (ai-model-strategy.md Job 1) ────────
+    # OpenRouter, per AI-02/OP-04: the account already holds a shared budget
+    # (AI-01 corrected: $4.57 remaining at time of writing) that every paid
+    # call in this app draws from, not one just for chat. The ceiling below is
+    # a hard backstop so an automated test loop cannot drain that key; it is
+    # deliberately conservative, not a prediction of real usage.
+    openrouter_api_key: SecretStr | None = Field(
+        default=None,
+        description="OpenRouter API key. Only the Studio Assistant needs this; "
+        "the key is optional so the API can start without it, and the "
+        "assistant endpoint fails loudly, naming the variable, if unset.",
+    )
+    grounded_chat_model: str = Field(
+        default="qwen/qwen3-235b-a22b-2507",
+        description="ai-model-strategy.md Job 1 primary. Non-reasoning, so no "
+        "hidden output-token tax.",
+    )
+    grounded_chat_fallback_model: str = Field(
+        default="deepseek/deepseek-v4-flash",
+        description="Job 1 fallback, used on a 429 or 5xx from the primary. "
+        "Pass reasoning: disabled -- this model defaults reasoning to 'high' "
+        "and would otherwise silently double its own cost.",
+    )
+    grounded_chat_max_tokens: int = Field(
+        default=1200,
+        gt=0,
+        description="Completion token cap for one answer. Bounds the single "
+        "largest line item in a grounded-chat call's cost.",
+    )
+    openrouter_spend_ceiling_usd: float = Field(
+        default=4.50,
+        gt=0,
+        description="Hard stop: once this ledger's lifetime spend (see "
+        "ai_spend_ledger) reaches this, the assistant refuses new calls "
+        "with a named error rather than place one more. Raise deliberately, "
+        "never silently.",
+    )
+
     # ── HTTP ──────────────────────────────────────────────────────────────
     allowed_origins: str = Field(
         default="*",

@@ -5,12 +5,11 @@ Purpose
     what a badge is worth, which words qualify, or how many survive lives in
     `domain/`; this module only says which column becomes which field.
 
-The one thing that is computed here
-    `display_reference` -- "Rom 8:1-4" -- because rendering a verse key as a
-    human reference needs the book table, which is the scripture domain's, and
-    doing it once at the boundary is cheaper than shipping the raw keys and
-    having every client reimplement it. It is presentation of a datum, not a
-    claim about one.
+    `display_reference` -- "Rom 8:1-4" -- lives in the scripture domain
+    (`reference_label.py`), not here: rendering a verse span as a human
+    reference is needed by this module and by the Studio Assistant's
+    citations alike, and a datum with two callers belongs to the layer both
+    can import without crossing into each other's module.
 
 Dependencies
     asyncpg records, the scripture domain's book table, the badge domain.
@@ -22,7 +21,7 @@ from collections.abc import Mapping
 
 import asyncpg
 
-from ...scripture.domain import BY_NUMBER, split_verse_key
+from ...scripture.domain import display_reference
 from ..domain import (
     AlignedWordRecord,
     CrossRefRecord,
@@ -228,28 +227,3 @@ def to_cross_ref(row: asyncpg.Record) -> CrossRefRecord:
         text=row["text"],
         source_key=row["source_key"],
     )
-
-
-def display_reference(start_key: int, end_key: int) -> str:
-    """Render a verse span the way a reader writes it.
-
-    Three shapes, because the source publishes all three: a single verse
-    ("Rom 8:1"), a span inside one chapter ("Rom 8:1-4"), and a span crossing a
-    chapter or a book ("Rom 8:1 - 9:5", "Rom 16:27 - 1 Cor 1:1").
-    """
-    start_book, start_chapter, start_verse = split_verse_key(start_key)
-    end_book, end_chapter, end_verse = split_verse_key(end_key)
-    head = f"{_book_name(start_book)} {start_chapter}:{start_verse}"
-    if start_key == end_key:
-        return head
-    if start_book == end_book and start_chapter == end_chapter:
-        return f"{head}-{end_verse}"
-    if start_book == end_book:
-        return f"{head} - {end_chapter}:{end_verse}"
-    return f"{head} - {_book_name(end_book)} {end_chapter}:{end_verse}"
-
-
-def _book_name(book_number: int) -> str:
-    """A book's display name, or its number when it is outside the canon."""
-    book = BY_NUMBER.get(book_number)
-    return book.name if book is not None else str(book_number)

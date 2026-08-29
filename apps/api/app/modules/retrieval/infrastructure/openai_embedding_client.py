@@ -42,23 +42,33 @@ class EmbeddingClientError(RuntimeError):
 
 
 class OpenAiEmbeddingClient:
-    """`EmbeddingClient`, implemented against OpenAI's REST API."""
+    """`EmbeddingClient`, implemented against OpenAI's REST API.
+
+    The key is checked in :meth:`embed`, not here: this class is constructed
+    both by scripts.ingest_embeddings (where a missing key should fail
+    immediately, and does -- embedding is that script's first move) and by
+    the API container at startup (where a missing key must NOT crash the
+    process; the Studio Assistant simply isn't usable yet until one is set).
+    One check, at the one point both callers actually need the key, serves
+    both without a second class.
+    """
 
     def __init__(self, *, api_key: str, model: str, timeout_seconds: float = 30.0) -> None:
-        if not api_key:
-            raise EmbeddingClientError(
-                "No OPENAI_API_KEY is configured. Set it before running "
-                "scripts.ingest_embeddings -- see Settings.openai_api_key."
-            )
+        self._api_key = api_key
         self._model = model
         self._client = httpx.AsyncClient(
             base_url=_ENDPOINT,
-            headers={"Authorization": f"Bearer {api_key}"},
+            headers={"Authorization": "Bearer " + api_key} if api_key else {},
             timeout=timeout_seconds,
         )
 
     async def embed(self, texts: Sequence[str]) -> Sequence[list[float]]:
         """One vector per text, batched under ``MAX_BATCH_SIZE`` per request."""
+        if not self._api_key:
+            raise EmbeddingClientError(
+                "No OPENAI_API_KEY is configured. Set it before embedding -- "
+                "see Settings.openai_api_key."
+            )
         if not texts:
             return []
         vectors: list[list[float]] = []
