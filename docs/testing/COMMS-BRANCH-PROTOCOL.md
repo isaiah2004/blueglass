@@ -156,6 +156,34 @@ Use `blocking: yes` sparingly. It is the difference between "when you get a chan
 
 ---
 
+## ⚠ Never run `git add -A` on this branch
+
+`comms` is an **orphan** branch, and that has a sharp edge worth knowing before it cuts you.
+
+Switching to it removes every file tracked on `main` — **including main's `.gitignore`**.
+Everything else still sitting in your working tree (build output, `node_modules`, and
+critically **`.env`**) is then untracked, unignored, and perfectly stageable. A reflexive
+`git add -A` would commit your secrets to a public repository.
+
+The branch now carries its own `.gitignore` that ignores `*` and whitelists back only
+`README.md`, `OPEN.md`, `threads/` and itself, so this is defended. But the habit is still
+worth having:
+
+```bash
+git add threads/ OPEN.md      # name what you mean
+git add -A                    # never, on this branch
+```
+
+The cleanest way to avoid the whole class of problem is not to check the branch out at all:
+
+```bash
+git fetch origin comms && git show origin/comms:OPEN.md
+```
+
+That reads the inbox without touching your working tree.
+
+---
+
 ## Rules
 
 1. **Append, never edit.** Your own message before it is pushed is fair game. Anything the
