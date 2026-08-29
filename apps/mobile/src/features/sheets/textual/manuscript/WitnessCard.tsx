@@ -12,7 +12,7 @@
  */
 
 import type { JSX } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 
 import type { ManuscriptWitness } from '@atlas/shared';
 import { Card } from '@/components/surface/Card';
