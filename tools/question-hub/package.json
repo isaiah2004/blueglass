@@ -1,0 +1,18 @@
+{
+  "name": "@atlas/question-hub",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Question Hub — the async decision channel between the agent fleet and the human. This manifest exists ONLY to give the test suite a one-command entry point; the server itself has zero runtime dependencies and must never gain one. It is deliberately outside the pnpm workspace globs (apps/*, packages/*), so `pnpm install` at the root neither reads nor links it.",
+  "scripts": {
+    "test": "node tests/smoke.mjs",
+    "test:fast": "node tests/smoke.mjs --no-e2e",
+    "test:unit": "node --test tests/*.test.mjs",
+    "test:api": "node --test tests/api/*.test.mjs",
+    "test:e2e": "playwright test --config playwright.config.mjs",
+    "test:e2e:phone": "playwright test --config playwright.config.mjs --project=phone",
+    "test:gate": "node tests/smoke.mjs --migration-gate",
+    "migration:backup": "node verify-migration.mjs --backup",
+    "migration:report": "node verify-migration.mjs --dry-run --report"
+  }
+}

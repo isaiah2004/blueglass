@@ -1,0 +1,19 @@
+{
+  "name": "@atlas/ai-guard",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The only permitted route from Atlas Bible code to a language model. Hard spend ceiling, per-process rate cap, and zero-cost disk cache in front of every provider call. Node-only — never import from the Expo client.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}

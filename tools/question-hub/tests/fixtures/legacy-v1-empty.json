@@ -1,0 +1,7 @@
+{
+  "_comment": "A v1 database with nothing in it — the shape a first-ever boot leaves behind. Migrating it must produce a valid v3 database, not throw and not invent records.",
+  "questions": [],
+  "events": [],
+  "status": null,
+  "version": 1
+}

@@ -1,0 +1,668 @@
+[
+  {
+    "id": "P-01", "section": "1 · Scope & Product Truth", "blocking": true, "kind": "choice",
+    "question": "What is the actual deliverable you want at the end of this run?",
+    "why": "Sets how far the fleet pushes. Everything downstream scales from this answer.",
+    "options": [
+      "A polished, demoable MVP of the Acts 16 journey — every screen real, seeded content, runs on my phone",
+      "Full Book of Acts (28 chapters) with all 5 tabs production-ready",
+      "Whole-Bible reader shell + full multimodal depth only for Acts",
+      "Architectural skeleton + 2-3 flagship features done to perfection, rest stubbed"
+    ],
+    "recommended": "Whole-Bible reader shell + full multimodal depth only for Acts"
+  },
+  {
+    "id": "P-02", "section": "1 · Scope & Product Truth", "blocking": true, "kind": "choice",
+    "question": "Is this a rewrite that must preserve the current Flutter app's features, or a fresh build against the PRD?",
+    "why": "The Flutter app (Lampstand UI: warm paper, green/amber, reader + ask + library + sources) and the PRD (dark cinematic Atlas Bible: 5 tabs, 3D maps, streaks) are almost entirely different products. I need to know which one is the target.",
+    "options": [
+      "Fresh build against the PRD — the Flutter app is a throwaway prototype, mine it for ideas only",
+      "Port the Flutter app 1:1 to Expo first, then layer the PRD on top",
+      "Hybrid — keep the Flutter reader/chat behaviour and quality bar, but the PRD's screens and visual language win"
+    ],
+    "recommended": "Hybrid — keep the Flutter reader/chat behaviour and quality bar, but the PRD's screens and visual language win"
+  },
+  {
+    "id": "P-03", "section": "1 · Scope & Product Truth", "kind": "multi",
+    "question": "Which of the 5 PRD tabs must be genuinely working (not stubbed) for you to call this a success?",
+    "why": "Lets me rank the build order and decide where to spend the deep-polish budget.",
+    "options": ["Home (Daily Drop + streak)", "Bible (Reader + inline badges + sheets)", "Discover (3D map + timeline)", "Studio (AI artifacts + grounded chat)", "Journal (reflections + milestones)"],
+    "recommended": "Bible (Reader + inline badges + sheets)"
+  },
+  {
+    "id": "P-04", "section": "1 · Scope & Product Truth", "kind": "choice",
+    "question": "Of the 10 inline badge types in the PRD, how many should I build for real in this run?",
+    "why": "Each badge type is a distinct data model + sheet UI + content pipeline. Ten is a lot; three done beautifully may beat ten done thinly.",
+    "options": [
+      "All 10 — even if some sheets are simpler",
+      "The 5 highest-impact (Route, 3D City, History, Root, Cross-Ref)",
+      "Just 3, done to a spectacular standard (Route, Root, History)",
+      "You choose based on what the data supports"
+    ],
+    "recommended": "The 5 highest-impact (Route, 3D City, History, Root, Cross-Ref)"
+  },
+  {
+    "id": "P-05", "section": "1 · Scope & Product Truth", "kind": "text",
+    "question": "Name one thing that, if it isn't spectacular, means the whole run failed.",
+    "why": "I want a single north-star quality bar to hold every agent's output against.",
+    "defaultAnswer": "The reader with inline badges opening cinematic context sheets"
+  },
+  {
+    "id": "P-06", "section": "1 · Scope & Product Truth", "kind": "choice",
+    "question": "Is the 'Aletheia' vs 'Atlas Bible' naming settled?",
+    "why": "Affects app name, bundle id, package names, brand strings, and the entire design system's naming.",
+    "options": ["Atlas Bible is the product name, Aletheia is internal/codename", "Aletheia is the product name", "Undecided — use ATLAS_BIBLE everywhere and keep it swappable via one constant"],
+    "recommended": "Undecided — use ATLAS_BIBLE everywhere and keep it swappable via one constant"
+  },
+  {
+    "id": "P-07", "section": "1 · Scope & Product Truth", "kind": "text",
+    "question": "Anything in the PRD you already know is wrong, dropped, or has changed since it was written?",
+    "why": "The doc has open review sign-offs from 7 people. I'd rather not build something you've already rejected.",
+    "defaultAnswer": "Nothing — build the PRD as written"
+  },
+  {
+    "id": "P-08", "section": "1 · Scope & Product Truth", "kind": "choice",
+    "question": "The PRD comment asks: 'can we build this as an expandable 3D bible vs today's map'. Should I pursue that?",
+    "why": "David's comment implies a fully explorable 3D world rather than a 2D/2.5D map with pins. Very different engineering cost.",
+    "options": ["Yes — 3D terrain globe you can fly through is the differentiator, invest there", "No — 2.5D stylised map with routes and pins is enough for now", "Build the 2.5D version but behind an interface that can swap to full 3D later"],
+    "recommended": "Build the 2.5D version but behind an interface that can swap to full 3D later"
+  },
+
+  {
+    "id": "D-01", "section": "2 · Design & Brand", "blocking": true, "kind": "choice",
+    "question": "Confirm the visual direction: the PRD mockups are near-black, cinematic, gold + cyan, serif scripture. Is that the target?",
+    "why": "The existing Flutter app is the opposite — warm cream paper, green/amber, light mode. I need to commit to one design system before any component is written.",
+    "options": [
+      "Yes — dark cinematic exactly as the mockups",
+      "Dark cinematic, but I want a light mode too from day one",
+      "Actually I prefer the warm-paper Lampstand look, restyle the PRD screens into it",
+      "Dark by default, light mode later (build tokens so it's possible)"
+    ],
+    "recommended": "Dark by default, light mode later (build tokens so it's possible)"
+  },
+  {
+    "id": "D-02", "section": "2 · Design & Brand", "kind": "choice",
+    "question": "How closely should the built UI match the mockup screenshots?",
+    "why": "Pixel-matching the mockups constrains layout; treating them as mood boards frees us to make it feel better in motion.",
+    "options": ["Pixel-faithful — the mockups are the spec", "Faithful in language and hierarchy, free in detail", "Mood-board only — you have licence to design better"],
+    "recommended": "Faithful in language and hierarchy, free in detail"
+  },
+  {
+    "id": "D-03", "section": "2 · Design & Brand", "kind": "multi",
+    "question": "Which typefaces should I use? (Mockups read as a classical serif for scripture + geometric sans for UI.)",
+    "why": "Font choice is load-bearing for the whole feel and needs deciding before the design system lands.",
+    "options": ["Serif: Cormorant Garamond", "Serif: EB Garamond", "Serif: Source Serif 4 (as in the Flutter app)", "Sans: Inter", "Sans: Instrument Sans", "Mono: JetBrains Mono", "Mono: IBM Plex Mono", "You pick — match the mockups as closely as licensing allows"],
+    "recommended": "You pick — match the mockups as closely as licensing allows"
+  },
+  {
+    "id": "D-04", "section": "2 · Design & Brand", "kind": "choice",
+    "question": "Do you have brand assets (logo, the gold globe mark, colour hex values) or should I generate them?",
+    "why": "The mockups show a specific gold wireframe globe logo. If it exists as a file, I'll use it.",
+    "options": ["I'll send you assets — leave placeholders", "Generate/approximate them, I'll replace later", "Use a pure-typographic wordmark, no globe"],
+    "recommended": "Generate/approximate them, I'll replace later"
+  },
+  {
+    "id": "D-05", "section": "2 · Design & Brand", "kind": "choice",
+    "question": "How much motion do you want?",
+    "why": "The PRD says 'cinematic' and 'glassmorphic sheets'. Motion budget affects performance targets and library choice.",
+    "options": ["Cinematic — camera flights, glowing route draws, parallax, haptics everywhere", "Tasteful — smooth sheets and transitions, motion only where it teaches something", "Minimal — fast and static, motion is a distraction"],
+    "recommended": "Tasteful — smooth sheets and transitions, motion only where it teaches something"
+  },
+  {
+    "id": "D-06", "section": "2 · Design & Brand", "kind": "choice",
+    "question": "Accessibility bar for v1?",
+    "why": "Dark gold-on-black at small sizes can fail WCAG AA. Deciding now avoids a repaint later.",
+    "options": ["WCAG AA everywhere, including a high-contrast mode + full screen-reader labels", "AA for text contrast + dynamic type support; screen reader best-effort", "Not a priority for v1"],
+    "recommended": "AA for text contrast + dynamic type support; screen reader best-effort"
+  },
+
+  {
+    "id": "T-01", "section": "3 · Platform & Distribution", "blocking": true, "kind": "multi",
+    "question": "Which platforms must actually run?",
+    "why": "Expo can target all of these, but 3D maps, audio, and haptics behave very differently per platform. This decides the test matrix.",
+    "options": ["iOS (device)", "iOS (simulator only)", "Android (device)", "Android (emulator only)", "Web", "Desktop"],
+    "recommended": "Android (device)"
+  },
+  {
+    "id": "T-02", "section": "3 · Platform & Distribution", "kind": "text",
+    "question": "What device(s) will you personally test on? (model + OS version)",
+    "why": "So I tune performance budgets and the E2E walkthrough to your real hardware.",
+    "defaultAnswer": "Android phone + Chrome on desktop"
+  },
+  {
+    "id": "T-03", "section": "3 · Platform & Distribution", "kind": "choice",
+    "question": "Expo managed workflow, or do we expect to need custom native modules?",
+    "why": "Mapbox/3D/audio-mixing may force a development build. Knowing early avoids a painful migration.",
+    "options": ["Managed + Expo Go for as long as possible", "Development build (expo-dev-client) from day one — assume native modules", "Whatever the feature set requires; you decide"],
+    "recommended": "Development build (expo-dev-client) from day one — assume native modules"
+  },
+  {
+    "id": "T-04", "section": "3 · Platform & Distribution", "kind": "choice",
+    "question": "Should the web build be a first-class target or a convenience for testing?",
+    "why": "Making web first-class rules out some native-only libraries and roughly doubles the UI QA surface — but it makes my automated click-through testing far easier.",
+    "options": ["First-class — real users will use the web app", "Testing convenience only — must run, needn't be perfect", "Don't care about web at all"],
+    "recommended": "Testing convenience only — must run, needn't be perfect"
+  },
+  {
+    "id": "T-05", "section": "3 · Platform & Distribution", "kind": "choice",
+    "question": "Do you want EAS Build / app store submission set up in this run?",
+    "why": "Requires an Expo account and Apple/Google credentials. Not something I can do without you.",
+    "options": ["Yes — configure EAS and get a real build on my phone", "Config files only, I'll run the builds", "Skip entirely for now"],
+    "recommended": "Config files only, I'll run the builds"
+  },
+
+  {
+    "id": "T-10", "section": "4 · App Architecture", "kind": "choice",
+    "question": "Router: Expo Router (file-based) or React Navigation directly?",
+    "why": "Expo Router gives deep-linking and typed routes for free, which matters for 'tap a city → open Bible at that verse'.",
+    "options": ["Expo Router (file-based, typed routes)", "React Navigation, configured manually"],
+    "recommended": "Expo Router (file-based, typed routes)"
+  },
+  {
+    "id": "T-11", "section": "4 · App Architecture", "kind": "choice",
+    "question": "Styling approach?",
+    "why": "Needs to support a token-driven dark theme, work on native + web, and stay fast in long scripture lists.",
+    "options": ["NativeWind (Tailwind for RN)", "Unistyles v3", "StyleSheet + a typed design-token module", "Tamagui"],
+    "recommended": "StyleSheet + a typed design-token module"
+  },
+  {
+    "id": "T-12", "section": "4 · App Architecture", "kind": "choice",
+    "question": "Client state management?",
+    "why": "ControlSight uses Zustand; I'd mirror that unless you prefer otherwise.",
+    "options": ["Zustand (matches ControlSight)", "Redux Toolkit", "Jotai", "React Context only"],
+    "recommended": "Zustand (matches ControlSight)"
+  },
+  {
+    "id": "T-13", "section": "4 · App Architecture", "kind": "choice",
+    "question": "Server-state / caching layer?",
+    "why": "Scripture, enrichment, and AI responses all need caching and offline persistence.",
+    "options": ["TanStack Query + persisted MMKV cache", "TanStack Query, memory only", "Hand-rolled fetch + SQLite cache"],
+    "recommended": "TanStack Query + persisted MMKV cache"
+  },
+  {
+    "id": "T-14", "section": "4 · App Architecture", "kind": "choice",
+    "question": "TypeScript strictness?",
+    "why": "ControlSight's rules demand complete, strict type annotations. I want to know how hard to push.",
+    "options": ["Maximum — strict, noUncheckedIndexedAccess, no `any`, ESLint blocks the build", "Strict, pragmatic escapes allowed with comments", "Default Expo template settings"],
+    "recommended": "Maximum — strict, noUncheckedIndexedAccess, no `any`, ESLint blocks the build"
+  },
+  {
+    "id": "T-15", "section": "4 · App Architecture", "kind": "choice",
+    "question": "Monorepo layout?",
+    "why": "ControlSight is a plain multi-app repo with ONE root manifest and no workspaces. That rule was written for its stack; a JS/TS repo may want workspaces for shared types.",
+    "options": [
+      "Mirror ControlSight — apps/ + libs/, one root package.json, no workspaces",
+      "pnpm workspaces — apps/mobile, apps/api, packages/shared-types, packages/ui",
+      "Single Expo app + separate server folder, no sharing"
+    ],
+    "recommended": "pnpm workspaces — apps/mobile, apps/api, packages/shared-types, packages/ui"
+  },
+
+  {
+    "id": "B-01", "section": "5 · Backend & Data", "blocking": true, "kind": "choice",
+    "question": "Keep the Python/FastAPI backend, or rewrite the backend too?",
+    "why": "You said 'rewrite the Flutter app into React Expo' — that's the client. The existing server is FastAPI + Chroma + Postgres. Keeping it is faster; a TypeScript backend gives end-to-end shared types.",
+    "options": [
+      "Keep FastAPI — port the client only, dockerise the server as-is",
+      "Rewrite the backend in TypeScript (Hono/Fastify) for shared types end-to-end",
+      "Keep FastAPI but restructure it to the ControlSight layering standard"
+    ],
+    "recommended": "Keep FastAPI but restructure it to the ControlSight layering standard"
+  },
+  {
+    "id": "B-02", "section": "5 · Backend & Data", "kind": "choice",
+    "question": "Database?",
+    "why": "The existing docker-compose already runs pgvector/pg16 on port 5435, and there's a Railway Postgres URL in .env.local.",
+    "options": ["Postgres + pgvector in Docker (as today, local-first)", "Postgres + pgvector in Docker locally, Railway/Neon for anything shared", "SQLite locally, Postgres later", "Supabase"],
+    "recommended": "Postgres + pgvector in Docker locally, Railway/Neon for anything shared"
+  },
+  {
+    "id": "B-03", "section": "5 · Backend & Data", "kind": "choice",
+    "question": "How much should the backend be dockerised?",
+    "why": "You gave me freedom to dockerise. Full compose means one command spins up API + DB + worker + seed.",
+    "options": [
+      "Full docker compose — API, Postgres, worker, migrations, seed data, one command",
+      "Just the database in Docker; run the API natively for fast reloads",
+      "Docker compose with hot-reload bind mounts so I get both"
+    ],
+    "recommended": "Docker compose with hot-reload bind mounts so I get both"
+  },
+  {
+    "id": "B-04", "section": "5 · Backend & Data", "kind": "choice",
+    "question": "Do you want a migrations tool wired up (Alembic / Drizzle) or is a plain SQL schema file enough?",
+    "why": "Migrations are the difference between a demo and something you can actually evolve.",
+    "options": ["Yes — proper migrations from commit one", "SQL schema file + a reset script is fine for now"],
+    "recommended": "Yes — proper migrations from commit one"
+  },
+  {
+    "id": "B-05", "section": "5 · Backend & Data", "kind": "choice",
+    "question": "Where does the pre-computed enrichment data live?",
+    "why": "The PRD's passage JSON (spatial/temporal/structural) is the heart of the app. Its home decides the whole content pipeline.",
+    "options": [
+      "Postgres tables, served by the API, cached on device",
+      "Static JSON files bundled into the app (fast, offline, no server needed)",
+      "Both — bundled JSON as the offline seed, Postgres as the source of truth"
+    ],
+    "recommended": "Both — bundled JSON as the offline seed, Postgres as the source of truth"
+  },
+  {
+    "id": "B-06", "section": "5 · Backend & Data", "kind": "text",
+    "question": "Is there existing enrichment data I should look at? (The Flutter repo has a `bible-enrichment/` folder.)",
+    "why": "If content already exists I should build to its shape rather than inventing a new one.",
+    "defaultAnswer": "Go look at bible-enrichment/ and tell me what's there"
+  },
+
+  {
+    "id": "A-01", "section": "6 · Auth & Accounts", "blocking": true, "kind": "choice",
+    "question": "Authentication for v1?",
+    "why": "The Flutter app uses Clerk and there are Clerk test keys in .env.local. Auth touches every screen, so it needs deciding early.",
+    "options": [
+      "Clerk (reuse the existing keys)",
+      "No auth for v1 — local device profile only, add auth later behind an interface",
+      "Supabase Auth",
+      "Anonymous device id now, real accounts later"
+    ],
+    "recommended": "Anonymous device id now, real accounts later"
+  },
+  {
+    "id": "A-02", "section": "6 · Auth & Accounts", "kind": "multi",
+    "question": "If/when there is auth, which sign-in methods?",
+    "why": "Apple Sign-In is mandatory on iOS if any other social login exists.",
+    "options": ["Email + password", "Magic link", "Google", "Apple", "Guest / no account"],
+    "recommended": "Guest / no account"
+  },
+  {
+    "id": "A-03", "section": "6 · Auth & Accounts", "kind": "choice",
+    "question": "Does user data need to sync across devices in v1?",
+    "why": "Local-only streaks and journal entries are dramatically simpler. Sync means conflict resolution.",
+    "options": ["Yes — streaks, journal, and flashcards sync", "No — local-only is fine for v1, but design the schema so sync is addable"],
+    "recommended": "No — local-only is fine for v1, but design the schema so sync is addable"
+  },
+
+  {
+    "id": "S-01", "section": "7 · Scripture & Licensing", "blocking": true, "kind": "choice",
+    "question": "Which Bible translation ships in this build?",
+    "why": "The mockups show ESV, which is licensed and cannot be redistributed without a Crossway agreement. The PRD itself says launch on BSB or WEB.",
+    "options": ["BSB (Berean Standard Bible) — open for commercial use", "WEB (World English Bible) — public domain", "KJV — public domain", "Multiple open translations with a switcher", "ESV — I have/will get a licence"],
+    "recommended": "Multiple open translations with a switcher"
+  },
+  {
+    "id": "S-02", "section": "7 · Scripture & Licensing", "kind": "text",
+    "question": "Do you already have Bible text data, or should I source it? (The Flutter server has `loaders/load_verses.py` and a `db/` folder.)",
+    "why": "Avoids me re-downloading and re-parsing something you've already loaded.",
+    "defaultAnswer": "Go look at server/db and server/loaders and reuse whatever is there"
+  },
+  {
+    "id": "S-03", "section": "7 · Scripture & Licensing", "kind": "choice",
+    "question": "Full Bible text in the build, or just Acts?",
+    "why": "Full Bible is ~4.5MB compressed per translation — very shippable — but the reader UX (book/chapter picker) differs a lot.",
+    "options": ["Full Bible — the reader should navigate anywhere", "Acts only for now", "Full New Testament"],
+    "recommended": "Full Bible — the reader should navigate anywhere"
+  },
+  {
+    "id": "S-04", "section": "7 · Scripture & Licensing", "kind": "choice",
+    "question": "Greek/Hebrew word roots — data source?",
+    "why": "The [Root] badge needs Strong's numbers and lemma data mapped to verses.",
+    "options": ["Strong's Concordance (public domain) + an open interlinear", "Only hand-curated roots for the passages we enrich", "Skip word roots in this run"],
+    "recommended": "Strong's Concordance (public domain) + an open interlinear"
+  },
+
+  {
+    "id": "AI-01", "section": "8 · AI & Generative Features", "blocking": true, "kind": "choice",
+    "question": "The OpenRouter key has ~$2. What is that budget for?",
+    "why": "$2 is enough for development testing but nowhere near enough to pre-generate content for the whole Bible. I need to know which it's funding.",
+    "options": [
+      "Development/testing only — prove the AI features work end-to-end",
+      "Testing + pre-generating enrichment for the Acts 16 demo passages",
+      "Testing + pre-generating all of Acts (may exceed $2 — tell me the estimate first)"
+    ],
+    "recommended": "Testing + pre-generating enrichment for the Acts 16 demo passages"
+  },
+  {
+    "id": "AI-02", "section": "8 · AI & Generative Features", "kind": "multi",
+    "question": "Which open-weight models should I default to on OpenRouter? (Best bang-for-buck, no large frontier models.)",
+    "why": "You set the constraint; I want your preference before I wire the model registry.",
+    "options": [
+      "Qwen3 family (strong reasoning, very cheap)",
+      "DeepSeek V3 / R1-distill (cheap, strong)",
+      "Llama 3.3 70B",
+      "Mistral Small / Devstral",
+      "GLM / Kimi open models",
+      "You choose — benchmark a few on our actual prompts and pick per-task"
+    ],
+    "recommended": "You choose — benchmark a few on our actual prompts and pick per-task"
+  },
+  {
+    "id": "AI-03", "section": "8 · AI & Generative Features", "kind": "choice",
+    "question": "Should I add a hard spend guard so the fleet can't burn the $2?",
+    "why": "Automated testing loops can quietly drain a key. A budget ceiling + request accounting prevents that.",
+    "options": [
+      "Yes — hard cap, per-request accounting, and refuse to call once a ceiling is hit",
+      "Yes, plus cache every AI response to disk so repeat runs cost nothing",
+      "No guard needed"
+    ],
+    "recommended": "Yes, plus cache every AI response to disk so repeat runs cost nothing"
+  },
+  {
+    "id": "AI-04", "section": "8 · AI & Generative Features", "kind": "choice",
+    "question": "The PRD says 'powered by NotebookLM' and 'Zero-Hallucination AI'. NotebookLM has no public API. How should I read that?",
+    "why": "This is the single biggest ambiguity in the PRD. It changes the whole Studio tab's architecture.",
+    "options": [
+      "It means NotebookLM-*style* — build our own grounded RAG with strict citations",
+      "Literally integrate NotebookLM somehow (I'll investigate feasibility)",
+      "Grounded RAG now, revisit NotebookLM later"
+    ],
+    "recommended": "It means NotebookLM-*style* — build our own grounded RAG with strict citations"
+  },
+  {
+    "id": "AI-05", "section": "8 · AI & Generative Features", "kind": "choice",
+    "question": "How strict should citation enforcement be?",
+    "why": "'Zero-hallucination' is a strong claim. I can enforce it structurally — refuse to render any claim lacking a verse/source anchor.",
+    "options": [
+      "Structural — every sentence must carry a source anchor or it isn't shown",
+      "Every response must cite at least one source; sentence-level is best-effort",
+      "Cite where possible, warn the user it's AI-generated"
+    ],
+    "recommended": "Structural — every sentence must carry a source anchor or it isn't shown"
+  },
+  {
+    "id": "AI-06", "section": "8 · AI & Generative Features", "kind": "choice",
+    "question": "Theological guardrails — whose lane?",
+    "why": "The PRD demands no denominational bias. That's a prompt-engineering and eval problem, and I want to know how conservative to be.",
+    "options": [
+      "Strictly historical/linguistic/geographic facts; refuse doctrinal interpretation entirely",
+      "Present multiple traditions' views where they differ, never pick one",
+      "Broadly evangelical framing is fine"
+    ],
+    "recommended": "Present multiple traditions' views where they differ, never pick one"
+  },
+  {
+    "id": "AI-07", "section": "8 · AI & Generative Features", "kind": "choice",
+    "question": "Should AI run at request time in the app, or only in an offline build-time pipeline?",
+    "why": "The PRD's cost strategy says pre-compute everything. But grounded chat is inherently live.",
+    "options": [
+      "Pre-computed for all badge/sheet content; live only for the Studio chat",
+      "Live everywhere with aggressive caching",
+      "Fully pre-computed, no live AI in v1"
+    ],
+    "recommended": "Pre-computed for all badge/sheet content; live only for the Studio chat"
+  },
+  {
+    "id": "AI-08", "section": "8 · AI & Generative Features", "kind": "choice",
+    "question": "Do you want an eval suite for the AI outputs?",
+    "why": "Without evals, 'grounded' is a vibe. With them, it's a number I can hold agents to.",
+    "options": ["Yes — golden-set evals for citation accuracy and factual grounding, run in CI", "Yes but keep it lightweight", "Not this run"],
+    "recommended": "Yes — golden-set evals for citation accuracy and factual grounding, run in CI"
+  },
+
+  {
+    "id": "M-01", "section": "9 · Maps, 3D & Visualisation", "blocking": true, "kind": "choice",
+    "question": "Mapping stack — do you have a Mapbox account/token?",
+    "why": "The PRD names Mapbox specifically. Its RN SDK needs a token and a dev build. Without a token I need a different plan.",
+    "options": [
+      "Yes, I have a Mapbox token — I'll add it",
+      "No — use MapLibre (open source, no token, self-hosted styles)",
+      "No — build a custom stylised map from GeoJSON, no tile provider at all"
+    ],
+    "recommended": "No — build a custom stylised map from GeoJSON, no tile provider at all"
+  },
+  {
+    "id": "M-02", "section": "9 · Maps, 3D & Visualisation", "kind": "choice",
+    "question": "How should the 'cinematic 3D terrain' actually be rendered?",
+    "why": "The mockups show gorgeous 3D relief. Real 3D terrain in RN is heavy; a stylised pre-rendered approach can look nearly as good for far less.",
+    "options": [
+      "react-native-skia — custom stylised 2.5D terrain, full control, no tile costs",
+      "Real 3D via react-three-fiber / expo-gl",
+      "Pre-rendered terrain images + animated SVG/Skia route overlays",
+      "You decide after prototyping two of these side by side"
+    ],
+    "recommended": "You decide after prototyping two of these side by side"
+  },
+  {
+    "id": "M-03", "section": "9 · Maps, 3D & Visualisation", "kind": "choice",
+    "question": "3D city reconstructions (the 'Philippi' / 'Solomonic Jerusalem' assets) — realistic for this run?",
+    "why": "These are art assets, not code. Without a 3D artist they'd have to be AI-generated stills or procedural.",
+    "options": [
+      "Use AI-generated still images + parallax/Ken-Burns motion for now",
+      "Procedural low-poly 3D built in code",
+      "Skip — show a photo + rich text card instead",
+      "AI-generated stills now, but build the sheet so real 3D can drop in"
+    ],
+    "recommended": "AI-generated stills now, but build the sheet so real 3D can drop in"
+  },
+  {
+    "id": "M-04", "section": "9 · Maps, 3D & Visualisation", "kind": "choice",
+    "question": "Where does the geographic data (ancient place coordinates) come from?",
+    "why": "Needed for every route, pin, and flythrough.",
+    "options": ["Pleiades (open ancient-places gazetteer) + OpenBible.info atlas data", "Hand-curated JSON for just the passages we enrich", "You research and pick the best open source"],
+    "recommended": "You research and pick the best open source"
+  },
+
+  {
+    "id": "AU-01", "section": "10 · Audio", "blocking": true, "kind": "choice",
+    "question": "The dual-host AI podcast is central to the PRD's habit loop. How real should it be in this run?",
+    "why": "ElevenLabs costs money and needs a key you haven't given me. Options range from real TTS to a convincing placeholder.",
+    "options": [
+      "Real TTS — I'll provide an ElevenLabs (or other) key",
+      "Use free/open TTS (e.g. Kokoro, Piper) to generate real audio locally",
+      "Ship the full player UI with a few hand-made sample tracks, no generation pipeline",
+      "Device TTS (expo-speech) so it works for any passage, swap for studio audio later"
+    ],
+    "recommended": "Use free/open TTS (e.g. Kokoro, Piper) to generate real audio locally"
+  },
+  {
+    "id": "AU-02", "section": "10 · Audio", "kind": "choice",
+    "question": "The 'Atmosphere Mixer' (independent voice + background music sliders) — build it?",
+    "why": "It needs two simultaneous audio streams with independent gain. Doable with expo-audio but it's real work.",
+    "options": ["Yes — it's a signature feature, build it properly", "Build the UI, wire only the voice track for now", "Skip"],
+    "recommended": "Yes — it's a signature feature, build it properly"
+  },
+  {
+    "id": "AU-03", "section": "10 · Audio", "kind": "choice",
+    "question": "Synchronised 'glowing lyrics' (word-level highlight as audio plays) — in scope?",
+    "why": "Needs word-level timestamps. Achievable with forced alignment, but it's a meaningful chunk of work.",
+    "options": ["Yes — verse-level highlight is enough", "Yes — word-level, do the forced alignment", "Skip for now"],
+    "recommended": "Yes — verse-level highlight is enough"
+  },
+  {
+    "id": "AU-04", "section": "10 · Audio", "kind": "choice",
+    "question": "Background audio + lock-screen controls?",
+    "why": "Requires native config and changes the audio architecture. Much cheaper to decide now than retrofit.",
+    "options": ["Yes — it's a podcast-style product, this is table stakes", "No — foreground only for v1"],
+    "recommended": "Yes — it's a podcast-style product, this is table stakes"
+  },
+
+  {
+    "id": "G-01", "section": "11 · Habit & Gamification", "kind": "choice",
+    "question": "What exactly counts as 'completing' a day?",
+    "why": "The PRD says all 3 steps (Listen, Explore, Reflect). I want to confirm before building the state machine.",
+    "options": ["All 3 steps — strict", "Any 2 of 3", "Just opening and reading the passage", "All 3, but each has a low bar (e.g. 30s of audio counts)"],
+    "recommended": "All 3, but each has a low bar (e.g. 30s of audio counts)"
+  },
+  {
+    "id": "G-02", "section": "11 · Habit & Gamification", "kind": "choice",
+    "question": "How is a 'day' defined?",
+    "why": "Timezone handling is a classic source of streak bugs. Deciding this prevents a whole bug class.",
+    "options": ["Local device midnight", "Local midnight with a 4am grace boundary (late-night readers keep the streak)", "UTC"],
+    "recommended": "Local midnight with a 4am grace boundary (late-night readers keep the streak)"
+  },
+  {
+    "id": "G-03", "section": "11 · Habit & Gamification", "kind": "choice",
+    "question": "Grace Savers — how are they earned?",
+    "why": "The PRD says 'up to 2 per month through consistent engagement' but doesn't define the mechanic.",
+    "options": ["2 granted automatically at the start of each month", "Earn 1 for every 7 consecutive completed days, max 2 banked", "Earn by completing bonus activities (quiz streaks, extra chapters)"],
+    "recommended": "Earn 1 for every 7 consecutive completed days, max 2 banked"
+  },
+  {
+    "id": "G-04", "section": "11 · Habit & Gamification", "kind": "choice",
+    "question": "Push notifications for the daily drop?",
+    "why": "Onboarding step 3 configures a notification time. Needs expo-notifications and permission flows.",
+    "options": ["Yes — local scheduled notifications (no server needed)", "Yes — server-driven push", "Skip for v1"],
+    "recommended": "Yes — local scheduled notifications (no server needed)"
+  },
+  {
+    "id": "G-05", "section": "11 · Habit & Gamification", "kind": "choice",
+    "question": "Is there a fixed 30-day Acts reading plan, or does the user pick their own passage?",
+    "why": "Onboarding says 'choose Testament, Book, Chapter' but the roadmap says a fixed 30-day Acts journey. These conflict.",
+    "options": ["Fixed 30-day Acts plan", "User picks any book, we generate a plan from it", "Both — offer the curated Acts plan or a custom plan"],
+    "recommended": "Both — offer the curated Acts plan or a custom plan"
+  },
+
+  {
+    "id": "ST-01", "section": "12 · Studio", "kind": "multi",
+    "question": "Which Studio artifacts must be real (generated, not mocked)?",
+    "why": "Each is a separate generation pipeline plus a viewer UI.",
+    "options": ["Executive Briefings (chapter summaries)", "Visual Slide Decks", "Root Flashcards (spaced repetition)", "Daily Quizzes", "Dual-host audio overview", "Grounded chat"],
+    "recommended": "Grounded chat"
+  },
+  {
+    "id": "ST-02", "section": "12 · Studio", "kind": "choice",
+    "question": "Spaced repetition for flashcards — real algorithm or simple review list?",
+    "why": "FSRS/SM-2 is genuinely better but adds scheduling state and a lot of tests.",
+    "options": ["Real SM-2/FSRS scheduling", "Simple 'review all / mark known' list for v1"],
+    "recommended": "Real SM-2/FSRS scheduling"
+  },
+  {
+    "id": "ST-03", "section": "12 · Studio", "kind": "choice",
+    "question": "'Custom Notebooks' — can users add their own sources (upload a PDF, paste notes) and ground the AI on them?",
+    "why": "This is the actual NotebookLM feature. Big scope, and it changes the RAG architecture from fixed-corpus to per-user.",
+    "options": ["Yes — user-uploaded sources are core", "No — grounded on scripture + our curated corpus only", "Design for it, build it later"],
+    "recommended": "Design for it, build it later"
+  },
+
+  {
+    "id": "J-01", "section": "13 · Journal & Privacy", "kind": "choice",
+    "question": "The PRD says journal entries are 'encrypted at rest'. How far should I take that?",
+    "why": "Options range from OS-level storage encryption to real client-side E2E encryption where the server can't read entries.",
+    "options": [
+      "Device secure storage (expo-secure-store / SQLCipher) — local only, never leaves device",
+      "Client-side encryption before any sync, server holds ciphertext only",
+      "Standard server-side encryption at rest is enough"
+    ],
+    "recommended": "Device secure storage (expo-secure-store / SQLCipher) — local only, never leaves device"
+  },
+  {
+    "id": "J-02", "section": "13 · Journal & Privacy", "kind": "choice",
+    "question": "Any analytics/telemetry in the app?",
+    "why": "The KPIs section wants D7/D30 retention and 'modality tap depth', which requires event tracking.",
+    "options": ["Yes — self-hosted/privacy-first (PostHog or our own events table)", "Local-only metrics I can view in a debug screen", "None for v1"],
+    "recommended": "Local-only metrics I can view in a debug screen"
+  },
+
+  {
+    "id": "O-01", "section": "14 · Offline & Performance", "kind": "choice",
+    "question": "Must the app work fully offline?",
+    "why": "The PRD's cost strategy leans on offline caching. Full offline changes the data layer substantially.",
+    "options": ["Yes — scripture, enrichment, and audio all available offline", "Scripture + enrichment offline; AI and audio need a connection", "Online-first, graceful degradation"],
+    "recommended": "Scripture + enrichment offline; AI and audio need a connection"
+  },
+  {
+    "id": "O-02", "section": "14 · Offline & Performance", "kind": "choice",
+    "question": "Performance target?",
+    "why": "Gives me a number to hold the fleet to, and something the E2E tests can assert.",
+    "options": ["60fps scrolling, <2s cold start, <200ms sheet open — measured and enforced in CI", "Feels smooth on my device; no formal budget", "Set sensible budgets yourself and enforce them"],
+    "recommended": "Set sensible budgets yourself and enforce them"
+  },
+
+  {
+    "id": "Q-01", "section": "15 · Testing & Quality", "kind": "multi",
+    "question": "Which test layers do you want?",
+    "why": "You asked for end-to-end click-through loops. I want to confirm the full pyramid beneath them.",
+    "options": ["Unit (Vitest/Jest)", "Component (React Native Testing Library)", "API integration (pytest/supertest)", "E2E on web (Playwright)", "E2E on device (Maestro)", "Visual regression snapshots", "AI output evals"],
+    "recommended": "E2E on web (Playwright)"
+  },
+  {
+    "id": "Q-02", "section": "15 · Testing & Quality", "kind": "choice",
+    "question": "Is TDD genuinely mandatory here (tests before implementation), as in ControlSight?",
+    "why": "It roughly doubles agent output volume but catches far more. Your call.",
+    "options": ["Yes — strict TDD, no exceptions", "Tests alongside implementation, before the feature is called done", "Tests for logic and API; UI covered by E2E only"],
+    "recommended": "Tests alongside implementation, before the feature is called done"
+  },
+  {
+    "id": "Q-03", "section": "15 · Testing & Quality", "kind": "choice",
+    "question": "Coverage gate?",
+    "why": "ControlSight demands 100% branch coverage on business logic. Confirm for this project.",
+    "options": ["100% on business logic, 80% overall, enforced", "80% overall, not enforced", "No numeric gate — judge by whether the tests are meaningful"],
+    "recommended": "100% on business logic, 80% overall, enforced"
+  },
+  {
+    "id": "Q-04", "section": "15 · Testing & Quality", "kind": "choice",
+    "question": "For the automated UI walkthroughs, which surface should I drive?",
+    "why": "Driving the web build with a real browser is fastest and I can do it unattended; device testing needs an emulator running.",
+    "options": ["Web build in a headless browser — fast, unattended, run constantly", "Android emulator via Maestro — closer to the truth, slower", "Both — web continuously, device before each milestone"],
+    "recommended": "Both — web continuously, device before each milestone"
+  },
+
+  {
+    "id": "OP-01", "section": "16 · DevOps", "kind": "choice",
+    "question": "CI — do you want GitHub Actions configured?",
+    "why": "Needs a GitHub remote. The repo isn't currently a git repo with a remote.",
+    "options": ["Yes — and I'll create the remote", "Write the workflows, leave them unwired", "No CI, local checks only"],
+    "recommended": "Write the workflows, leave them unwired"
+  },
+  {
+    "id": "OP-02", "section": "16 · DevOps", "kind": "choice",
+    "question": "Should I commit as I go?",
+    "why": "I default to not committing unless asked. For a run this long, frequent commits give you a way to review and revert.",
+    "options": ["Yes — small, conventional commits per feature, on a branch", "Yes — commit freely on main", "No commits — leave everything in the working tree"],
+    "recommended": "Yes — small, conventional commits per feature, on a branch"
+  },
+  {
+    "id": "OP-03", "section": "16 · DevOps", "kind": "choice",
+    "question": "Keep ControlSight's CHANGELOG + MAJOR.FEATURE.PATCH versioning discipline?",
+    "why": "It's a strong practice but adds a step to every change.",
+    "options": ["Yes — every change gets a CHANGELOG entry and version bump", "CHANGELOG per feature, not per patch", "Skip"],
+    "recommended": "CHANGELOG per feature, not per patch"
+  },
+  {
+    "id": "OP-04", "section": "16 · DevOps", "kind": "text",
+    "question": "Any secrets/keys you can give me beyond the OpenRouter key? (Mapbox, ElevenLabs, api.bible, OpenAI…)",
+    "why": "Determines which features I can actually test end-to-end versus mock.",
+    "defaultAnswer": "Only what's already in the spark-app .env files"
+  },
+
+  {
+    "id": "W-01", "section": "17 · Working Agreement", "blocking": true, "kind": "choice",
+    "question": "How should I handle a question you haven't answered yet?",
+    "why": "This is the core of the async loop you asked for. It sets the fleet's default behaviour when blocked.",
+    "options": [
+      "Pick the recommended option, note the assumption, keep moving — flag it for later review",
+      "Build both paths behind an interface where cheap, otherwise take the recommendation",
+      "Stop and wait for anything genuinely ambiguous"
+    ],
+    "recommended": "Pick the recommended option, note the assumption, keep moving — flag it for later review"
+  },
+  {
+    "id": "W-02", "section": "17 · Working Agreement", "kind": "choice",
+    "question": "How many agents should run at once?",
+    "why": "More parallelism is faster but harder to keep coherent, and every agent burns tokens.",
+    "options": ["2-3 — keep it coherent and reviewable", "4-6 — aggressive parallelism", "As many as the work allows, you manage it"],
+    "recommended": "2-3 — keep it coherent and reviewable"
+  },
+  {
+    "id": "W-03", "section": "17 · Working Agreement", "kind": "choice",
+    "question": "How often do you want a progress report?",
+    "why": "So I can pace summaries to your attention rather than spamming you.",
+    "options": ["Every time I check the hub — a short status at the top", "Only at milestones", "Only when something needs you"],
+    "recommended": "Every time I check the hub — a short status at the top"
+  },
+  {
+    "id": "W-04", "section": "17 · Working Agreement", "kind": "choice",
+    "question": "Should I keep the Question Hub running for the whole project as the async channel?",
+    "why": "It's how you'll answer everything the fleet surfaces from here on.",
+    "options": ["Yes — keep it up, keep posting questions there", "Yes, and also notify me some other way when something is blocking", "Only for this initial questionnaire"],
+    "recommended": "Yes — keep it up, keep posting questions there"
+  },
+  {
+    "id": "W-05", "section": "17 · Working Agreement", "kind": "text",
+    "question": "Is there anything you'd consider out of bounds? (files not to touch, things not to install, costs not to incur)",
+    "why": "You gave me broad freedom; I'd like the edges of it stated explicitly.",
+    "defaultAnswer": "Don't modify A:\\Work\\gt\\ControlSight or A:\\Work\\spark\\spark-app; don't spend beyond the $2 OpenRouter budget"
+  },
+  {
+    "id": "W-06", "section": "17 · Working Agreement", "kind": "text",
+    "question": "Anything else I should know that I haven't asked about?",
+    "why": "Open floor — deadlines, audiences, demos coming up, personal preferences, pet peeves.",
+    "defaultAnswer": ""
+  }
+]

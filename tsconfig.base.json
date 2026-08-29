@@ -1,0 +1,29 @@
+{
+  // Shared TypeScript strictness for every package in the Atlas Bible workspace.
+  //
+  // Purpose:   one place that defines "maximum strictness" (assumption T-14), so no
+  //            package can quietly opt out of it.
+  // Contains:  correctness and hygiene flags only. Deliberately no `target`, `module`,
+  //            `lib`, or `jsx` — each package layers those on top for its own runtime
+  //            (Expo/React Native vs. plain Node), so this file composes cleanly with
+  //            `expo/tsconfig.base`.
+  // Used by:   apps/mobile/tsconfig.json, packages/shared/tsconfig.json.
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "useUnknownInCatchVariables": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowUnreachableCode": false,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "moduleDetection": "force"
+  }
+}

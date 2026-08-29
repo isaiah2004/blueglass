@@ -1,0 +1,102 @@
+{
+  "_comment": "The reason pass-2 normalised matching exists. Every record here has an answer the human genuinely picked from the list, stored with punctuation that no longer matches the option byte-for-byte because the question was re-asked with re-typed wording afterwards. C-01 reproduces the SHAPE of the live D-01 defect; it is hand-written, not copied from data/. C-AMBIGUOUS is the control: normalisation must refuse to guess.",
+  "questions": [
+    {
+      "id": "C-01",
+      "section": "2 · Punctuation drift",
+      "question": "Which visual direction should the app commit to?",
+      "why": "Every token and all twelve mockups follow from this.",
+      "kind": "choice",
+      "options": [
+        "Warm paper — keep the prototype's look",
+        "Dark cinematic — commit to it now (build tokens so it's possible)"
+      ],
+      "recommended": "Dark cinematic — commit to it now (build tokens so it's possible)",
+      "defaultAnswer": null,
+      "blocking": true,
+      "askedBy": "orchestrator",
+      "status": "answered",
+      "answer": "Dark cinematic — commit to it now (build tokens so it’s possible)",
+      "note": "The mockups already assume it.",
+      "askedAt": "2026-08-20T11:00:00.000Z",
+      "answeredAt": "2026-08-21T08:00:00.000Z"
+    },
+    {
+      "id": "C-02",
+      "section": "2 · Punctuation drift",
+      "question": "How should chapters be paginated?",
+      "why": "Answer stored with an em dash; the option now carries a plain hyphen.",
+      "kind": "choice",
+      "options": [
+        "Continuous scroll - one long column",
+        "Paged - one screen per pericope"
+      ],
+      "recommended": "Continuous scroll - one long column",
+      "defaultAnswer": null,
+      "blocking": false,
+      "askedBy": "reader-agent",
+      "status": "answered",
+      "answer": "Paged — one screen per pericope",
+      "note": null,
+      "askedAt": "2026-08-20T11:01:00.000Z",
+      "answeredAt": "2026-08-21T08:01:00.000Z"
+    },
+    {
+      "id": "C-03",
+      "section": "2 · Punctuation drift",
+      "question": "What should the empty state say?",
+      "why": "Answer stored with curly double quotes around the phrase.",
+      "kind": "choice",
+      "options": [
+        "Say \"Nothing waiting on you.\"",
+        "Say \"0 items in queue\""
+      ],
+      "recommended": "Say \"Nothing waiting on you.\"",
+      "defaultAnswer": null,
+      "blocking": false,
+      "askedBy": "copy-agent",
+      "status": "answered",
+      "answer": "Say “Nothing waiting on you.”",
+      "note": null,
+      "askedAt": "2026-08-20T11:02:00.000Z",
+      "answeredAt": "2026-08-21T08:02:00.000Z"
+    },
+    {
+      "id": "C-04",
+      "section": "2 · Punctuation drift",
+      "question": "Which cache layer?",
+      "why": "Answer stored with doubled spaces and different casing.",
+      "kind": "choice",
+      "options": ["MMKV persisted cache", "In-memory only"],
+      "recommended": "MMKV persisted cache",
+      "defaultAnswer": null,
+      "blocking": false,
+      "askedBy": "state-agent",
+      "status": "answered",
+      "answer": "mmkv  persisted   cache ",
+      "note": null,
+      "askedAt": "2026-08-20T11:03:00.000Z",
+      "answeredAt": "2026-08-21T08:03:00.000Z"
+    },
+    {
+      "id": "C-AMBIGUOUS",
+      "section": "2 · Punctuation drift",
+      "question": "Which label wins?",
+      "why": "Two options normalise to the same string. The matcher must refuse to guess rather than pick one.",
+      "kind": "choice",
+      "options": ["Ship it", "ship  it"],
+      "recommended": null,
+      "defaultAnswer": null,
+      "blocking": false,
+      "askedBy": "orchestrator",
+      "status": "answered",
+      "answer": "SHIP IT",
+      "note": null,
+      "askedAt": "2026-08-20T11:04:00.000Z",
+      "answeredAt": "2026-08-21T08:04:00.000Z"
+    }
+  ],
+  "events": [],
+  "status": null,
+  "version": 1
+}

@@ -1,0 +1,226 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Atlas Bible — local development stack.
+#
+# Purpose
+#   One command brings up everything the app talks to, and code edits reload
+#   without a rebuild (assumption B-03, docs/decisions/ASSUMPTIONS.md).
+#
+#     cp .env.example .env
+#     docker compose up -d
+#
+# Services
+#   db          Postgres 16 + pgvector      -> host ${DB_HOST_PORT:-5436}
+#   api         FastAPI, uvicorn --reload   -> host ${API_HOST_PORT:-8010}
+#   migrate     alembic upgrade head        run --rm migrate
+#   embeddings  local BGE-M3 fallback        profile: embeddings
+#
+# ONE COMMAND: `docker compose up -d` waits for Postgres to pass its
+# healthcheck, runs the Alembic migrations to completion, and only then starts
+# the API. A schema that failed to apply stops the API from starting, which is
+# what you want — an API serving against a half-migrated database fails later,
+# further from the cause. The embeddings image is profile-gated because it is
+# multi-gigabyte and only needed when somebody is actually embedding.
+#
+# ISOLATION FROM THE PROTOTYPE
+#   The Flutter prototype's stack (A:\Work\spark\spark-app, read-only) uses host
+#   port 5435, container name `spark-postgres` and volume `spark_pgdata`. Every
+#   name and port here is deliberately different so both stacks can run at once.
+#   Host port 5432 is also taken by an unrelated native Postgres on this machine.
+#
+# STATUS 2026-08-29
+#   `apps/api/` exists and serves the M1 scripture read API. `docker compose
+#   up -d` brings up db + api with hot reload; `docker compose run --rm migrate`
+#   applies the Alembic migrations. See docs/DEVELOPMENT.md.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Project name: prefixes containers, networks and the default volume namespace.
+# Override per-shell with COMPOSE_PROJECT_NAME to run a second isolated stack.
+name: atlas-bible
+
+services:
+  # ── Postgres 16 + pgvector ─────────────────────────────────────────────────
+  # The single source of truth: scripture text, enrichment records, user data,
+  # and (retiring Chroma) the vector index — docs/architecture/data-inventory.md
+  # section 7.
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: atlas-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-atlas}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-atlas}
+      POSTGRES_DB: ${POSTGRES_DB:-atlas}
+      # C collation makes ORDER BY byte-deterministic, so verse ordering and
+      # test fixtures are identical on every developer's machine regardless of
+      # host glibc/ICU. Applied by initdb — only on a fresh volume.
+      POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale=C'
+    ports:
+      # Host 5436 by default: 5432 is a native Postgres on this machine and
+      # 5435 belongs to the Flutter prototype's compose stack.
+      - '${DB_HOST_PORT:-5436}:5432'
+    volumes:
+      - atlas_pgdata:/var/lib/postgresql/data
+      # Extension bootstrap. Runs once, on an empty data directory only.
+      - ./infra/db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # `api` waits on this, so it must mean "accepting queries", not
+      # "process started". pg_isready against the real database does that.
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-atlas} -d ${POSTGRES_DB:-atlas}']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      # initdb on a fresh volume takes several seconds; failures during that
+      # window must not count against `retries`.
+      start_period: 20s
+    networks: [atlas]
+
+  # ── FastAPI ────────────────────────────────────────────────────────────────
+  # Built from infra/api/Dockerfile, `dev` target: dependencies live in the
+  # image, source arrives over a bind mount so uvicorn's reloader sees host
+  # edits without a rebuild.
+  api:
+    build:
+      context: .
+      dockerfile: infra/api/Dockerfile
+      target: dev
+      args:
+        PYTHON_VERSION: ${PYTHON_VERSION:-3.12}
+    image: atlas-bible/api:dev
+    container_name: atlas-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        # Not `service_started`: asyncpg opens its pool during FastAPI's
+        # lifespan startup, so a not-yet-ready Postgres is a crash loop.
+        condition: service_healthy
+      migrate:
+        # The schema must exist before the first request. `up -d` therefore
+        # blocks on the migration finishing, and a failed migration keeps the
+        # API down rather than letting it serve 500s against missing tables.
+        condition: service_completed_successfully
+    env_file:
+      # Optional so a fresh clone can still run `docker compose config` and
+      # `up -d db` before anyone has copied .env.example.
+      - path: .env
+        required: false
+    environment:
+      # Derived from the POSTGRES_* values above rather than read from .env,
+      # because the .env DATABASE_URL is the HOST-side one (localhost:5436) and
+      # would be wrong inside this network. `environment` outranks `env_file`.
+      DATABASE_URL: postgresql://${POSTGRES_USER:-atlas}:${POSTGRES_PASSWORD:-atlas}@db:5432/${POSTGRES_DB:-atlas}
+      # Same reasoning: the embeddings service is reachable by service name.
+      EMBEDDINGS_URL: http://embeddings:80
+      # WORKAROUND: inotify events do not cross the Windows -> WSL2 bind-mount
+      # boundary, so watchfiles never fires and --reload silently does nothing.
+      # Polling costs a little CPU and is the only thing that works there.
+      # Set WATCHFILES_FORCE_POLLING=false in .env on Linux/macOS hosts.
+      WATCHFILES_FORCE_POLLING: ${WATCHFILES_FORCE_POLLING:-true}
+      PYTHONPATH: /app
+    ports:
+      - '${API_HOST_PORT:-8010}:8000'
+    volumes:
+      # THE hot-reload mount. Everything else in this file exists to serve it.
+      - ./apps/api:/app
+      # Read-only: shared contract types the API may consume but must not write.
+      - ./packages/shared:/packages/shared:ro
+      # Read-only: the licence-verified source datasets. apps/api/scripts/
+      # seeds scripture from data/scripture/ with no network access, so a fresh
+      # clone can reach a working reader offline. Read-only because the service
+      # must never write to acquired data; re-acquiring uses a host checkout.
+      - ./data:/data:ro
+    healthcheck:
+      # curl is not installed in the slim image and adding it just for a probe
+      # would be wasteful; the interpreter is already there.
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request; urllib.request.urlopen("http://127.0.0.1:8000/health", timeout=3)
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    networks: [atlas]
+
+  # ── One-shot migration runner ──────────────────────────────────────────────
+  # Alembic, from `apps/api/db/versions/`. Reuses the api image so the
+  # migrations run against exactly the driver and Python the service uses, and
+  # so `env.py` can import `app.config` for the DSN — one place a connection
+  # string comes from.
+  #
+  #     docker compose run --rm migrate
+  #
+  # No `profiles:` on purpose — `api` depends on this completing successfully,
+  # so a plain `docker compose up -d` migrates and then serves. Re-run it alone
+  # with `docker compose run --rm migrate` after authoring a new revision.
+  migrate:
+    build:
+      context: .
+      dockerfile: infra/api/Dockerfile
+      target: dev
+      args:
+        PYTHON_VERSION: ${PYTHON_VERSION:-3.12}
+    image: atlas-bible/api:dev
+    # No container_name: `docker compose run` generates its own name and would
+    # silently ignore a fixed one, which reads as a lie in the file.
+    restart: 'no'
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-atlas}:${POSTGRES_PASSWORD:-atlas}@db:5432/${POSTGRES_DB:-atlas}
+      PYTHONPATH: /app
+    volumes:
+      # Read-write is deliberate: `alembic revision` writes a new file here and
+      # a developer wants it on the host, not lost inside a container.
+      - ./apps/api:/app
+    working_dir: /app
+    entrypoint: ['alembic']
+    command: ['upgrade', 'head']
+    networks: [atlas]
+
+  # ── Self-hosted embeddings (profile: embeddings) ───────────────────────────
+  # Q-010 was ANSWERED against self-hosting: the product owner chose to pay for
+  # a separate embedding API (OpenAI text-embedding-3-small, 1536 dimensions —
+  # DECISIONS.md section 2). This service therefore is NOT the production path;
+  # it survives as an offline/no-key fallback for local experiments. Anything
+  # embedded with it is 1024-dimensional and will NOT fit the `embeddings`
+  # column, which migration 0003 fixes at 1536. Profile-gated: the image and
+  # weights are several GB and most tasks in this repo never touch retrieval.
+  embeddings:
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.8
+    container_name: atlas-embeddings
+    profiles: ['embeddings']
+    restart: unless-stopped
+    command:
+      - '--model-id'
+      - '${EMBEDDING_MODEL:-BAAI/bge-m3}'
+      - '--port'
+      - '80'
+    ports:
+      - '${EMBEDDINGS_HOST_PORT:-8091}:80'
+    volumes:
+      # Model weights cache. Named volume, so `down` does not force a multi-GB
+      # re-download and `down -v` deliberately does.
+      - atlas_hf_cache:/data
+    # No healthcheck: the image ships no shell utility to probe with, and the
+    # first start downloads weights for minutes — a healthcheck would just be a
+    # long red light. Readiness is `curl localhost:8091/health` from the host.
+    networks: [atlas]
+
+# ── Volumes ──────────────────────────────────────────────────────────────────
+# Explicitly named so they can never be confused with the prototype's
+# `spark_pgdata`, and so `docker volume ls` reads clearly.
+volumes:
+  atlas_pgdata:
+    name: atlas_bible_pgdata
+  atlas_hf_cache:
+    name: atlas_bible_hf_cache
+
+# ── Network ──────────────────────────────────────────────────────────────────
+# One private bridge. Services address each other by service name (`db`,
+# `embeddings`); nothing depends on a published host port internally.
+networks:
+  atlas:
+    name: atlas_bible_net
+    driver: bridge

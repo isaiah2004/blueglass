@@ -1,0 +1,12 @@
+# Atlas Bible — data payload policy
+#
+# data/raw/ holds acquired third-party datasets (~120 MB). Payloads are NOT committed:
+# they are reproducible from the URLs and checksums recorded in each PROVENANCE.md.
+#
+# PROVENANCE.md files ARE committed, always. They are the licence and integrity record
+# for every byte of content that ships, and must survive independently of the payloads.
+
+raw/**
+!raw/
+!raw/*/
+!raw/**/PROVENANCE.md

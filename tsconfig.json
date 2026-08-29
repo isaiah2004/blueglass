@@ -1,0 +1,23 @@
+{
+  // TypeScript configuration for the workspace's own tooling files.
+  //
+  // Purpose:  give `vitest.config.ts`, `playwright.config.ts`, and the Playwright specs
+  //           in `e2e/` a real program, so the type-aware ESLint pass and `pnpm typecheck`
+  //           both cover them. Application code is NOT compiled here — each package owns
+  //           its own tsconfig (`apps/mobile`, `packages/shared`, `packages/ai-guard`).
+  // Runtime:  Node. This is the only config in the repo that pulls in Node's globals.
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "target": "es2022",
+    // `dom` is here for the Playwright specs: their `page.evaluate` callbacks run inside a
+    // browser and reference `document`, `Element`, `HTMLImageElement` and the like. Node
+    // itself never sees those globals, and no application code is compiled by this config,
+    // so the wider lib cannot leak into the app (`apps/mobile` sets its own `lib`).
+    "lib": ["es2022", "dom"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "types": ["node"],
+    "noEmit": true
+  },
+  "include": ["*.config.ts", "e2e/**/*.ts"]
+}

@@ -1,0 +1,25 @@
+{
+  "_comment": "A database written by a NEWER server than the one reading it. Loading this must refuse: exit non-zero before any write path is armed. If an old server.mjs silently accepted it, the next persist() would rewrite the file in the old shape and drop every field it did not understand.",
+  "questions": [
+    {
+      "id": "F-01",
+      "section": "5 · From the future",
+      "question": "Anything at all.",
+      "why": "Content is irrelevant; the version header is the whole test.",
+      "kind": "choice",
+      "options": ["A", "B"],
+      "recommended": "A",
+      "defaultAnswer": null,
+      "blocking": false,
+      "askedBy": "orchestrator",
+      "status": "answered",
+      "answer": "B",
+      "note": null,
+      "askedAt": "2026-08-20T10:00:00.000Z",
+      "answeredAt": "2026-08-21T09:15:00.000Z"
+    }
+  ],
+  "events": [],
+  "status": null,
+  "version": 99
+}

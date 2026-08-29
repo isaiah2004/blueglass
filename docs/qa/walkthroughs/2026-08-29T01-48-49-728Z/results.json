@@ -1,0 +1,728 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\isaia\\AppData\\Local\\mise\\installs\\node\\25.8.2\\node.exe",
+      "W:\\spark-expo\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "e2e/walkthrough/01-launch.spec.ts",
+      "e2e/walkthrough/02-tabs.spec.ts"
+    ],
+    "configFile": "W:\\spark-expo\\playwright.config.ts",
+    "rootDir": "W:/spark-expo/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "W:\\spark-expo\\e2e\\support\\global-setup.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 6
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "W:/spark-expo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "phone",
+        "name": "phone",
+        "testDir": "W:/spark-expo/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "W:/spark-expo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "tablet",
+        "name": "tablet",
+        "testDir": "W:/spark-expo/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "W:/spark-expo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "desktop",
+        "name": "desktop",
+        "testDir": "W:/spark-expo/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "W:\\spark-expo\\docs\\qa\\walkthroughs\\2026-08-29T01-48-49-728Z/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 6,
+    "webServer": {
+      "command": "pnpm --filter @atlas/mobile run web",
+      "url": "http://localhost:8081",
+      "reuseExistingServer": true,
+      "timeout": 240000,
+      "stdout": "ignore",
+      "stderr": "pipe"
+    }
+  },
+  "suites": [
+    {
+      "title": "walkthrough\\01-launch.spec.ts",
+      "file": "walkthrough/01-launch.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "chapter 1 · launch",
+          "file": "walkthrough/01-launch.spec.ts",
+          "line": 17,
+          "column": 6,
+          "specs": [
+            {
+              "title": "the app boots into a painted, navigable shell",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5503,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "cold launch at /",
+                          "duration": 4657
+                        },
+                        {
+                          "title": "every tab is reachable from the first screen",
+                          "duration": 195
+                        },
+                        {
+                          "title": "the browser tab names the app",
+                          "duration": 113
+                        },
+                        {
+                          "title": "the canvas is painted dark by default",
+                          "duration": 129
+                        }
+                      ],
+                      "startTime": "2026-08-29T01:48:52.050Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "683db752f00b4d26fb79-62c7d4ae5fcb20b3dfd0",
+              "file": "walkthrough/01-launch.spec.ts",
+              "line": 18,
+              "column": 3
+            },
+            {
+              "title": "a deep link into an unknown route degrades honestly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3838,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open a route that does not exist",
+                          "duration": 3341
+                        }
+                      ],
+                      "startTime": "2026-08-29T01:48:52.039Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "683db752f00b4d26fb79-7b873f49aead10fede60",
+              "file": "walkthrough/01-launch.spec.ts",
+              "line": 71,
+              "column": 3
+            },
+            {
+              "title": "the app boots into a painted, navigable shell",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 4971,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "cold launch at /",
+                          "duration": 3807
+                        },
+                        {
+                          "title": "every tab is reachable from the first screen",
+                          "duration": 240
+                        },
+                        {
+                          "title": "the browser tab names the app",
+                          "duration": 192
+                        },
+                        {
+                          "title": "the canvas is painted dark by default",
+                          "duration": 247
+                        }
+                      ],
+                      "startTime": "2026-08-29T01:48:52.084Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "683db752f00b4d26fb79-ede26dae64f110c04d34",
+              "file": "walkthrough/01-launch.spec.ts",
+              "line": 18,
+              "column": 3
+            },
+            {
+              "title": "a deep link into an unknown route degrades honestly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 4122,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open a route that does not exist",
+                          "duration": 3633
+                        }
+                      ],
+                      "startTime": "2026-08-29T01:48:52.083Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "683db752f00b4d26fb79-b5572305802daefc586a",
+              "file": "walkthrough/01-launch.spec.ts",
+              "line": 71,
+              "column": 3
+            },
+            {
+              "title": "the app boots into a painted, navigable shell",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 3456,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "cold launch at /",
+                          "duration": 2546
+                        },
+                        {
+                          "title": "every tab is reachable from the first screen",
+                          "duration": 219
+                        },
+                        {
+                          "title": "the browser tab names the app",
+                          "duration": 163
+                        },
+                        {
+                          "title": "the canvas is painted dark by default",
+                          "duration": 184
+                        }
+                      ],
+                      "startTime": "2026-08-29T01:49:00.851Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "683db752f00b4d26fb79-89fe7c27bf3b3b3a1378",
+              "file": "walkthrough/01-launch.spec.ts",
+              "line": 18,
+              "column": 3
+            },
+            {
+              "title": "a deep link into an unknown route degrades honestly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 2821,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open a route that does not exist",
+                          "duration": 2462
+                        }
+                      ],
+                      "startTime": "2026-08-29T01:49:00.691Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "683db752f00b4d26fb79-c28e294e2ea55fe2da35",
+              "file": "walkthrough/01-launch.spec.ts",
+              "line": 71,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "walkthrough\\02-tabs.spec.ts",
+      "file": "walkthrough/02-tabs.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "chapter 2 · the five tabs",
+          "file": "walkthrough/02-tabs.spec.ts",
+          "line": 29,
+          "column": 6,
+          "specs": [
+            {
+              "title": "every tab is reachable by tapping, and each is sound",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 5922,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "launch",
+                          "duration": 3737
+                        },
+                        {
+                          "title": "tap the home tab",
+                          "duration": 320
+                        },
+                        {
+                          "title": "tap the bible tab",
+                          "duration": 309
+                        },
+                        {
+                          "title": "tap the discover tab",
+                          "duration": 342
+                        },
+                        {
+                          "title": "tap the studio tab",
+                          "duration": 378
+                        },
+                        {
+                          "title": "tap the journal tab",
+                          "duration": 254
+                        }
+                      ],
+                      "startTime": "2026-08-29T01:48:52.038Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "bbe62a3765d4412daaa9-3589473eb48f008dbf47",
+              "file": "walkthrough/02-tabs.spec.ts",
+              "line": 30,
+              "column": 3
+            },
+            {
+              "title": "the shell survives a full round trip",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "phone",
+                  "projectName": "phone",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 5187,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "walk the tabs there and back",
+                          "duration": 4750
+                        }
+                      ],
+                      "startTime": "2026-08-29T01:48:52.100Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "bbe62a3765d4412daaa9-89572150466990dd7353",
+              "file": "walkthrough/02-tabs.spec.ts",
+              "line": 60,
+              "column": 3
+            },
+            {
+              "title": "every tab is reachable by tapping, and each is sound",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 4648,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "launch",
+                          "duration": 3079
+                        },
+                        {
+                          "title": "tap the home tab",
+                          "duration": 204
+                        },
+                        {
+                          "title": "tap the bible tab",
+                          "duration": 266
+                        },
+                        {
+                          "title": "tap the discover tab",
+                          "duration": 246
+                        },
+                        {
+                          "title": "tap the studio tab",
+                          "duration": 238
+                        },
+                        {
+                          "title": "tap the journal tab",
+                          "duration": 278
+                        }
+                      ],
+                      "startTime": "2026-08-29T01:49:01.793Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "bbe62a3765d4412daaa9-8e0d508511f9e3b1c09d",
+              "file": "walkthrough/02-tabs.spec.ts",
+              "line": 30,
+              "column": 3
+            },
+            {
+              "title": "the shell survives a full round trip",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet",
+                  "projectName": "tablet",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 3394,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "walk the tabs there and back",
+                          "duration": 2789
+                        }
+                      ],
+                      "startTime": "2026-08-29T01:48:57.079Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "bbe62a3765d4412daaa9-efe162a4259c0725d39c",
+              "file": "walkthrough/02-tabs.spec.ts",
+              "line": 60,
+              "column": 3
+            },
+            {
+              "title": "every tab is reachable by tapping, and each is sound",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 4765,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "launch",
+                          "duration": 3205
+                        },
+                        {
+                          "title": "tap the home tab",
+                          "duration": 227
+                        },
+                        {
+                          "title": "tap the bible tab",
+                          "duration": 258
+                        },
+                        {
+                          "title": "tap the discover tab",
+                          "duration": 206
+                        },
+                        {
+                          "title": "tap the studio tab",
+                          "duration": 242
+                        },
+                        {
+                          "title": "tap the journal tab",
+                          "duration": 255
+                        }
+                      ],
+                      "startTime": "2026-08-29T01:49:02.969Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "bbe62a3765d4412daaa9-2c6883fe1c3637d8eb55",
+              "file": "walkthrough/02-tabs.spec.ts",
+              "line": 30,
+              "column": 3
+            },
+            {
+              "title": "the shell survives a full round trip",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4138,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "walk the tabs there and back",
+                          "duration": 3714
+                        }
+                      ],
+                      "startTime": "2026-08-29T01:49:00.706Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "bbe62a3765d4412daaa9-dac667e89fb55cbe452d",
+              "file": "walkthrough/02-tabs.spec.ts",
+              "line": 60,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-08-29T01:48:49.737Z",
+    "duration": 19554.465999999997,
+    "expected": 12,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

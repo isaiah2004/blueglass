@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#05070C" />
+<meta name="color-scheme" content="dark" />
+<title>Atlas Bible — Question Hub</title>
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="/app.css" />
+<script type="module" src="/app.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#list">Skip to the questions</a>
+
+<header>
+  <div class="brand">
+    <h1>Atlas <em>Bible</em></h1>
+    <span class="sub">Question Hub</span>
+    <button id="shortcutsBtn" class="ghost-btn" aria-label="Keyboard shortcuts">?</button>
+  </div>
+
+  <button id="sectionIndexBtn" class="progress-wrap" aria-label="Jump to a section">
+    <span class="progress-meta">
+      <span><b id="pAnswered">0</b> of <span id="pTotal">0</span> answered</span>
+      <span id="pBlocking"></span>
+    </span>
+    <span class="bar"><i id="pBar"></i></span>
+  </button>
+
+  <div class="filters" role="group" aria-label="Filter questions">
+    <button class="chip" data-filter="open" aria-pressed="true">Unanswered</button>
+    <button class="chip alert" data-filter="blocking" aria-pressed="false">Blocking</button>
+    <button class="chip alert" data-filter="inuse" aria-pressed="false">In use</button>
+    <button class="chip" data-filter="norec" aria-pressed="false">No recommendation</button>
+    <button class="chip" data-filter="images" aria-pressed="false">Has images</button>
+    <button class="chip alert" data-filter="recheck" aria-pressed="false">Re-check</button>
+    <button class="chip" data-filter="all" aria-pressed="false">All</button>
+    <button class="chip status" data-filter="status" aria-pressed="false">Fleet status</button>
+    <button class="chip" id="gestureToggle" aria-pressed="true">Gestures</button>
+  </div>
+
+  <div class="search-row">
+    <input id="search" type="search" placeholder="Search id, question, why…" aria-label="Search questions"
+      enterkeyhint="search" autocapitalize="none" autocorrect="off" />
+  </div>
+  <p class="sort-note">Questions where your answer changes the most work, first.</p>
+</header>
+
+<div id="restoreBanner" class="banner" hidden>
+  <span><b id="restoreCount">0</b> unsaved answers restored.</span>
+  <button id="restoreDismiss" type="button">Dismiss</button>
+</div>
+
+<main id="list" tabindex="-1"></main>
+<footer id="globalAccept" class="global-accept" hidden></footer>
+
+<div class="savebar">
+  <button id="acceptMirror" class="mirror" data-act="accept-section" hidden></button>
+  <span class="status" id="status">Loading…</span>
+  <button id="nextBtn" class="ghost-btn wide" type="button">&darr; Next</button>
+  <button class="save" id="saveBtn" type="button" disabled>Save</button>
+</div>
+
+<dialog id="acceptSheet" class="sheet" aria-labelledby="acceptTitle">
+  <div class="sheet-grab" aria-hidden="true"></div>
+  <div class="sheet-head">
+    <h2 id="acceptTitle">Accept recommendations</h2>
+    <button type="button" data-act="close-accept" aria-label="Close">&times;</button>
+  </div>
+  <div id="acceptBody" class="sheet-list" tabindex="-1" autofocus></div>
+  <div class="sheet-actions">
+    <button type="button" data-act="close-accept" class="ghost-btn wide">Cancel</button>
+    <button type="button" id="acceptConfirm" class="save">Accept</button>
+  </div>
+</dialog>
+
+<dialog id="lightbox" class="lightbox">
+  <button type="button" data-act="close-lightbox" class="lb-close" aria-label="Close image">&times;</button>
+  <div class="lb-stage"><img id="lightboxImage" alt="" /></div>
+  <p id="lightboxCaption" class="lb-caption"></p>
+</dialog>
+
+<dialog id="sectionIndex" class="sheet" aria-label="Sections">
+  <div class="sheet-grab" aria-hidden="true"></div>
+  <div class="sheet-head">
+    <h2>Sections</h2>
+    <button type="button" data-act="close-index" aria-label="Close">&times;</button>
+  </div>
+  <div id="sectionIndexBody" class="sheet-list" tabindex="-1" autofocus></div>
+</dialog>
+
+<dialog id="shortcuts" class="sheet" aria-label="Keyboard shortcuts">
+  <div class="sheet-head">
+    <h2>Keyboard</h2>
+    <button type="button" data-act="close-shortcuts" aria-label="Close">&times;</button>
+  </div>
+  <dl class="keys" tabindex="-1" autofocus>
+    <dt>j / k</dt><dd>Next / previous question</dd>
+    <dt>1 – 9</dt><dd>Pick that option</dd>
+    <dt>a</dt><dd>Accept the recommendation</dd>
+    <dt>Shift + A</dt><dd>Review this section's recommendations</dd>
+    <dt>o</dt><dd>Write your own answer</dd>
+    <dt>n</dt><dd>Add a note</dd>
+    <dt>/</dt><dd>Search</dd>
+    <dt>Ctrl / Cmd + S</dt><dd>Save</dd>
+    <dt>Esc</dt><dd>Close, or leave the field</dd>
+  </dl>
+</dialog>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+</body>
+</html>

@@ -1,0 +1,223 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\isaia\\AppData\\Local\\mise\\installs\\node\\25.8.2\\node.exe",
+      "W:\\spark-expo\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "e2e/walkthrough/01-launch.spec.ts",
+      "--project",
+      "desktop",
+      "-g",
+      "degrades honestly"
+    ],
+    "configFile": "W:\\spark-expo\\playwright.config.ts",
+    "rootDir": "W:/spark-expo/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "W:\\spark-expo\\e2e\\support\\global-setup.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "W:/spark-expo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "phone",
+        "name": "phone",
+        "testDir": "W:/spark-expo/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "W:/spark-expo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "tablet",
+        "name": "tablet",
+        "testDir": "W:/spark-expo/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "W:/spark-expo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "desktop",
+        "name": "desktop",
+        "testDir": "W:/spark-expo/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "W:\\spark-expo\\docs\\qa\\walkthroughs\\2026-08-29T01-48-11-168Z/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 6,
+    "webServer": {
+      "command": "pnpm --filter @atlas/mobile run web",
+      "url": "http://localhost:8081",
+      "reuseExistingServer": true,
+      "timeout": 240000,
+      "stdout": "ignore",
+      "stderr": "pipe"
+    }
+  },
+  "suites": [
+    {
+      "title": "walkthrough\\01-launch.spec.ts",
+      "file": "walkthrough/01-launch.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "chapter 1 · launch",
+          "file": "walkthrough/01-launch.spec.ts",
+          "line": 17,
+          "column": 6,
+          "specs": [
+            {
+              "title": "a deep link into an unknown route degrades honestly",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 1438,
+                      "error": {
+                        "message": "Error: tap-target audit — desktop / 01-launch.spec.ts / open a route that does not exist — 1 problem(s):\n  - [tap-target-too-small] a (no test id) Go to Home\n      measures 1216x21px, below the 44px minimum\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 7\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   Object {\u001b[39m\n\u001b[31m+     \"detail\": \"measures 1216x21px, below the 44px minimum\",\u001b[39m\n\u001b[31m+     \"kind\": \"tap-target-too-small\",\u001b[39m\n\u001b[31m+     \"label\": \"a (no test id) Go to Home\",\u001b[39m\n\u001b[31m+   },\u001b[39m\n\u001b[31m+ ]\u001b[39m",
+                        "stack": "Error: tap-target audit — desktop / 01-launch.spec.ts / open a route that does not exist — 1 problem(s):\n  - [tap-target-too-small] a (no test id) Go to Home\n      measures 1216x21px, below the 44px minimum\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 7\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   Object {\u001b[39m\n\u001b[31m+     \"detail\": \"measures 1216x21px, below the 44px minimum\",\u001b[39m\n\u001b[31m+     \"kind\": \"tap-target-too-small\",\u001b[39m\n\u001b[31m+     \"label\": \"a (no test id) Go to Home\",\u001b[39m\n\u001b[31m+   },\u001b[39m\n\u001b[31m+ ]\u001b[39m\n    at expectTapTargets (W:\\spark-expo\\e2e\\support\\audits.ts:105:77)\n    at auditPage (W:\\spark-expo\\e2e\\support\\audits.ts:175:5)\n    at W:\\spark-expo\\e2e\\support\\steps.ts:121:36\n    at Object.step (W:\\spark-expo\\e2e\\support\\steps.ts:108:5)\n    at W:\\spark-expo\\e2e\\walkthrough\\01-launch.spec.ts:72:5",
+                        "location": {
+                          "file": "W:\\spark-expo\\e2e\\support\\audits.ts",
+                          "column": 77,
+                          "line": 105
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39msupport\\audits.ts:105\n\n\u001b[0m \u001b[90m 103 |\u001b[39m )\u001b[33m:\u001b[39m \u001b[33mPromise\u001b[39m\u001b[33m<\u001b[39m\u001b[36mvoid\u001b[39m\u001b[33m>\u001b[39m {\n \u001b[90m 104 |\u001b[39m   \u001b[36mconst\u001b[39m findings \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m probeSmallTapTargets(page\u001b[33m,\u001b[39m minimumPx)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 105 |\u001b[39m   expect(findings\u001b[33m,\u001b[39m formatFindings(\u001b[32m`tap-target audit — ${label}`\u001b[39m\u001b[33m,\u001b[39m findings))\u001b[33m.\u001b[39mtoEqual([])\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 106 |\u001b[39m }\n \u001b[90m 107 |\u001b[39m\n \u001b[90m 108 |\u001b[39m \u001b[90m/**\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "W:\\spark-expo\\e2e\\support\\audits.ts",
+                            "column": 77,
+                            "line": 105
+                          },
+                          "message": "Error: tap-target audit — desktop / 01-launch.spec.ts / open a route that does not exist — 1 problem(s):\n  - [tap-target-too-small] a (no test id) Go to Home\n      measures 1216x21px, below the 44px minimum\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 7\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   Object {\u001b[39m\n\u001b[31m+     \"detail\": \"measures 1216x21px, below the 44px minimum\",\u001b[39m\n\u001b[31m+     \"kind\": \"tap-target-too-small\",\u001b[39m\n\u001b[31m+     \"label\": \"a (no test id) Go to Home\",\u001b[39m\n\u001b[31m+   },\u001b[39m\n\u001b[31m+ ]\u001b[39m\n\n   at support\\audits.ts:105\n\n  103 | ): Promise<void> {\n  104 |   const findings = await probeSmallTapTargets(page, minimumPx);\n> 105 |   expect(findings, formatFindings(`tap-target audit — ${label}`, findings)).toEqual([]);\n      |                                                                             ^\n  106 | }\n  107 |\n  108 | /**\n    at expectTapTargets (W:\\spark-expo\\e2e\\support\\audits.ts:105:77)\n    at auditPage (W:\\spark-expo\\e2e\\support\\audits.ts:175:5)\n    at W:\\spark-expo\\e2e\\support\\steps.ts:121:36\n    at Object.step (W:\\spark-expo\\e2e\\support\\steps.ts:108:5)\n    at W:\\spark-expo\\e2e\\walkthrough\\01-launch.spec.ts:72:5"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "open a route that does not exist",
+                          "duration": 1071,
+                          "error": {
+                            "message": "Error: tap-target audit — desktop / 01-launch.spec.ts / open a route that does not exist — 1 problem(s):\n  - [tap-target-too-small] a (no test id) Go to Home\n      measures 1216x21px, below the 44px minimum\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 7\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   Object {\u001b[39m\n\u001b[31m+     \"detail\": \"measures 1216x21px, below the 44px minimum\",\u001b[39m\n\u001b[31m+     \"kind\": \"tap-target-too-small\",\u001b[39m\n\u001b[31m+     \"label\": \"a (no test id) Go to Home\",\u001b[39m\n\u001b[31m+   },\u001b[39m\n\u001b[31m+ ]\u001b[39m",
+                            "stack": "Error: tap-target audit — desktop / 01-launch.spec.ts / open a route that does not exist — 1 problem(s):\n  - [tap-target-too-small] a (no test id) Go to Home\n      measures 1216x21px, below the 44px minimum\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 7\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   Object {\u001b[39m\n\u001b[31m+     \"detail\": \"measures 1216x21px, below the 44px minimum\",\u001b[39m\n\u001b[31m+     \"kind\": \"tap-target-too-small\",\u001b[39m\n\u001b[31m+     \"label\": \"a (no test id) Go to Home\",\u001b[39m\n\u001b[31m+   },\u001b[39m\n\u001b[31m+ ]\u001b[39m\n    at expectTapTargets (W:\\spark-expo\\e2e\\support\\audits.ts:105:77)\n    at auditPage (W:\\spark-expo\\e2e\\support\\audits.ts:175:5)\n    at W:\\spark-expo\\e2e\\support\\steps.ts:121:36\n    at Object.step (W:\\spark-expo\\e2e\\support\\steps.ts:108:5)\n    at W:\\spark-expo\\e2e\\walkthrough\\01-launch.spec.ts:72:5",
+                            "location": {
+                              "file": "W:\\spark-expo\\e2e\\support\\audits.ts",
+                              "column": 77,
+                              "line": 105
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39msupport\\audits.ts:105\n\n\u001b[0m \u001b[90m 103 |\u001b[39m )\u001b[33m:\u001b[39m \u001b[33mPromise\u001b[39m\u001b[33m<\u001b[39m\u001b[36mvoid\u001b[39m\u001b[33m>\u001b[39m {\n \u001b[90m 104 |\u001b[39m   \u001b[36mconst\u001b[39m findings \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m probeSmallTapTargets(page\u001b[33m,\u001b[39m minimumPx)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 105 |\u001b[39m   expect(findings\u001b[33m,\u001b[39m formatFindings(\u001b[32m`tap-target audit — ${label}`\u001b[39m\u001b[33m,\u001b[39m findings))\u001b[33m.\u001b[39mtoEqual([])\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 106 |\u001b[39m }\n \u001b[90m 107 |\u001b[39m\n \u001b[90m 108 |\u001b[39m \u001b[90m/**\u001b[39m\u001b[0m"
+                          }
+                        }
+                      ],
+                      "startTime": "2026-08-29T01:48:13.073Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "W:\\spark-expo\\test-results\\walkthrough-01-launch-chap-12873-own-route-degrades-honestly-desktop\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "W:\\spark-expo\\test-results\\walkthrough-01-launch-chap-12873-own-route-degrades-honestly-desktop\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "W:\\spark-expo\\e2e\\support\\audits.ts",
+                        "column": 77,
+                        "line": 105
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "683db752f00b4d26fb79-c28e294e2ea55fe2da35",
+              "file": "walkthrough/01-launch.spec.ts",
+              "line": 71,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-08-29T01:48:11.174Z",
+    "duration": 4088.4700000000003,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

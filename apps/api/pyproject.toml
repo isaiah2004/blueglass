@@ -1,0 +1,42 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Atlas Bible API — tool configuration.
+#
+# Dependencies are NOT declared here: rule 5.0.3 keeps one Python manifest, at
+# the repository root (requirements.txt / requirements-dev.txt). This file holds
+# pytest and ruff configuration only, so both tools find their settings whether
+# they are run from apps/api or from the repository root.
+# ─────────────────────────────────────────────────────────────────────────────
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+# Each test gets its own event loop. A session-scoped loop would let one test's
+# leaked task fail an unrelated later test, which is the worst kind of flake.
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-q --strict-markers --strict-config"
+markers = [
+    "integration: needs a live Postgres. Skipped when ATLAS_TEST_DATABASE_URL is unset.",
+]
+filterwarnings = ["error::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 95
+target-version = "py312"
+src = ["."]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "B", "UP", "ASYNC", "S", "RUF"]
+# S101: pytest's whole idiom is assert, and the production asserts that remain
+# are narrowing assertions for the type checker on rows we just inserted.
+ignore = ["S101"]
+
+[tool.ruff.lint.per-file-ignores]
+# Test bodies legitimately hardcode credentials-shaped strings (device ids).
+"tests/*" = ["S105", "S106"]
+# S608 flags SQL built by string formatting. In this one file the ONLY
+# interpolated value is COSINE_DISTANCE_OPERATOR, a module constant no request
+# can reach; every caller-supplied value crosses as a bound parameter. Writing
+# the operator as a literal instead is precisely what let the operator and the
+# score arithmetic drift apart in the prototype.
+"app/modules/retrieval/infrastructure/pgvector_embedding_repository.py" = ["S608"]

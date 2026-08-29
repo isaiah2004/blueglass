@@ -1,0 +1,49 @@
+{
+  "_comment": "A database that has already been migrated. Running migrate() over it must be a no-op: a server restarted twice must not re-derive answerDetail from an answer it already derived, nor re-stamp migratedAt.",
+  "questions": [
+    {
+      "id": "V3-01",
+      "section": "4 · Already migrated",
+      "question": "Which rendering path should the reader use?",
+      "why": "Changes the whole layout engine.",
+      "kind": "choice",
+      "options": ["Native text", "Canvas", "WebView"],
+      "recommended": "Native text",
+      "defaultAnswer": null,
+      "blocking": false,
+      "askedBy": "orchestrator",
+      "status": "answered",
+      "answer": "Canvas",
+      "note": null,
+      "askedAt": "2026-08-20T10:00:00.000Z",
+      "answeredAt": "2026-08-21T09:15:00.000Z",
+      "answerDetail": {
+        "kind": "choice",
+        "selected": ["Canvas"],
+        "other": null,
+        "ranking": null,
+        "text": null,
+        "source": "imported",
+        "match": "exact",
+        "needsReview": false
+      },
+      "attachments": [],
+      "optionMeta": {},
+      "allowOther": true,
+      "layout": "list",
+      "assumedInUse": false,
+      "priority": null,
+      "withdrawnAt": null,
+      "withdrawReason": null,
+      "updatedAt": "2026-08-21T09:15:00.000Z"
+    }
+  ],
+  "events": [
+    { "seq": 1, "kind": "ask", "detail": { "id": "V3-01" }, "at": "2026-08-20T10:00:00.000Z" }
+  ],
+  "status": null,
+  "version": 3,
+  "migratedFrom": 1,
+  "migratedAt": "2026-08-25T00:00:00.000Z",
+  "seq": 1
+}

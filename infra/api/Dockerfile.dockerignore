@@ -1,0 +1,30 @@
+# Build-context exclusions for infra/api/Dockerfile.
+#
+# BuildKit reads `<dockerfile-path>.dockerignore` in preference to the context
+# root's `.dockerignore`, which lets the API image narrow the repository-root
+# context without putting a root-level file in another agent's way.
+#
+# Rule of thumb: the API image needs the Python source, the two dependency
+# manifests, and `packages/shared` (the cross-language book-table contract test
+# reads books.data.ts from it). Everything else is dead weight — `node_modules/`
+# alone is hundreds of megabytes and would be uploaded on every build.
+
+# Everything is excluded by default; re-include only what the image needs.
+*
+
+!apps/api
+!packages/shared
+!requirements.txt
+!requirements-dev.txt
+
+# …minus the parts of those trees that must never enter an image.
+apps/api/.venv
+apps/api/.env
+apps/api/.env.*
+apps/api/**/__pycache__
+apps/api/**/*.py[cod]
+apps/api/**/.pytest_cache
+apps/api/**/.ruff_cache
+apps/api/**/.mypy_cache
+packages/shared/node_modules
+packages/shared/dist

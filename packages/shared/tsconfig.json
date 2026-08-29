@@ -1,0 +1,16 @@
+{
+  // TypeScript configuration for @atlas/shared.
+  //
+  // The package is consumed as source (see `main` in package.json) — Metro and Vitest
+  // both transpile it directly — so this config only ever type-checks. It never emits.
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "es2022",
+    "lib": ["es2022"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "types": [],
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts"]
+}

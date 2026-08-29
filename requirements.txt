@@ -1,0 +1,36 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Atlas Bible — Python runtime dependencies (apps/api).
+#
+# ONE manifest for the whole repository's Python, per rule 5.0.3. Development
+# and test tooling lives in requirements-dev.txt, which includes this file.
+#
+# Versions are PINNED EXACTLY (rule 5.5.2). A range here would mean the image a
+# developer builds on Tuesday differs from the one built on Wednesday, and the
+# first symptom would be a test failing for a reason nobody changed.
+#
+# Install
+#   docker compose build api           # normal path; nothing to do by hand
+#   pip install -r requirements-dev.txt  # host-side, for editor tooling
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Web framework ────────────────────────────────────────────────────────────
+fastapi==0.141.1
+# [standard] pulls in watchfiles (the --reload watcher), httptools and uvloop.
+uvicorn[standard]==0.52.4
+
+# ── Validation and configuration ─────────────────────────────────────────────
+pydantic==2.13.5
+pydantic-settings==2.15.0
+
+# ── Database ─────────────────────────────────────────────────────────────────
+# The application talks to Postgres through asyncpg directly: no ORM, SQL is the
+# source of truth (docs/architecture/data-inventory.md section 7).
+asyncpg==0.31.0
+# SQLAlchemy is here ONLY because Alembic requires it. No ORM models exist and
+# no application module imports it.
+alembic==1.19.1
+sqlalchemy[asyncio]==2.0.52
+
+# ── HTTP client ──────────────────────────────────────────────────────────────
+# Used by the scripture loader in apps/api/scripts/ to fetch public-domain text.
+httpx==0.28.1

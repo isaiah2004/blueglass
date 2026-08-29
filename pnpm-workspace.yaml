@@ -1,0 +1,6 @@
+# Workspace membership for the Atlas Bible monorepo.
+#   apps/*      deployable surfaces (the Expo client today, more later)
+#   packages/*  pure libraries shared across surfaces
+packages:
+  - 'apps/*'
+  - 'packages/*'

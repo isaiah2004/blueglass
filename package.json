@@ -1,0 +1,50 @@
+{
+  "name": "atlas-bible",
+  "version": "0.9.0",
+  "private": true,
+  "type": "module",
+  "description": "Atlas Bible (Aletheia) — multimodal Bible atlas. pnpm workspace root; holds shared tooling and task scripts only, never application code.",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=20.19.4"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @atlas/mobile run start",
+    "web": "pnpm --filter @atlas/mobile run web",
+    "android": "pnpm --filter @atlas/mobile run android",
+    "ios": "pnpm --filter @atlas/mobile run ios",
+    "build": "pnpm --recursive --if-present run build",
+    "typecheck": "tsc --noEmit -p tsconfig.json && pnpm --recursive --if-present run typecheck",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:seed": "docker compose up -d db && docker compose run --rm migrate && docker compose run --rm --no-deps api python -m scripts.seed",
+    "db:verify": "docker compose run --rm --no-deps api python -m scripts.verify_scripture",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "e2e": "playwright test",
+    "walkthrough": "node e2e/run-walkthrough.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.62.1",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react-native": "14.0.1",
+    "@types/node": "26.4.0",
+    "@types/react-dom": "19.2.5",
+    "eslint": "10.9.1",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "17.11.0",
+    "jsdom": "30.0.1",
+    "prettier": "3.9.6",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.68.0",
+    "vitest": "4.1.11"
+  },
+  "pnpm": {
+    "overrides": {
+      "@react-native/metro-config": "0.86.3"
+    }
+  }
+}

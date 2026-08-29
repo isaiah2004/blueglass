@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Build output
+dist/
+build/
+.expo/
+.expo-shared/
+web-build/
+*.tsbuildinfo
+
+# Environment — never commit secrets
+.env
+.env.*
+!.env.example
+
+# Question Hub runtime state (the human's answers, not source)
+tools/question-hub/data/
+
+# AI response cache and spend ledger.
+# `.cache/ai/` is where packages/ai-guard writes by default (ATLAS_AI_DATA_DIR).
+# `*.spend.json` catches a ledger moved elsewhere by ATLAS_AI_LEDGER_PATH, which is why
+# the default ledger is named `ledger.spend.json` and not `ai-spend.json`.
+# `.atlas/` was the path in the original design sketch (docs/architecture/ai-model-strategy.md)
+# and may exist on machines set up against it; ignored so a stale one cannot be committed.
+.cache/ai/
+.atlas/
+*.spend.json
+
+# Test artefacts
+coverage/
+playwright-report/
+test-results/
+.maestro/
+# Python tool caches — pytest and ruff write these into apps/api on every run.
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+
+# Logs
+*.log
+logs/

@@ -1,0 +1,18 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Atlas Bible — Python development and test dependencies.
+#
+# Kept separate from requirements.txt (rule 5.5.4) so the production image never
+# ships a test runner. The compose `api` service builds the dev image and DOES
+# install these, because the test suite runs inside that container.
+# ─────────────────────────────────────────────────────────────────────────────
+
+-r requirements.txt
+
+# ── Tests ────────────────────────────────────────────────────────────────────
+pytest==9.1.1
+pytest-asyncio==1.4.0
+# httpx supplies ASGITransport, so endpoint tests run in-process with no socket.
+# It is already a runtime dependency; listed here for intent, not a second pin.
+
+# ── Lint ─────────────────────────────────────────────────────────────────────
+ruff==0.16.5

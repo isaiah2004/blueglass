@@ -1,0 +1,19 @@
+{
+  // TypeScript configuration for @atlas/ai-guard.
+  //
+  // Runtime: Node only. Unlike `@atlas/shared`, this package touches the filesystem
+  //          (spend ledger, response cache) and `fetch`, so it pulls in Node's globals
+  //          via `"types": ["node"]`. The Expo client must never import it — see the
+  //          package README, "Where this package may be imported".
+  // Emit:    none. The package is consumed as source, like @atlas/shared.
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "es2022",
+    "lib": ["es2022"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "types": ["node"],
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts"]
+}
