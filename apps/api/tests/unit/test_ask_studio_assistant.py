@@ -145,3 +145,41 @@ async def test_an_exhausted_spend_guard_refuses_before_calling_the_model() -> No
         await assistant.ask(question="Who is Lydia?")
     assert excinfo.value.code == "assistant_spend_ceiling_reached"
     assert chat.received_messages is None  # the vendor was never called
+
+
+class _BrokenEmbeddingClient:
+    """Simulates a real adapter's own error -- e.g. a missing API key."""
+
+    async def embed(self, texts: Sequence[str]) -> Sequence[list[float]]:
+        raise RuntimeError("No OPENAI_API_KEY is configured.")
+
+
+@pytest.mark.asyncio
+async def test_an_embedding_failure_becomes_a_dependency_unavailable_error() -> None:
+    assistant = AskStudioAssistant(
+        embedding_client=_BrokenEmbeddingClient(),
+        embedding_repository=_FakeEmbeddingRepository([]),
+        chat_client=_FakeChatClient(),
+        spend_guard=_FakeSpendGuard(),
+        model=_MODEL,
+        max_tokens=1200,
+    )
+    with pytest.raises(DependencyUnavailableError) as excinfo:
+        await assistant.ask(question="Who is Lydia?")
+    assert excinfo.value.code == "assistant_retrieval_unavailable"
+
+
+class _BrokenChatClient:
+    """Simulates a real chat adapter's own error -- e.g. an unreachable vendor."""
+
+    async def complete(self, messages, *, max_tokens: int) -> ChatCompletionResult:
+        raise RuntimeError("OpenRouter chat request failed: 503")
+
+
+@pytest.mark.asyncio
+async def test_a_chat_failure_becomes_a_dependency_unavailable_error() -> None:
+    assistant, _, guard = _assistant([_chunk(0.61)], chat_client=_BrokenChatClient())
+    with pytest.raises(DependencyUnavailableError) as excinfo:
+        await assistant.ask(question="Who is Lydia?")
+    assert excinfo.value.code == "assistant_chat_unavailable"
+    assert guard.recorded == []  # a failed call is never billed

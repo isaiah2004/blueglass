@@ -74,10 +74,24 @@ class AskStudioAssistant:
                 code="assistant_spend_ceiling_reached",
             )
 
-        [query_vector] = await self.embedding_client.embed([question])
-        chunks = await self.embedding_repository.nearest(
-            embedding=list(query_vector), limit=self.source_limit, kinds=self.kinds
-        )
+        try:
+            [query_vector] = await self.embedding_client.embed([question])
+            chunks = await self.embedding_repository.nearest(
+                embedding=list(query_vector), limit=self.source_limit, kinds=self.kinds
+            )
+        except Exception as error:
+            # Both concrete adapters (OpenAiEmbeddingClient, PgVectorEmbeddingRepository)
+            # raise their own module-specific errors -- an unconfigured key, an
+            # unreachable vendor, a database that dropped its connection. This
+            # use case does not import those infrastructure classes (that would
+            # cross the application/infrastructure boundary the wrong way); it
+            # treats any failure retrieving context as the one thing the client
+            # actually needs to know: retrieval is not usable right now.
+            raise DependencyUnavailableError(
+                f"Could not retrieve grounding context: {error}",
+                code="assistant_retrieval_unavailable",
+            ) from error
+
         citations = [Citation.from_chunk(chunk) for chunk in chunks]
         messages = build_messages(
             question,
@@ -87,7 +101,13 @@ class AskStudioAssistant:
             ],
         )
 
-        result = await self.chat_client.complete(messages, max_tokens=self.max_tokens)
+        try:
+            result = await self.chat_client.complete(messages, max_tokens=self.max_tokens)
+        except Exception as error:
+            raise DependencyUnavailableError(
+                f"Could not reach the grounded-chat vendor: {error}",
+                code="assistant_chat_unavailable",
+            ) from error
         cost_usd = estimate_cost_usd(
             result.model, input_tokens=result.input_tokens, output_tokens=result.output_tokens
         )

@@ -25,6 +25,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from ..infrastructure.db import Database
+from ..modules.assistant.application import (
+    AskStudioAssistant,
+    ChatCompletionClient,
+    SpendGuard,
+)
+from ..modules.assistant.infrastructure import OpenRouterChatClient, PostgresSpendGuard
 from ..modules.badges.application import (
     BadgeRepository,
     GetBadge,
@@ -40,6 +46,11 @@ from ..modules.identity.application import (
 from ..modules.identity.infrastructure import (
     DeviceIdentityResolver,
     PostgresIdentityRepository,
+)
+from ..modules.retrieval.application import EmbeddingClient, EmbeddingRepository
+from ..modules.retrieval.infrastructure import (
+    OpenAiEmbeddingClient,
+    PgVectorEmbeddingRepository,
 )
 from ..modules.scripture.application import (
     GetChapter,
@@ -75,6 +86,10 @@ class Container:
     # The identity repository satisfies the study module's narrow author
     # port. Binding one adapter to two ports is the composition root's job.
     author_registry: AuthorRegistry = field(init=False)
+    embedding_client: EmbeddingClient = field(init=False)
+    embedding_repository: EmbeddingRepository = field(init=False)
+    chat_client: ChatCompletionClient = field(init=False)
+    spend_guard: SpendGuard = field(init=False)
 
     # ── Use cases ─────────────────────────────────────────────────────────
     list_translations: ListTranslations = field(init=False)
@@ -87,6 +102,7 @@ class Container:
     set_preferences: SetPreferences = field(init=False)
     get_chapter_study: GetChapterStudy = field(init=False)
     save_chapter_study: SaveChapterStudy = field(init=False)
+    ask_studio_assistant: AskStudioAssistant = field(init=False)
 
     def __post_init__(self) -> None:
         self.database = Database(self.settings)
@@ -103,6 +119,27 @@ class Container:
         self.author_registry = self.identity_repository
         self.identity_resolver = DeviceIdentityResolver()
         self.study_repository = PostgresStudyRepository(self.database)
+        self.embedding_client = OpenAiEmbeddingClient(
+            api_key=(
+                self.settings.openai_api_key.get_secret_value()
+                if self.settings.openai_api_key
+                else ""
+            ),
+            model=self.settings.embedding_model,
+        )
+        self.embedding_repository = PgVectorEmbeddingRepository(self.database)
+        self.chat_client = OpenRouterChatClient(
+            api_key=(
+                self.settings.openrouter_api_key.get_secret_value()
+                if self.settings.openrouter_api_key
+                else ""
+            ),
+            model=self.settings.grounded_chat_model,
+            fallback_model=self.settings.grounded_chat_fallback_model,
+        )
+        self.spend_guard = PostgresSpendGuard(
+            self.database, ceiling_usd=self.settings.openrouter_spend_ceiling_usd
+        )
 
     def _wire_use_cases(self) -> None:
         """Build each use case once; they are stateless and safe to share."""
@@ -120,6 +157,14 @@ class Container:
         self.set_preferences = SetPreferences(self.identity_repository)
         self.get_chapter_study = GetChapterStudy(self.study_repository)
         self.save_chapter_study = SaveChapterStudy(self.study_repository, self.author_registry)
+        self.ask_studio_assistant = AskStudioAssistant(
+            embedding_client=self.embedding_client,
+            embedding_repository=self.embedding_repository,
+            chat_client=self.chat_client,
+            spend_guard=self.spend_guard,
+            model=self.settings.grounded_chat_model,
+            max_tokens=self.settings.grounded_chat_max_tokens,
+        )
 
     async def startup(self) -> None:
         """Open long-lived resources."""
@@ -128,3 +173,5 @@ class Container:
     async def shutdown(self) -> None:
         """Close long-lived resources."""
         await self.database.disconnect()
+        await self.embedding_client.aclose()
+        await self.chat_client.aclose()

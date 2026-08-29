@@ -11,7 +11,9 @@ def to_ask_out(answer: AssistantAnswer) -> AskOut:
     return AskOut(
         answer=answer.text,
         citations=[
-            CitationOut(label=citation.label, verse_key=citation.verse_key, score=citation.score)
+            CitationOut(
+                label=citation.label, verse_key=citation.verse_key, score=citation.score
+            )
             for citation in answer.citations
         ],
         confidence=answer.confidence,

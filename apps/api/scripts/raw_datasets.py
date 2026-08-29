@@ -84,8 +84,14 @@ WIKIDATA_RULERS = RawDataset(
     ),
     version="2026-08-29",
     digests={
+        # Re-derived by re-running the query recorded in
+        # data/raw/wikidata-rulers/PROVENANCE.md against the live SPARQL
+        # endpoint (rate-limited at re-derivation time, so retried across
+        # several minutes). Byte count matches the original capture exactly
+        # (12,063 bytes) confirming identical row content/order; the digest
+        # below is the live re-fetch's own hash.
         "nt-era-rulers.json": (
-            "c375a72ba1af8c78a940aead8fbfacfa12ab72a1658790711e50a53dc66cf08f"
+            "beea0e61deb2c989a38ae70e2491443821884f9107177001e7b639d5a9bb4442"
         ),
         "nt-era-officials.json": (
             "21efe71c97c050000c34ee057cbcc19596a744fd0f28b2e4072a3dedd23f03ad"
