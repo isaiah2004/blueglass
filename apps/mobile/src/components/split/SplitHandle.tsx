@@ -20,11 +20,7 @@
 import type { JSX } from 'react';
 import { Platform, View, type ViewStyle } from 'react-native';
 import { GestureDetector, type PanGesture } from 'react-native-gesture-handler';
-import Animated, {
-  useAnimatedStyle,
-  withTiming,
-  type SharedValue,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, withTiming, type SharedValue } from 'react-native-reanimated';
 
 import { radius, type Theme } from '@/theme';
 import { createThemedStyles, useMotion, useTheme } from '@/theme/runtime';

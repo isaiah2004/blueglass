@@ -16,6 +16,12 @@
  *      screen background is a themed colour and would otherwise be resolved once, at
  *      module load, in whichever palette happened to be the default.
  *   4. `QueryClientProvider` — TanStack Query, the server-state layer (assumption `T-13`).
+ *   5. `BadgeSheetHost` — registers the five badge sheet bodies with the reading canvas's
+ *      slot (`features/reader/badges/badge-sheet-slot.tsx`). It belongs above the navigator
+ *      for the reason the slot exists: a prop would make every route that mounts
+ *      `ReaderScreen` name all five sheets, so adding the sixth would edit files that have
+ *      nothing to do with it. Mounted once here, a tapped `[Route]` opens onto its map
+ *      rather than onto its teaser.
  *
  * The document is painted twice, on purpose
  *   `app/+html.tsx` puts the dark canvas on `<html>` before any JavaScript runs, and
@@ -57,6 +63,7 @@ import { enableScreens } from 'react-native-screens';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { createAtlasQueryClient } from '@/api';
+import { BadgeSheetHost } from '@/features/sheets/BadgeSheetHost';
 import { useAtlasFonts } from '@/theme/fonts';
 import { ThemeProvider, useDocumentBackground, useTheme } from '@/theme/runtime';
 
@@ -111,8 +118,10 @@ export default function RootLayout(): JSX.Element {
       <SafeAreaProvider>
         <ThemeProvider>
           <QueryClientProvider client={queryClient}>
-            <ThemedStatusBar />
-            <Stack screenOptions={{ headerShown: false }} />
+            <BadgeSheetHost>
+              <ThemedStatusBar />
+              <Stack screenOptions={{ headerShown: false }} />
+            </BadgeSheetHost>
           </QueryClientProvider>
         </ThemeProvider>
       </SafeAreaProvider>

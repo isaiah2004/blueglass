@@ -50,6 +50,36 @@ export interface Citation {
 }
 
 /**
+ * Provenance for one dataset a claim rests on.
+ *
+ * Added for M2. Decision `AI-05` requires every badge to **name** its source and licence,
+ * not merely to carry a citation chip: a chip proves someone said this, a licence proves
+ * we may repeat it, and `docs/decisions/DECISIONS.md` `Q-007` turns on being able to tell
+ * a share-alike source from a permissive one by inspection rather than by reading prose.
+ *
+ * `license` is spelled the American way because that is the database column and the wire
+ * field; renaming a published field for a spelling preference is not worth a migration.
+ */
+export interface SourceAttribution {
+  /** Stable key in the provenance table, e.g. `openbible_geocoding`. */
+  readonly key: string;
+  /** Human name of the dataset. */
+  readonly name: string;
+  /** SPDX-style identifier, e.g. `CC-BY-4.0`. */
+  readonly license: string;
+  /** The line the licence obliges us to print, verbatim. */
+  readonly attribution: string;
+  /** True when the licence is copyleft, which constrains redistribution (`Q-007`). */
+  readonly shareAlike: boolean;
+  /** Where the dataset lives, when it has a public home. */
+  readonly url?: string;
+  /** The dataset's own version or release date. */
+  readonly version?: string;
+  /** ISO date we fetched it. A 2021 gazetteer and a 2026 dump are not equally fresh. */
+  readonly retrievedAt?: string;
+}
+
+/**
  * How well grounded a generated claim is.
  *
  * The Studio sheet renders this as the Grounding Confidence meter, and the design

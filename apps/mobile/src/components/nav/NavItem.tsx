@@ -35,15 +35,7 @@
 import type { JSX } from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
 
-import {
-  borderWidth,
-  layout,
-  radius,
-  spacing,
-  uiText,
-  withOpacity,
-  type Theme,
-} from '@/theme';
+import { borderWidth, layout, radius, spacing, uiText, withOpacity, type Theme } from '@/theme';
 import { createThemedStyles, useTheme } from '@/theme/runtime';
 
 import { Icon } from './Icon';

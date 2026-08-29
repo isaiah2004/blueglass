@@ -38,6 +38,7 @@ describe.each(BOTH_THEMES)('TranslationSheet in the %s theme', (theme: ThemeName
       <TranslationSheet
         visible
         loading={false}
+        failed={false}
         translations={TRANSLATIONS}
         selectedCode="BSB"
         onSelect={() => undefined}
@@ -57,6 +58,7 @@ describe.each(BOTH_THEMES)('TranslationSheet in the %s theme', (theme: ThemeName
       <TranslationSheet
         visible
         loading={false}
+        failed={false}
         translations={TRANSLATIONS}
         selectedCode="BSB"
         onSelect={() => undefined}
@@ -78,6 +80,7 @@ describe.each(BOTH_THEMES)('TranslationSheet in the %s theme', (theme: ThemeName
       <TranslationSheet
         visible
         loading={false}
+        failed={false}
         translations={TRANSLATIONS}
         selectedCode="KJV"
         onSelect={() => undefined}
@@ -100,6 +103,7 @@ describe.each(BOTH_THEMES)('TranslationSheet in the %s theme', (theme: ThemeName
       <TranslationSheet
         visible
         loading={false}
+        failed={false}
         translations={TRANSLATIONS}
         selectedCode="BSB"
         onSelect={onSelect}
@@ -118,6 +122,7 @@ describe.each(BOTH_THEMES)('TranslationSheet in the %s theme', (theme: ThemeName
       <TranslationSheet
         visible
         loading
+        failed={false}
         translations={undefined}
         selectedCode="BSB"
         onSelect={() => undefined}
@@ -135,6 +140,7 @@ describe.each(BOTH_THEMES)('TranslationSheet in the %s theme', (theme: ThemeName
       <TranslationSheet
         visible
         loading={false}
+        failed={false}
         translations={[]}
         selectedCode="BSB"
         onSelect={() => undefined}
@@ -152,6 +158,7 @@ describe.each(BOTH_THEMES)('TranslationSheet in the %s theme', (theme: ThemeName
       <TranslationSheet
         visible
         loading={false}
+        failed={false}
         translations={[
           { code: 'XYZ', name: 'Restricted Text', language: 'en', canRedistribute: false },
         ]}
@@ -163,6 +170,29 @@ describe.each(BOTH_THEMES)('TranslationSheet in the %s theme', (theme: ThemeName
     );
 
     expect(inDocument.text()).toContain('Server-delivered only');
+    view.unmount();
+  });
+
+  it('says the list could not be loaded, never that the database needs seeding', () => {
+    // Seen for real in a walkthrough: the client's ten-second budget elapsed under load
+    // while the API answered every call in single-digit milliseconds, and the sheet told
+    // the reader to re-seed a database that was fine. A failed request establishes nothing
+    // about what is in the database, so it may not make a claim about it.
+    const view = renderReader(
+      <TranslationSheet
+        visible
+        loading={false}
+        failed
+        translations={undefined}
+        selectedCode="BSB"
+        onSelect={() => undefined}
+        onClose={() => undefined}
+      />,
+      theme,
+    );
+
+    expect(inDocument.text()).toContain('could not be loaded');
+    expect(inDocument.text()).not.toContain('db:seed');
     view.unmount();
   });
 });

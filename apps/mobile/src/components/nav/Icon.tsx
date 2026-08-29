@@ -80,7 +80,9 @@ export function Icon({
       // `importantForAccessibility` itself. Passing those two directly makes React warn on
       // every render, because react-native-web forwards them to the DOM verbatim.
       aria-hidden={isDecorative}
-      {...(label === undefined ? {} : { accessibilityRole: 'image' as const, accessibilityLabel: label })}
+      {...(label === undefined
+        ? {}
+        : { accessibilityRole: 'image' as const, accessibilityLabel: label })}
     >
       {iconPaths[name].map((d) => (
         <Path

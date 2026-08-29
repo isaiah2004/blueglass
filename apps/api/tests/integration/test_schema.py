@@ -5,6 +5,9 @@ A migration file is a claim. These tests read the live catalog and check it.
 
 from __future__ import annotations
 
+import re
+from pathlib import Path
+
 import asyncpg
 import pytest
 
@@ -13,14 +16,50 @@ pytestmark = pytest.mark.integration
 _EXPECTED_TABLES = {
     "alembic_version",
     "chapter_studies",
+    "cross_references",
     "data_sources",
     "embeddings",
     "identities",
     "identity_preferences",
+    "place_mentions",
+    "place_names",
+    "places",
     "passages",
+    "route_stops",
+    "routes",
     "translations",
     "verses",
 }
+
+_VERSIONS_DIR = Path(__file__).resolve().parents[2] / "db" / "versions"
+_REVISION = re.compile(r'^revision = "([^"]+)"', re.MULTILINE)
+#: down_revision is a string, None, or -- for a merge revision -- a tuple of
+#: strings. Every quoted id on the line is a parent.
+_DOWN_REVISION = re.compile(r"^down_revision = (.+)$", re.MULTILINE)
+_QUOTED = re.compile(r'"([^"]+)"')
+
+
+def _migration_head() -> str:
+    """The one revision nothing else builds on.
+
+    Computed rather than hardcoded: several agents author migrations in this
+    repository at once, and a literal "0003" here would have to be edited by
+    whoever happened to land last. Two heads are a genuine defect -- alembic
+    upgrade head cannot choose between them -- so this fails on that too.
+    """
+    revisions: set[str] = set()
+    parents: set[str] = set()
+    for path in _VERSIONS_DIR.glob("*.py"):
+        source = path.read_text(encoding="utf-8")
+        found = _REVISION.search(source)
+        assert found is not None, f"{path.name} declares no revision id"
+        revisions.add(found.group(1))
+        declared = _DOWN_REVISION.search(source)
+        if declared is not None:
+            parents.update(_QUOTED.findall(declared.group(1)))
+    heads = revisions - parents
+    assert len(heads) == 1, f"Expected exactly one migration head, found {heads}"
+    return heads.pop()
 
 
 async def test_every_expected_table_exists(connection: asyncpg.Connection) -> None:
@@ -35,7 +74,7 @@ async def test_every_expected_table_exists(connection: asyncpg.Connection) -> No
 async def test_migrations_are_at_head(connection: asyncpg.Connection) -> None:
     version = await connection.fetchval("SELECT version_num FROM alembic_version")
 
-    assert version == "0003"
+    assert version == _migration_head()
 
 
 async def test_both_q009_shapes_exist(connection: asyncpg.Connection) -> None:

@@ -2,7 +2,7 @@
 
 CLAUDE.md's definition of done for a feature is not "tests pass". It is: design a
 high-coverage walkthrough of the app, run it, find bugs, fix them, repeat until a full pass
-is clean. This is that walkthrough — ten chapters that drive the real UI in a real browser
+is clean. This is that walkthrough — fifteen chapters that drive the real UI in a real browser
 at three widths, photograph every step, and audit each screen for the things a reader
 notices and a unit test cannot see.
 
@@ -62,7 +62,8 @@ old runs instead of `.gitignore`-ing them.
 
 ## 2 · What it covers
 
-Ten chapters, run at all three widths unless noted.
+Fifteen chapters, run at all three widths unless noted. Chapters 1–10 are the M1 reading
+canvas; 11–15 are the M2 inline badge system.
 
 | Chapter | Journey | The questions it answers |
 |---|---|---|
@@ -76,6 +77,11 @@ Ten chapters, run at all three widths unless noted.
 | `08-responsive` | Resize a live page 375 → 768 → 1280, then drag the rail | Does the layout recompute on resize, do the rail and split pane obey the 600 dp and 1100 dp breakpoints, is the rail divider actually draggable (`Q-006`, port-map risk #5)? |
 | `09-search` | Open search, find a word, open a result, and search for nothing | Does search float over the reader rather than replacing it, do results contain what was searched for, is there an explicit empty state? |
 | `10-error-states` | Cut the API off, then bring it back | Is there an honest error state rather than a blank canvas or an endless spinner, is the message fit for a reader, does Retry actually retry, is a 503 treated as a failure? |
+| `11-badges-inline` | Read Acts 16, then read a chapter with no badges | Are there pills for all five `P-04` kinds, is each one inside its verse rather than beside it, is any pill taller than the line it sits on, does scripture still dominate the canvas (pillar 1), does a chapter with no enrichment simply read? |
+| `12-badge-sheets` | Tap one badge of every kind | Does a surface open, does it carry its source **and its licence** (`AI-05`), does everything in it fit inside it, and does it show the thing that kind exists to show — the map, the timeline, the lexicon entry, the linked passages? Plus: does the history sheet say "Murai's reading" (`Q-015`) rather than stating his reading as fact? |
+| `13-badge-summary` | Scroll to the chapter foot, tap a row, follow a cross-reference | Is every badge repeated as pill, teaser and chevron (`design-language.md` §5), does a row open the same badge its pill does, are the summary's sources printed, and does tapping a linked passage actually navigate? |
+| `14-badge-surfaces` | Open a badge at each width; cut the API mid-session | Half sheet below 600 dp and rail at or above it, never both (`Q-006`); is the sheet really half, does the rail really not overlap the canvas; and with the API gone, are there no pills claiming data the app does not have, and do they come back when it returns? |
+| `15-badges-light` | Toggle to light and revisit every badge surface | `D-01`: are the pills still painted, does a badge still open and read, does the summary still read, and does the toggle travel back? |
 
 ### The standing audit — run after **every** step of every chapter
 
@@ -124,19 +130,30 @@ agents renaming forty props.
 | Translation | `open-translations` · `translation-sheet` · `translation-{CODE}` |
 | Reference picker | `open-navigator` · `navigator-sheet` (phone) · `navigator-rail` (≥ 600 dp) · `book-navigator` · `book-{bookId}` · `chapter-grid` · `chapter-tile-{n}` |
 | Failure and loading | `reader-offline` · `reader-error` · `reader-notFound` · `reader-bad-address` · `reader-message-action` · `chapter-skeleton` |
+| Verse detail | `verse-sheet` · `verse-sheet-reference` · `verse-sheet-close` |
+| Search | `search-open` · `search-overlay` · `search-input` · `search-results` · `search-result-{i}` · `search-empty` · `search-close` |
+| Split layout | `reader-context-rail` · `reader-rail-handle` · `reader-split-pane` |
+| **Badges (M2)** | `inline-badge-{badgeId}` · `badge-sheet` · `reader-context-badge` · `badge-rail-close` · `badge-detail-{badgeId}` · `badge-detail-teaser` · `badge-sources-{badgeId}` · `chapter-badge-summary` · `chapter-badge-sources` · `badge-summary-row-{badgeId}` |
+| **Badge bodies (M2)** | `spatial-route-map` · `spatial-city-map` · `history-axes` · `root-lemma` · `cross-ref-targets` · `cross-ref-row-{verseKey}` · `history-murai-note` |
 
-### Owed — the harness reaches for these and nothing sets them
+### Two contracts, not one
 
-A step that fails on one of these is **not** a harness bug. It is a walkthrough step whose
-screen has not been built, and the failure message names the id to add.
+`e2e/support/test-ids.ts` holds the M1 vocabulary; `e2e/support/badge-ids.ts` holds M2's.
+They are separate because a badge id is not a shell id and a chapter that only drives
+badges should not have to import forty ids it will never use — not because M2's are any
+less binding.
 
-| Id | Which chapter needs it | What it is |
-| --- | --- | --- |
-| `reader-context-rail` | 8 | The ≥ 600 dp context rail. `components/split/ContextRailShell.tsx` accepts a `railTestID`; the reader does not pass one. |
-| `reader-rail-handle` | 8 | The draggable divider, from the same component. |
-| `reader-split-pane` | 8 | The ≥ 1100 dp two-pane split. |
-| `verse-sheet`, `verse-sheet-reference`, `verse-sheet-close` | 6 | The verse detail surface. Tapping a verse currently selects and highlights it; nothing opens. |
-| `search-open`, `search-overlay`, `search-input`, `search-results`, `search-result-{i}`, `search-empty`, `search-close` | 9 | Full-text scripture search. The reader's `book-search` filters the book list, which is a different feature. |
+### Unreachable — an id a real component carries that nothing in the reader mounts
+
+Every id in the M1 table above is now set by a shipped component; the surfaces once marked
+**OWED** have all been built. The **badge bodies** row is different, and the difference
+matters. Those ids are carried by finished components in
+`apps/mobile/src/features/sheets/`, but nothing mounts `BadgeSheetProvider`, so the reader
+never renders any of them. `/spike/spatial-sheets` and `/spike/textual-sheets` show what
+the reader is missing.
+
+A step that fails on one of these is **not** a harness bug, and the assertion must not be
+weakened to "the chrome is present" — that would turn the headline M2 defect into a pass.
 
 ## 4 · Adding a step
 
@@ -204,9 +221,14 @@ Stated plainly, because an unwritten gap gets mistaken for a passing check.
 
 **Not covered — not built yet, or not yet worth an assertion**
 
-- **The eleven inline badges.** M1 is "real scripture on screen"; badge sheets, the map,
-  the timeline and word roots are later milestones. The badge spike has its own spec
+- **Six of the eleven inline badges.** `P-04` ships five — Route, Site, History, Root,
+  Cross-Ref — and chapters 11-15 drive all five end to end, including their sheet bodies.
+  Manuscript, Structure, Cultural, Context, Meditate and Lineage have no wire spelling yet
+  and therefore nothing to walk through. The badge spike has its own spec
   (`e2e/inline-badge-spike.spec.ts`), which is deleted with the spike route.
+- **Hebrew, and right-to-left layout.** `L-06`: the word layer covers books 40-66, so no
+  Root badge in scripture is Hebrew. RTL is exercised only by the synthetic probe at
+  `/spike/textual-sheets`, which this harness does not drive.
 - **The Discover, Studio and Journal tabs beyond "it renders and is sound".** Their content
   is not built. Chapter 2 audits them; it does not exercise them.
 - **Audio.** Stubbed by `AU-01`, so there is nothing behaving to walk through.
@@ -239,6 +261,27 @@ Stated plainly, because an unwritten gap gets mistaken for a passing check.
   so short verses fail by two pixels. That is a real tension between the reading rhythm and
   the touch minimum, and it is surfaced rather than exempted: the product owner should
   decide whether verse rows get extra vertical padding or their own smaller minimum.
+
+---
+
+## 6b · Timeouts, and why there are five of them
+
+`retries` is **0** and stays 0 (`OP-01`, and `playwright.config.ts` says so): a retry would
+hide exactly the flake this harness exists to expose. The way flake is dealt with instead is
+to give each wait a budget that matches what it is waiting for, so a failure names the right
+thing.
+
+| Wait | Budget | Why |
+|---|---|---|
+| An assertion about an element that is either in the tree or is not | 10 s (`expect.timeout`) | The default. A genuinely missing element must fail fast. |
+| A click, once the page has settled | 15 s (`actionTimeout`) | Instant in practice. A control that is covered, disabled or moving still fails inside a step. |
+| **A control settling after a cold start** | 60 s (`support/settle.ts`) | Playwright's own stability check — the same bounding box across two consecutive animation frames — cannot settle while the main thread is starved by a cold Metro bundle under six workers. Used before every inline pill and before the spike's tap test. |
+| **The first painted verse of a chapter** | 30 s (`support/journeys.ts`) | An HTTP round trip behind a bundle that may still be compiling. Measured at 7-9 s with four workers and past 10 s with six. |
+| A step as a whole | 90 s (`timeout`) | Absorbs all of the above and still fails a genuinely hung run. |
+
+None of these changes an **assertion**. Verse 1 must still be on screen; the pill must still
+be tappable; a badge with no provenance must still not render. What they change is how long
+the harness waits for the machine, which is not the thing under test.
 
 ---
 

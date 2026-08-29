@@ -31,6 +31,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from . import __version__
 from .config import Settings, get_settings
 from .config.container import Container
+from .modules.badges.presentation import router as badge_router
 from .modules.health.presentation import router as health_router
 from .modules.identity.presentation import router as identity_router
 from .modules.scripture.presentation import router as scripture_router
@@ -40,7 +41,8 @@ from .shared.logging import configure_logging
 
 _DESCRIPTION = (
     "Scripture read API for Atlas Bible. Translations, the 66-book canon, "
-    "chapters, indexed verse search, and chapter study content."
+    "chapters, indexed verse search, chapter study content, and the inline "
+    "badges a chapter renders."
 )
 
 _logger = logging.getLogger("atlas.startup")
@@ -115,6 +117,7 @@ def create_app(
     app.include_router(scripture_router)
     app.include_router(identity_router)
     app.include_router(study_router)
+    app.include_router(badge_router)
     return app
 
 

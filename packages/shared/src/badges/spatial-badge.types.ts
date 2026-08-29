@@ -59,21 +59,50 @@ export interface CityLandmark {
   readonly summary: string;
 }
 
-/** Sheet content for `[🏛️ 3D City]` — one city, reconstructed. */
+/**
+ * Sheet content for `[🏛️ 3D City]` — one site, as far as the sources allow.
+ *
+ * REVISED FOR M2, and the revision is the point.
+ *   `docs/architecture/dataset-validation.md` §4.3 records a confirmed negative: no
+ *   openly-licensed 3D reconstruction of any biblical city exists. The nearest candidate
+ *   is CC BY-NC-ND, which fails `DECISIONS.md` #3 on NonCommercial and fails again on
+ *   NoDerivatives. So the four reconstruction fields became OPTIONAL — they are the
+ *   interface a commissioned model drops into later — and the fields that ship today
+ *   describe the SITE, every one of them a column of the gazetteer under CC BY 4.0.
+ *
+ *   Filling `summary` or `eraLabel` from a model would be exactly the pillar-3 violation
+ *   the whole product is built to avoid, so the server never sets them.
+ */
 export interface City3dBadgePayload {
-  /** The city itself. `has3dReconstruction` is true by definition for this badge. */
+  /** The city itself, with its gazetteer pin. */
   readonly location: MappedLocation;
+  /** Whether a reconstruction exists to load. False for every row M2 ships. */
+  readonly hasReconstruction: boolean;
+  /** Modern name of the site, when one is identified. */
+  readonly modernName?: string;
   /**
-   * Key of the 3D asset package to load. The asset itself is fetched by the rendering
-   * layer; the domain only names it, so this module stays free of I/O.
+   * How many modern sites scholarship proposes for this ancient place. 777 of the 1,342
+   * ancient places have more than one; `DECISIONS.md` #10 forbids hiding that behind a
+   * single confident pin, so the count is part of the payload, not a footnote.
    */
-  readonly reconstructionId: string;
-  /** The period the reconstruction depicts, e.g. `Roman colony, c. AD 50`. */
-  readonly eraLabel: string;
+  readonly identificationCount: number;
+  /** How precisely the pin is known, e.g. `site`, `region`. */
+  readonly precisionType?: string;
+  /** How many verses of the whole canon name this place. Drives the sheet's stat strip. */
+  readonly canonVerseCount: number;
+  /** OSIS ids of the verses in THIS chapter that name it. */
+  readonly mentionedAt: readonly string[];
+  /**
+   * Key of the 3D asset package to load. Absent until a reconstruction is commissioned;
+   * present, it is fetched by the rendering layer, so the domain only names it.
+   */
+  readonly reconstructionId?: string;
+  /** The period a reconstruction depicts, e.g. `Roman colony, c. AD 50`. */
+  readonly eraLabel?: string;
   /** One paragraph on the city's character at that time. */
-  readonly summary: string;
-  /** Structures worth pointing the camera at. May be empty. */
-  readonly landmarks: readonly CityLandmark[];
+  readonly summary?: string;
+  /** Structures worth pointing the camera at. */
+  readonly landmarks?: readonly CityLandmark[];
 }
 
 /** The `[🗺️ Route]` badge, ready to render. */

@@ -143,3 +143,46 @@ Three gates run before any load commits: the cached payload's SHA-256 must match
 measured verse count, and the committed table must pass every check in
 `scripts/scripture_assertions.py`. All three run inside one transaction, so a
 failure rolls back rather than publishing a half-Bible.
+
+## Loading History and Structure enrichment
+
+Two deterministic ingests, no model and no network. Run them in this order —
+dating joins against the passages the structure ingest loads:
+
+```bash
+docker compose exec api python -m scripts.ingest_structure   # passages + chiasms
+docker compose exec api python -m scripts.ingest_history     # rulers + dating
+```
+
+Measured on 2026-08-29, from the files in `data/raw/`:
+
+|                                                           |                   Rows |
+| --------------------------------------------------------- | ---------------------: |
+| `passages` (scheme `murai`)                               |              **2,005** |
+| `literary_structures` · `structure_nodes`                 | **1,830** · **10,085** |
+| `rulers` (Roman Empire, Judaea, Achaia)                   |                 **43** |
+| `historical_events` (203 events × the books they narrate) |                **329** |
+| `passage_dating` (New Testament only)                     |                **510** |
+
+Both loaders are idempotent, verify each source file's SHA-256 against
+`data/raw/<dir>/PROVENANCE.md` before parsing, and prove the committed rows
+inside the loading transaction — `scripts/structure_assertions.py` and
+`scripts/history_assertions.py`. A count that moves fails the load.
+
+Three rules are enforced by the schema rather than by convention:
+
+- **`Q-016` — dating is New Testament only.** The only open per-passage dating
+  descends from Ussher's chronology. A `book_number` CHECK on `passage_dating`
+  and `historical_events` means an Old Testament year cannot be inserted at all.
+- **`Q-015` — Murai's structure is one scholar's reading.** Every row carries
+  `attributed_to`, `claim_label` (`Murai's reading`) and
+  `claim_type = 'interpretive'`, all NOT NULL, so no UI can omit the framing.
+- **`AI-05` — every claim carries a source anchor.** `source_id` is NOT NULL on
+  every table here, so a row with no provenance cannot exist and no badge can
+  render one.
+
+**Licence carve-out.** Murai's spreadsheets quote the NAB, NRSV and NJB, which
+are not his to license. `scripts/murai_copyright.py` drops any cell carrying a
+verse reference or a quotation mark — 7,108 of 10,078 English cells — and the
+Japanese column, which is contaminated the same way, is never read. An
+integration test re-proves in SQL that nothing quoted survived.

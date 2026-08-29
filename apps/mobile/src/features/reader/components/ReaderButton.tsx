@@ -133,7 +133,11 @@ export function ReaderButton({
           )}
           <Text
             numberOfLines={1}
-            style={[styles.label, align === 'end' ? styles.textEnd : undefined, { color: shell.label }]}
+            style={[
+              styles.label,
+              align === 'end' ? styles.textEnd : undefined,
+              { color: shell.label },
+            ]}
           >
             {label}
           </Text>

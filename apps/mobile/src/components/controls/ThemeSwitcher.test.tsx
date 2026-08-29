@@ -99,7 +99,9 @@ describe('ThemeSwitcher', () => {
 
   it('marks exactly one position as selected', () => {
     const rendered = mount(<ThemeSwitcher />);
-    const checked = rendered.byRole('radio').filter((r) => r.getAttribute('aria-checked') === 'true');
+    const checked = rendered
+      .byRole('radio')
+      .filter((r) => r.getAttribute('aria-checked') === 'true');
 
     expect(checked).toHaveLength(1);
     rendered.unmount();

@@ -105,10 +105,6 @@ export function backoffDelayMs(
  * @param policy - The schedule to follow.
  * @returns Whether to try again. Side effects: none.
  */
-export function shouldRetry(
-  error: ApiError,
-  attemptsMade: number,
-  policy: RetryPolicy,
-): boolean {
+export function shouldRetry(error: ApiError, attemptsMade: number, policy: RetryPolicy): boolean {
   return error.isRetryable && attemptsMade < policy.maxAttempts;
 }

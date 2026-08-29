@@ -68,7 +68,9 @@ export function ThemeSwitcher(): JSX.Element {
 
   const resolved = themePreferenceLabel[themeName];
   const status =
-    preference === 'system' ? `Following your system — ${resolved.toLowerCase()} right now` : `Always ${resolved.toLowerCase()}`;
+    preference === 'system'
+      ? `Following your system — ${resolved.toLowerCase()} right now`
+      : `Always ${resolved.toLowerCase()}`;
 
   return (
     <View style={styles.group}>

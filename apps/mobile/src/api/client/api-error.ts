@@ -111,11 +111,7 @@ export interface ApiMalformedResponseError extends ApiErrorCommon {
 
 /** Every way an API call can fail. */
 export type ApiError =
-  | ApiTimeoutError
-  | ApiNetworkError
-  | ApiAbortedError
-  | ApiHttpError
-  | ApiMalformedResponseError;
+  ApiTimeoutError | ApiNetworkError | ApiAbortedError | ApiHttpError | ApiMalformedResponseError;
 
 /** Build a {@link ApiTimeoutError}. */
 export function timeoutError(timeoutMs: number, attempts = 1): ApiTimeoutError {

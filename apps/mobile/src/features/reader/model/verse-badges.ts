@@ -33,6 +33,21 @@ export interface VerseBadgeAnchor {
   /** The exact word or phrase in the verse the badge annotates. */
   readonly word: string;
   /**
+   * The badge id, so a tap knows which sheet to open. Absent for an anchor that has no
+   * badge behind it — the pill is then decorative and does not respond.
+   */
+  readonly badgeId?: string;
+  /**
+   * The 0-based character offset the server placed this badge at, into the verse text of
+   * *this* translation. Preferred over {@link occurrence} when present, because the server
+   * computed it from a word alignment rather than from a string search.
+   *
+   * It is verified, not trusted: the same word sits at different offsets in KJV and BSB, and
+   * an offset that no longer lands on {@link word} means the row describes a different text.
+   * See {@link resolveSpans}.
+   */
+  readonly startOffset?: number;
+  /**
    * Which occurrence of that word to annotate, 1-based. Defaults to the first.
    * "Jesus" appears four times in some verses, and the badge belongs to one of them.
    */
@@ -61,6 +76,8 @@ export interface VerseBadgeSegment {
   readonly label: string | undefined;
   /** Stable key for the renderer, unique within one verse. */
   readonly id: string;
+  /** The badge to open when the pill is tapped, or `undefined` for a decorative pill. */
+  readonly badgeId: string | undefined;
 }
 
 /** One piece of a segmented verse, in reading order. */
@@ -100,6 +117,29 @@ function indexOfOccurrence(text: string, word: string, occurrence: number): numb
 }
 
 /**
+ * Where one anchor actually starts in this verse, or -1.
+ *
+ * Verify, then fall back. The server's offset is the better answer — it came from a word
+ * alignment, so it distinguishes the "us" the badge means from the three others in the verse
+ * — but it was computed against one translation's text, and the reader may be looking at
+ * another. So the offset is checked against the text about to be rendered, and only a range
+ * that still spells the anchored word is used. Anything else falls back to the occurrence
+ * search, which is wrong less often than a stale offset is.
+ *
+ * @param text - The verse text as it will be rendered.
+ * @param anchor - The anchor to locate.
+ * @returns The start index, or -1 when the anchor does not belong to this text.
+ *   Side effects: none.
+ */
+function locateAnchor(text: string, anchor: VerseBadgeAnchor): number {
+  const offset = anchor.startOffset;
+  if (offset !== undefined && text.startsWith(anchor.word, offset)) {
+    return offset;
+  }
+  return indexOfOccurrence(text, anchor.word, anchor.occurrence ?? 1);
+}
+
+/**
  * Resolves anchors to spans, dropping any that do not match or that overlap an earlier one.
  *
  * Dropping rather than throwing is deliberate: a bad anchor must never stop a verse from
@@ -114,7 +154,7 @@ function resolveSpans(text: string, anchors: readonly VerseBadgeAnchor[]): reado
   const found: AnchorSpan[] = [];
 
   for (const anchor of anchors) {
-    const start = indexOfOccurrence(text, anchor.word, anchor.occurrence ?? 1);
+    const start = locateAnchor(text, anchor);
     if (start === -1) {
       continue;
     }
@@ -167,7 +207,8 @@ export function segmentVerse(
       type: 'badge',
       kind: span.anchor.kind,
       label: span.anchor.label,
-      id: `${span.anchor.kind}-${String(index)}-${String(span.start)}`,
+      id: span.anchor.badgeId ?? `${span.anchor.kind}-${String(index)}-${String(span.start)}`,
+      badgeId: span.anchor.badgeId,
     });
     cursor = span.end;
   });

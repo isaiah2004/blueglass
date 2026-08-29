@@ -109,6 +109,7 @@ export function ReaderSheets({
         visible={open === 'translations'}
         translations={translations.data}
         loading={translations.isPending}
+        failed={translations.isError}
         selectedCode={prefs.translationCode}
         onClose={onClose}
         onSelect={(code) => {

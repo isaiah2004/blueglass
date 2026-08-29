@@ -37,10 +37,10 @@ const PLAN_START = { book: 'acts', chapter: '1' } as const;
  * @param address - The store's current address.
  * @returns The book slug and chapter to open. Side effects: none.
  */
-function resumeParams(address: {
+function resumeParams(address: { readonly book: string; readonly chapter: number }): {
   readonly book: string;
-  readonly chapter: number;
-}): { readonly book: string; readonly chapter: string } {
+  readonly chapter: string;
+} {
   const isUntouched =
     address.book === DEFAULT_READER_ADDRESS.book &&
     address.chapter === DEFAULT_READER_ADDRESS.chapter;

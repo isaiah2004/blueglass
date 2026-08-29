@@ -62,7 +62,9 @@ describe('the two palettes agree on shape and disagree on value', () => {
     const dark = new Map(colorEntries(darkTheme));
     const light = new Map(colorEntries(lightTheme));
 
-    const shared = [...dark].filter(([path, value]) => path !== 'name' && light.get(path) === value);
+    const shared = [...dark].filter(
+      ([path, value]) => path !== 'name' && light.get(path) === value,
+    );
 
     expect(shared).toStrictEqual([]);
   });

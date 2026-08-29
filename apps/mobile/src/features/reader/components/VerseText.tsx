@@ -7,12 +7,11 @@
  *   the web — drag-selection all behave as if the badges were not there. That single-Text
  *   requirement is why `InlineBadge` is built the way it is (architecture decision A-1).
  *
- * Known limitation, deliberately not worked around here
- *   `components/InlineBadge.tsx` reads the dark theme from `@/theme` at module scope, so a
- *   badge pill keeps its dark hues under the light theme. That component is owned
- *   elsewhere; the fix belongs there - it should read `useTheme()` from `@/theme/runtime`
- *   like every other component now does, rather than gain a second implementation here.
- *   The annotated word, which this file does own, is tinted from the *active* theme.
+ * Theming
+ *   `InlineBadge` reads the active palette through `useTheme()`, and so does the annotated
+ *   word this file tints. Both are therefore correct under the light theme as well as the
+ *   dark one (`D-01`). The M1 note that lived here — that the pill kept its dark hues because
+ *   the component read the module-scope colour table — is fixed, not merely inherited.
  *
  * Dependencies
  *   `@/components/InlineBadge`, the reader's theme hook, and the segmenting model.
@@ -20,7 +19,7 @@
  */
 
 import type { JSX } from 'react';
-import { Text, type TextStyle } from 'react-native';
+import { Text, type GestureResponderEvent, type TextStyle } from 'react-native';
 
 import { InlineBadge } from '@/components/InlineBadge';
 import type { ScriptureStep } from '@/theme';
@@ -39,10 +38,12 @@ export interface VerseTextProps {
   /** Style for the scripture itself. */
   readonly style: TextStyle;
   /**
-   * Called when a badge is tapped. Omitted in M1: with no badge sheets built yet, a
-   * pressable pill that does nothing is worse than one that is plainly decorative.
+   * Called when a badge is tapped, with the badge's own id.
+   *
+   * Omitting it makes every pill in the verse decorative — which is what a pill whose badge
+   * carries no id must be anyway, because there would be nothing for it to open.
    */
-  readonly onBadgePress?: (kind: string) => void;
+  readonly onBadgePress?: (badgeId: string) => void;
 }
 
 /**
@@ -76,17 +77,22 @@ export function VerseText({
             </Text>
           );
         }
+        const badgeId = segment.badgeId;
         return (
           <InlineBadge
             key={segment.id}
             kind={segment.kind}
             scriptureStep={scriptureStep}
+            testID={`inline-badge-${segment.id}`}
             {...(segment.label === undefined ? {} : { label: segment.label })}
-            {...(onBadgePress === undefined
+            {...(onBadgePress === undefined || badgeId === undefined
               ? {}
               : {
-                  onPress: () => {
-                    onBadgePress(segment.kind);
+                  onPress: (event: GestureResponderEvent) => {
+                    // The verse row is itself a control. Without this, tapping a pill would
+                    // open the badge AND select the verse under it — two surfaces for one tap.
+                    event.stopPropagation();
+                    onBadgePress(badgeId);
                   },
                 })}
           />

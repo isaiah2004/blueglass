@@ -168,9 +168,7 @@ describe('paneWidthFromDrag — the form the gesture uses', () => {
         const pointerAtStart =
           edge === 'leading' ? 500 + halfHandle : DESKTOP.containerWidth - 500 - halfHandle;
 
-        expect(viaDrag).toBe(
-          paneWidthFromPointer(pointerAtStart + translation, edge, DESKTOP),
-        );
+        expect(viaDrag).toBe(paneWidthFromPointer(pointerAtStart + translation, edge, DESKTOP));
       }
     }
   });

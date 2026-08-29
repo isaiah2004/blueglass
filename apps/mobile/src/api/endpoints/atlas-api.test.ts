@@ -42,7 +42,9 @@ const CHAPTER_BODY = {
   translation: 'BSB',
   book_number: 43,
   chapter: 3,
-  verses: [{ verse: 16, text: 'For God so loved the world', osis_id: 'John.3.16', verse_key: 43_003_016 }],
+  verses: [
+    { verse: 16, text: 'For God so loved the world', osis_id: 'John.3.16', verse_key: 43_003_016 },
+  ],
 };
 
 /** Verbatim `GET /search?q=beloved`, trimmed to one hit. */
@@ -81,7 +83,10 @@ function apiOver(replies: readonly CannedReply[]): {
 describe('AtlasApi', () => {
   it('reads liveness from GET /health', async () => {
     const { api, calls } = apiOver([
-      { status: 200, body: { status: 'ok', service: 'atlas-api', version: '0.4.0', environment: 'local' } },
+      {
+        status: 200,
+        body: { status: 'ok', service: 'atlas-api', version: '0.4.0', environment: 'local' },
+      },
     ]);
 
     const result = await api.getHealth();

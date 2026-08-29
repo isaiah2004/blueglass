@@ -1,0 +1,36 @@
+# Line endings. Why this file exists.
+#
+# `.prettierrc.json` sets `"endOfLine": "lf"`, so `pnpm format:check` fails on any file
+# checked out with CRLF. Git on Windows does exactly that when `core.autocrlf=true` — the
+# default from the Git for Windows installer — which silently rewrote every text file in the
+# working tree and broke `format:check` on ~70 files that no one had touched. Without this
+# file the breakage returns on the next clone or checkout, because it is produced by the
+# checkout itself rather than by anything in the repo.
+#
+# `text=auto eol=lf` makes the working tree match what the index already stores: Git has
+# always normalised these blobs to LF on the way in, so this changes what lands on disk and
+# nothing about repository content. It also makes every developer's tree byte-identical
+# regardless of their `core.autocrlf`, which is the point.
+#
+# After adding or changing a rule here, run `git add --renormalize .` to re-apply it.
+* text=auto eol=lf
+
+# Binaries. Declared rather than left to Git's heuristic, so a PNG whose first bytes happen
+# to look like text can never be mangled by end-of-line conversion.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ico   binary
+*.pdf   binary
+*.gz    binary
+*.zip   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+
+# Generated. Excluded from diffs and from language statistics, not from formatting — that is
+# `.prettierignore`'s job and the two lists are deliberately not the same.
+pnpm-lock.yaml -diff linguist-generated

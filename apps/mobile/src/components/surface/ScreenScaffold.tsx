@@ -78,7 +78,7 @@ export function ScreenScaffold({
         style={styles.scroll}
         contentContainerStyle={[
           styles.content,
-          { paddingTop: (hasNavigationRail ? spacing.xxl : insets.top + spacing.xxl) },
+          { paddingTop: hasNavigationRail ? spacing.xxl : insets.top + spacing.xxl },
           { paddingBottom: insets.bottom + spacing.xxxl },
         ]}
         testID={testID}

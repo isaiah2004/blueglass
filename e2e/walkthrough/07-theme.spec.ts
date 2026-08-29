@@ -43,9 +43,8 @@ const MIN_LIGHTNESS_GAP = 0.3;
  * steps 2 to 4 — the ones that actually verify light mode, which is what `D-01` promised —
  * had therefore never run once.
  */
-const scriptureInk = async (
-  page: Parameters<typeof textColorInside>[0],
-): Promise<string> => textColorInside(page, verseId(1));
+const scriptureInk = async (page: Parameters<typeof textColorInside>[0]): Promise<string> =>
+  textColorInside(page, verseId(1));
 
 test.describe('chapter 7 · light and dark', () => {
   test('the theme toggle genuinely inverts the reading canvas', async ({ page, walkthrough }) => {

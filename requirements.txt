@@ -34,3 +34,11 @@ sqlalchemy[asyncio]==2.0.52
 # ── HTTP client ──────────────────────────────────────────────────────────────
 # Used by the scripture loader in apps/api/scripts/ to fetch public-domain text.
 httpx==0.28.1
+
+# ── Spreadsheet reader ───────────────────────────────────────────────────────
+# Hajime Murai publishes the literary-structure corpus as four .xlsx workbooks
+# and offers no other format (docs/architecture/dataset-validation.md 4.1), so
+# apps/api/scripts/ingest_structure.py needs a reader. Nothing under app/
+# imports it; it is present in the image only because the ingest commands run
+# inside that image.
+openpyxl==3.1.5

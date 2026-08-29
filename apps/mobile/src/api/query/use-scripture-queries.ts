@@ -71,7 +71,9 @@ export function useTranslationsQuery(
  * Served from the server's domain table, so it answers even against an empty database —
  * which means the reference picker can render before any scripture has loaded.
  */
-export function useBooksQuery(options: AtlasQueryOptions = {}): AtlasQueryResult<readonly ApiBook[]> {
+export function useBooksQuery(
+  options: AtlasQueryOptions = {},
+): AtlasQueryResult<readonly ApiBook[]> {
   const api = options.api ?? atlasApi;
   return useQuery<readonly ApiBook[], AtlasApiException>({
     queryKey: atlasQueryKeys.books(),
@@ -96,9 +98,10 @@ export function useChapterQuery(
   options: AtlasQueryOptions = {},
 ): AtlasQueryResult<ApiChapter> {
   const api = options.api ?? atlasApi;
-  const key = address === null
-    ? atlasQueryKeys.chapters()
-    : atlasQueryKeys.chapter(address.translation, address.book, address.chapter);
+  const key =
+    address === null
+      ? atlasQueryKeys.chapters()
+      : atlasQueryKeys.chapter(address.translation, address.book, address.chapter);
 
   return useQuery<ApiChapter, AtlasApiException>({
     queryKey: key,

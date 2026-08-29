@@ -63,7 +63,9 @@ describe('toHttpError', () => {
 
   it('derives retryability from the status, not from the envelope', () => {
     const refused = toHttpError(404, { error: { code: 'book_not_found', message: 'no' } });
-    const unavailable = toHttpError(503, { error: { code: 'dependency_unavailable', message: 'no' } });
+    const unavailable = toHttpError(503, {
+      error: { code: 'dependency_unavailable', message: 'no' },
+    });
 
     expect(refused.isRetryable).toBe(false);
     expect(unavailable.isRetryable).toBe(true);

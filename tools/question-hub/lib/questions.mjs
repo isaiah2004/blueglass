@@ -31,9 +31,35 @@ export function configureMediaCheck(fn) {
   checkSrc = fn;
 }
 
+/**
+ * The next free id in a prefix's family.
+ *
+ * COUNTING IS NOT ALLOCATING. The previous version returned `prefix + (count + 1)`, which
+ * is only free when the family is contiguous and zero-padded the same way — and it is
+ * neither. `Q-01`, `Q-02`, `Q-03` and `Q-04` were seeded unpadded alongside `Q-005`+, so 23
+ * `Q-` questions existed while the highest was already `Q-024`. Two agents in a row were
+ * handed `Q-024`, and because `/api/ask` upserts by id, each silently overwrote a question
+ * a human had already answered — the one failure `lib/db.mjs` is written to prevent, walked
+ * in through the front door.
+ *
+ * So: take the highest number actually in use, add one, and step over anything still taken.
+ * The final loop is belt and braces for a hand-written id like `Q-024b`.
+ *
+ * @param db The database.
+ * @param prefix The id family, e.g. `Q`.
+ * @returns An id no question currently holds.
+ */
 function nextId(db, prefix) {
-  const taken = db.questions.filter((q) => q.id.startsWith(prefix + '-')).length + 1;
-  return prefix + '-' + String(taken).padStart(3, '0');
+  const taken = new Set(db.questions.map((q) => q.id));
+  let highest = 0;
+  for (const id of taken) {
+    if (!id.startsWith(prefix + '-')) continue;
+    const number = Number.parseInt(id.slice(prefix.length + 1), 10);
+    if (Number.isFinite(number) && number > highest) highest = number;
+  }
+  let candidate = highest + 1;
+  while (taken.has(prefix + '-' + String(candidate).padStart(3, '0'))) candidate += 1;
+  return prefix + '-' + String(candidate).padStart(3, '0');
 }
 
 /** Validate a posted question. Throws HttpError(400) with one actionable sentence. */

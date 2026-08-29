@@ -3,6 +3,924 @@
 Versioning is `MAJOR.FEATURE.PATCH` (CLAUDE.md, "Versioning"): one FEATURE bump per
 feature, one PATCH bump per fix. The current version lives in the root `package.json`.
 
+## 0.17.3 — 2026-08-29
+
+**`pnpm format:check` exits 0 again.** A standalone formatting fix, owned separately from the
+M2 badge work: nothing here changes a line of behaviour, and no test, assertion or rendered
+pixel moves. It is listed as its own PATCH because the breakage is older than M2 and would
+have outlived it.
+
+### Fixed
+
+- **`pnpm format:check` no longer fails on 144 untouched files.** The report attributed this
+  to Prettier 3.9.6 reflowing signatures, but that was true of only half of it, and the
+  larger half had a different cause. Two independent defects were stacked on the same exit
+  code:
+
+  1. **Line endings, and there was no `.gitattributes`.** `core.autocrlf=true` — the default
+     from the Git for Windows installer — checks every text file out with CRLF, while
+     `.prettierrc.json` sets `"endOfLine": "lf"`. So Git itself broke the check, on files no
+     one had edited, and `playwright.config.ts` — cited in the report as evidence of
+     reflowing — turned out to need _zero_ reformatting: stripped of its carriage returns it
+     was already byte-for-byte what Prettier wanted. This is why `pnpm format` alone was
+     never a fix. Running it would have made the check pass until the next `git checkout`
+     silently re-broke it, because the conversion happens on checkout rather than in the
+     repository. The repo now has a `.gitattributes` pinning `* text=auto eol=lf`, so every
+     working tree is byte-identical regardless of the developer's `core.autocrlf`, and the
+     92 tracked files that had been checked out with CRLF were converted in place. Git had
+     always normalised these blobs to LF on the way in, so this changed what sits on disk and
+     nothing about repository content — verified by comparing all 92 against their index
+     blobs, and by confirming `git status` and `git diff` are unchanged from before the
+     conversion. Binary types are declared explicitly rather than left to Git's heuristic, so
+     no PNG among the 1,242 tracked ones can be mangled by end-of-line conversion.
+  2. **Genuine drift, at the wrong `printWidth`.** The remaining files really were misformatted,
+     but not by 3.9.6 reflowing at 100 columns — they had been _written_ wrapped at 80, the
+     Prettier default, by something that never read `.prettierrc.json`. `retry.ts` carried a
+     96-character import expanded across six lines; `bible.tsx` carried a signature split
+     across four. Both fit on one line at the configured width. `pnpm format` rewrote these.
+
+  `pnpm format:check`, `pnpm lint` and `pnpm typecheck` are green, 1,736 JS tests and 433
+  backend tests pass, and the walkthrough is unchanged.
+
+## 0.17.2 — 2026-08-29
+
+M2 repair round 2 — **the Route badge stops asserting a journey.** Seven walkthrough
+findings, worked hardest-first. The headline defect was a badge contradicting the chapter
+open on the same screen: `[Route]` in Acts 16 titled itself "Derbe to Thyatira — 20 stops on
+this journey" and drew a numbered leg list, while 16:4 names Jerusalem as where the decisions
+were made without Paul going there, 16:7 records that "the Spirit of Jesus would not permit
+them" to enter Bithynia, and 16:14 names Thyatira only as Lydia's home town.
+
+### Fixed — majors
+
+- **The Route badge names places, not travel** (`AI-05`, pillar 3; assumption `B-05`, queued
+  as `Q-028`). `routes.scheme = 'chapter'` is derived by reading place names out of the text
+  in the order it prints them, which cannot tell a place travelled through from a place
+  merely mentioned — so nothing on the sheet says it can. The teaser is "16 places named in
+  this chapter"; the title is "Places named in this chapter"; the stat strip is `PLACES` and
+  `SPAN` (the gap between the two furthest-apart pins, which no reordering can change) with
+  no `STOPS`, no `LONGEST LEG` and no leg distances; the list prints the verse that names each
+  place where the mileage used to be; and the method line — "Listed in the order this chapter
+  names them" — moved from below the map and the figures to directly under the heading, where
+  it qualifies them. `departure` and `destination` are withheld under this scheme and kept for
+  one that can establish them. `geo/distance.ts` no longer offers a path length at all.
+- **The line on the map is a trace, not a route.** Wording alone was not enough: a saturated
+  cyan polyline with a soft glow, drawing itself progressively through sixteen pins, reads as
+  a voyage however the caption above it is worded. `RouteLine` gained a `mentionOrder`
+  variant — a dashed hairline at 42 % strength, no glow, no draw — and `design-language.md`
+  §6's route line is kept, unchanged, for a scheme that can establish a route.
+- **A place the chapter names twice is one pin.** `_named_places` now deduplicates across the
+  whole passage rather than only between neighbours, so Acts 16's two Mysias, two Troases and
+  three Macedonias stop drawing a 136-mile round trip and a triangle. Twenty waypoints become
+  sixteen places.
+- **`pnpm walkthrough` no longer flakes on a cold tablet project.** The spike's tap test
+  failed one run in two on `locator.click` timing out at 15 s with the element already in the
+  DOM: the project was starting into a cold Metro bundle with six workers on one machine, and
+  Playwright's stability check cannot settle on a starved main thread. `e2e/support/settle.ts`
+  separates two waits that were sharing one budget — _the app becoming ready_, which belongs
+  to the 90 s test timeout, and _the click_, which belongs to the 15 s action timeout and is
+  instant on a settled page. `retries` stays at 0 and `actionTimeout` stays at 15 s, so the
+  harness still exposes flake rather than absorbing it. The same wait is used before every
+  inline pill the badge chapters tap.
+- **The walkthrough runs four browsers, not six.** Fixing the spike's tap test exposed the
+  same starvation in two more places over five full runs: two tablet chapters failed on a
+  reader that was still `Loading passage` after 10 s (7-9 s in isolation), and the
+  translation switcher came up empty because the client's ten-second request budget elapsed
+  while the API was answering in single-digit milliseconds. Playwright's default is half the
+  logical cores — six here — and six cold Chrome instances plus Metro plus Postgres do not
+  fit in twelve. `playwright.config.ts` caps it, `ATLAS_E2E_WORKERS` still overrides, and
+  `retries` stays 0. Three consecutive full runs green afterwards, and _faster_: 3.5 min
+  against 4.2. `docs/qa/WALKTHROUGH.md` §6b now tabulates every budget in the harness and
+  says which are about the machine.
+- **A failed translation request no longer blames the database.** The switcher printed "No
+  translations are loaded. Seed the database with `pnpm db:seed`." whenever the list was
+  empty — including when the request had simply failed, which establishes nothing about what
+  is in the database. `TranslationSheet` now separates the two.
+
+### Fixed — minors
+
+- **Stat captions no longer break mid-word.** Three `flex: 1` cells in a 232 dp context rail
+  left about 60 px each, and react-native-web's default `overflow-wrap: break-word` rendered
+  `STRAIGHT LINE` as `STRAIGH` / `T LINE`. `StatRow` now measures itself and lays out as many
+  cells as `size.statCell` (96 dp) allows, wrapping the rest onto a second row —
+  `components/surface/stat-row-layout.ts`, tested at 200, 343 and 1280 dp. A figure is joined
+  to its unit with a no-break space, so `3,575 mi` can never split either. This fixes the
+  `[Site]` sheet's three-cell strip at the same time.
+- **The licence is stated once, and cannot break.** The attribution strip printed
+  "Cross-references © OpenBible.info, CC BY 4.0" and then `CC-BY-4.0` underneath, which the
+  desktop rail broke into `CC-` / `BY-4.0`. `packages/shared/src/licence-notice.ts` gives both
+  strips one rule: the identifier is printed only where the notice does not already carry it
+  (Natural Earth names none), and always with non-breaking hyphens. The share-alike marker is
+  never suppressed — no licensor's notice states it, and it is the flag `Q-007` turns on.
+- **Rule 5.4.3 restored.** `ReaderScreen`, `ChapterCanvas`, `useReadingCanvas`, `RouteMap` and
+  `MapGraticule` were over the fifty-line cap. Split along real seams, not arbitrary ones:
+  `hooks/use-reader-commands.ts` (the reader's commands and surface state),
+  `hooks/use-canvas-scroll.ts` (the scroll bookkeeping and the imperative handle),
+  `hooks/use-route-geometry.ts` (fit, project, declutter), and `ReadingArea` / `ReaderSurfaces`
+  / `VerseColumn` / `GridLines` / `GridLabels` as components.
+
+### Fixed — polish
+
+- **The Greek shown as "AS WRITTEN HERE" is the word alone.** `Σαμοθράκην,` and `κολωνία.`
+  carried the verse's punctuation into a label that promises the word.
+  `badges/domain/surface.py` trims clause marks from both ends and deliberately keeps the
+  elision apostrophe, which spells the word rather than punctuating it.
+- **The map's scale bar stopped shouting.** It was a solid `ink.primary` slab with
+  `ink.primary` type stacked on it, sitting on the coastline it measured — the only
+  100 %-white element on the canvas. It is now a hairline rule with two end ticks and a
+  metadata-toned caption on a label plate, drawn from two new derived roles
+  (`mapPalette.furniture`, `.furnitureLabel`) rather than an inlined hue. `D-05`.
+
+### Tests
+
+- `apps/api/tests/unit/test_route_badge_claims.py` — the teaser, the title, the roles and the
+  deduplication, pinned against the three verses of Acts 16 the old wording contradicted.
+- `apps/api/tests/unit/test_badge_surface_form.py` — clause marks trimmed, elision kept.
+- `packages/shared/src/licence-notice.test.ts`,
+  `apps/mobile/src/components/surface/stat-row-layout.test.ts`, and rewritten
+  `route-view`, `distance` and `SpatialSheet` suites. `SpatialSheet.test.tsx` passed the
+  300-line cap once the travel assertions landed and split along the seam that matters —
+  the sheet — into `RouteSheet.test.tsx`.
+- 1,734 JS tests and 527 backend tests pass; `pnpm typecheck` and `pnpm lint` are clean.
+- Two integration and several component assertions were **changed, not deleted**: they pinned
+  the journey vocabulary this round removed (`test_badges_live.py` asserted Derbe was a
+  "departure"; `SpatialSheet.test.tsx` asserted `STRAIGHT LINE` and `Derbe to Thyatira`).
+  They were asserting a claim the data does not support.
+
+## 0.17.1 — 2026-08-29
+
+M2 repair round 1 — **the badges open onto their sheets.** The M2 walkthrough's fourteen
+findings, worked hardest-first. The headline defect was a seam built from both ends and never
+joined: `BadgeSheetProvider` was mounted by nothing, so every one of the five badges opened
+onto the same four things — a pill, a reference, a one-line teaser and a source list. The map,
+the timeline, the lexicon entry and the linked passages existed, were good, and were reachable
+only from `/spike/*`. All 57 badge tests now pass at all three widths.
+
+### Fixed — blockers
+
+- **`app/_layout.tsx` mounts `BadgeSheetHost`.** `features/sheets/BadgeSheetHost.tsx` is the
+  one place `features/reader` and `features/sheets` meet, which is what the slot was designed
+  for: neither folder imports the other, and a sixth badge is one entry in one file. Every
+  body is registered with `chrome="body"`, because `BadgeDetail` has already drawn the mark,
+  the reference, the teaser and the `AI-05` strip — drawing them again printed the badge's
+  name twice and its licences twice. The textual sheets gained the `chrome` prop the spatial
+  sheets already had.
+- **A cross-reference can now be followed.** `BadgeSheetRenderer` was `(badge) => ReactNode`
+  and passed no callback, so even once mounted, `CrossRefSheet` had no way to navigate. It is
+  now `(badge, actions) => ReactNode`; `BadgeSheetTarget` states a destination in the reader's
+  own vocabulary so the seam stays one-way, and `ReaderScreen` resolves it through the same
+  `bookFromNumber` gate the search results already pass. The phone sheet dismisses before the
+  move; the rail does not, so a reader can follow a second link from the same list.
+
+### Fixed — majors
+
+- **`Q-015` reaches the reader.** The `[History]` teaser printed Hajime Murai's pericope title
+  as a bare fact, in the open sheet and in the chapter-end summary, while the API was already
+  sending `interpretive_claim` and `attributed_to`. `badge-claim.ts` is the rule and
+  `BadgeClaimMark` is the mark, so both surfaces that print a teaser print its attribution. It
+  is set in sentence case on purpose: `HistorySheet`'s own uppercase note sits two lines below,
+  and setting both the same way printed the identical shout twice.
+- **Evidence chips wrap.** They were single unbreakable lines reaching up to 472 px past the
+  context rail and clipped by an ancestor, so the page never scrolled and the citation was
+  simply gone. Chips now shrink and wrap at every width. Measured in Chrome at 375, 768 and
+  1280 dp across all five kinds: nothing overflows any badge surface.
+
+### Fixed — minors and polish
+
+- **Each distinct source is printed once.** Every M2 citation's label _is_ its dataset's
+  attribution line, so a Root badge printed one sentence four times — two identical chips
+  (STEPBible's TBESG and TAGNT are two files of one project) and two strip lines.
+  `badge-evidence.ts` drops a chip the attribution strip below already prints in full; a
+  citation that says something the strip cannot still renders.
+- **`[3D City]` is now `[Site]`** (`Q-025`). `DECISIONS.md` §4 records it as dataset-less, the
+  sheet already called itself `SITE` and said so in a sentence, and the mark now promises what
+  the sheet delivers. The wire kind stays `3d-city`.
+- **An inland site map has something in it.** `geo/site-framing.ts` steps the camera out until
+  at least twelve coastline vertices are drawn inside the frame. Zoom is degrees per _pixel_,
+  so the fixed 6.2 that framed Jerusalem well left Lystra as an empty graticule in the 232 dp
+  rail. Coastal sites are unchanged.
+- **"Jerusalem - today Jerusalem" is gone.** The `3d-city` teaser prints the modern name only
+  when it is actually a rename, and otherwise says how much of the canon names the place.
+- **"to listen ro" is gone.** `domain/gloss.py` rejects a gloss whose last token reduces to one
+  or two letters English does not use as a word, and falls back to the same lexicon row's
+  definition. Measured across all 11,035 TBESG entries it matches exactly two rows, both
+  genuinely corrupt, and no correct gloss.
+- **The tablet reading measure is protected.** The gutter and the scripture step now follow the
+  reading _pane's_ width rather than the window's form factor: a 768 dp tablet has 408 dp of
+  pane once both rails are taken off, and tablet type in a tablet gutter produced a 306 dp
+  column — narrower than the same app's phone column, in larger type. Measured 306 dp → 338 dp
+  at a smaller step; 1024 and 1280 dp are unchanged.
+
+### Fixed — the harness and the tools
+
+- **`badgeSurfaceOverflow` no longer reports clipped SVG geometry.** An SVG child reports its
+  full geometric box regardless of the root that clips it, so the coastline path measured
+  967 px wide inside a 375 px sheet while rendering perfectly. It was the only entry left once
+  the chips were fixed, so a real chip regression would have arrived as one more line in a list
+  already treated as noise. `probes-layout.ts` had made the same exclusion for the same reason;
+  this brings the badge probe into line with it. The `<svg>` root is still measured.
+- **The Question Hub can no longer overwrite an answered question.** `nextId` counted questions
+  in a prefix family and returned `count + 1`, which is only free when the family is contiguous
+  and uniformly padded — and it is neither, so two agents in a row were handed `Q-024` and each
+  silently overwrote a question a human had already answered. `ASSUMPTIONS.md` carries four
+  rows apologising for that collision. The allocator now reads the highest id in use and steps
+  over anything taken; a regression test pins it. The question damaged during this round was
+  restored verbatim from `data/snapshots/`. The hub was restarted and the fix verified live:
+  the next `ask` landed on `Q-027`, where the old allocator would have returned `Q-026` and
+  destroyed the question filed twenty minutes earlier.
+
+### Recorded rather than fixed
+
+- **The `[Root]` badge is New Testament only** (`L-06`). `verse_words` holds books 40–66, so
+  the 8,021 loaded Hebrew lexicon rows are unreachable and right-to-left rendering is exercised
+  only by the synthetic probe at `/spike/textual-sheets`. The Hebrew word layer (STEPBible
+  TAHOT) is not in `data/raw/`, and ingesting it is a download, a parser and an alignment pass —
+  not a repair. Recorded the way `Q-016` records NT-only dating.
+- **The gold shared between verse numbers and two badge hues** (`Q-026`). `design-language.md`
+  §8.2 forbids mixing the meanings and §2's own hue table does it; contrast is fine (5.38:1 to
+  6.04:1 in light). Queued for the owner; the table stands as written meanwhile.
+
+## 0.17.0 — 2026-08-29
+
+M2 adversarial walkthrough — **five new chapters, and what they found.** The harness now
+drives the badge system itself: pills in the line, five sheets, the chapter-end summary,
+both badge homes, an outage mid-session, and the whole thing again in light. 153 tests at
+three widths, 126 passing. The 21 failures are the milestone's real defects, reported by
+name.
+
+### Added — `e2e/walkthrough/11`–`15`
+
+- **`11-badges-inline`** — Acts 16 carries pills for all five `P-04` kinds; every pill is
+  inside its verse and none is taller than the line it sits on; badges occupy under 6% of
+  the painted canvas, which is pillar 1 made measurable. Then Leviticus 13, verified
+  against the live API as carrying no badges at all, to prove the canvas degrades to plain
+  scripture rather than to an empty summary heading.
+- **`12-badge-sheets`** — one test per kind, so five missing bodies report as five findings
+  with five screenshot trails rather than as one that stopped at the first. Each asserts
+  the source **and the licence** (`AI-05`, `Q-007`), that nothing overflows the surface, and
+  that the body the kind exists for is actually there. A sixth test holds `Q-015`: the
+  history sheet must say "Murai's reading", not state his reading as fact.
+- **`13-badge-summary`** — the summary and the pills must agree exactly on what is in the
+  chapter, since both are built from one response; a row must open the badge its pill does;
+  and a linked passage must navigate.
+- **`14-badge-surfaces`** — the phone sheet is measured as genuinely half, the rail as
+  genuinely not overlapping the canvas, and the other surface as absent, so `Q-006` cannot
+  pass on a phone that wrongly grew a rail. Then the API is cut mid-session and the reader
+  must show no pill it cannot back, and must recover when it returns.
+- **`15-badges-light`** — `D-01` is one of the 26 overrides and chapter 7 predates the
+  badges. Every M2 surface is photographed in light and the pills are proven still painted.
+
+### Added — `e2e/support/badge-ids.ts`, `e2e/support/badge-journeys.ts`
+
+M2's test-id contract lives beside M1's rather than inside it, and the shared moves —
+open a badged chapter, read which pills are on screen, tap one, find its home by width —
+live in one place so five chapters cannot drift.
+
+`badgeSurfaceOverflow` is new. The standing audit measures overflow against the viewport,
+which is the right question for a full-width screen and the wrong one for a 290 px rail:
+a chip 400 px past the rail is clipped by an ancestor, the page never scrolls, and the
+citation is simply gone. Measuring against the container is what catches it.
+
+### Changed — `docs/qa/WALKTHROUGH.md`
+
+Chapters 11–15 documented; the badge ids added to the contract; and the stale **Owed**
+table replaced. Every M1 id it listed is now shipped. What replaces it is **Unreachable**,
+which is a different and more interesting state: an id a finished component carries that
+nothing in the reader mounts.
+
+### Not fixed
+
+This was a QA pass; no application code was changed. The findings are recorded in
+`docs/qa/walkthroughs/qa-m2-adversarial/` (`RESULTS.md`, plus 332 screenshots at
+375/768/1280 in both themes).
+
+## 0.16.0 — 2026-08-29
+
+M2 reader wiring — **the pills are in the scripture.** `GET /badges/chapters/BSB/Acts/16`
+now arrives in the reading canvas as twelve inline marks sitting inside the verses they
+annotate, a summary of all of them at the end of the chapter, and a sheet or a rail panel
+when one is tapped. Verified in Chrome at 375, 768 and 1280 dp, in both themes, with zero
+console errors.
+
+> **Corrected in 0.17.1.** This entry originally claimed 390, 834 and 1440 dp. The harness
+> drives 375, 768 and 1280 (`e2e/support/viewports.ts`), chosen because those are the
+> widths that straddle `Q-006`'s 600 and 1100 dp breakpoints. Nothing was ever driven at
+> 390/834/1440.
+
+### Added — `apps/mobile/src/features/reader/badges/`
+
+- **One query per chapter, run beside the chapter text, never after it.**
+  `useChapterBadgesQuery` is deliberately not merged with `useChapterQuery`: scripture paints
+  when its own request lands and the pills arrive when theirs does. A chapter whose badge read
+  failed is a chapter with no pills — never a chapter with no text.
+- **The decoder is where `AI-05` is enforced.** A badge that arrives with an empty `sources`
+  list is dropped before any component can see it, so "every claim carries a source anchor or
+  is not shown" is a property of the type rather than a rule each sheet must remember. Three
+  more refusals join it: a kind this client has no hue for, a verse key outside the canon, and
+  a closed vocabulary the client cannot narrow — an unknown `language` would set the wrong
+  reading direction and an unknown `dating_origin` would let a guess read as sourced.
+- **One bad badge never blanks a chapter.** The envelope decodes strictly; each badge decodes
+  independently and a failure is skipped and counted in `droppedCount`. The app has no
+  structured logger yet, so the count rides in the data where a test can assert on it — which
+  is the difference between resilience and a silent swallow.
+- **One badge model, shared with the sheets.** The decoder emits `@atlas/shared`'s
+  `InlineBadgeBase` envelopes carrying exactly the payload shapes `features/sheets/` declares,
+  so a sheet body registered through the slot receives the type it asked for with no adapter
+  between. Packed verse keys are resolved to `VerseKey` objects here, at the edge, because
+  that is a decoder's job and not a sheet's.
+- **`badge-sheet-slot.tsx` — the seam between the reader and the five sheet bodies.** The
+  chrome (mark, reference, teaser, evidence chips, attribution) belongs to the canvas because
+  it is identical on every badge and because `AI-05` makes the attribution non-optional; the
+  body is one component per kind and is registered through a context. Neither side imports the
+  other. With nothing registered a sheet is still a complete, honest surface.
+- **The chapter-end summary list** (`design-language.md` §5, `image9.png`): every badge in the
+  chapter as pill, one-line teaser and chevron, opening the same sheet the inline pill does.
+  It is the route for the reader who will not break off mid-sentence, which is most readers.
+
+### The density rule, restated on the client
+
+The server caps at two badges per verse. `chapter-badges.ts` applies the same ceiling again on
+the way in — not from distrust, but because a pristine reading canvas is a _client_ property.
+A ~25-word verse is two lines on a phone and a third pill turns the middle of a sentence into
+a toolbar. Nothing is capped in the summary list, which is what makes the inline cap safe.
+
+### Anchoring — verify, then fall back
+
+`model/verse-badges.ts` now takes the server's character offset, which came from a word
+alignment and therefore distinguishes the `us` the badge means from the three others in the
+verse. It checks the offset against the text it is about to render before using it: the same
+word sits at different offsets in KJV and BSB, and an offset that no longer spells the
+anchored word means the row describes a different text. It then falls back to the occurrence
+search, and drops the anchor if that fails too. A drifted enrichment row costs the reader a
+pill, never a verse.
+
+### Changed — the two spike concessions, closed
+
+- **The badge glyph is a vector, not an emoji** (`Q-021`). `design-language.md` §5 asks for
+  "text and icon in the full hue", and the OS paints an emoji in its own palette. Ten
+  monochrome paths now live in `components/badge-icons.ts`, drawn by `components/BadgeGlyph`
+  on the same 24-unit outline grid as the navigation glyphs. The bracketed mark is text only:
+  `[Route]`, with the glyph between the bracket and the word.
+- **`InlineBadge` reads the active palette.** It took its hue from the module-scope `colors`
+  table, so a pill kept its dark hues under the light theme. `D-01` does not allow that; it
+  now calls `useTheme()` like every other component.
+- **Tapping a pill no longer also selects the verse under it.** The verse row is itself a
+  control, so a badge press calls `stopPropagation` — two surfaces for one tap was a bug the
+  reader would have felt as the sheet and the dock opening together.
+- **No nested `<button>` on the web** (`Q-024`, recorded in `ASSUMPTIONS.md`).
+  react-native-web renders `accessibilityRole="button"` as a real `<button>`, and a button
+  inside a button is invalid HTML — React logged it on every chapter and the dev LogBox banner
+  covered the tab bar. The pill keeps its label, hit slop and tap target on the web but not the
+  role; the chapter-end summary list is the keyboard-reachable route to every badge, which is
+  what that list is for. On native there is no DOM and the role stays.
+- `model/badge-preview.ts` is **deleted**, as its own header said it would be the moment a real
+  source arrived. `EXPO_PUBLIC_READER_BADGE_PREVIEW` no longer exists (`R-02` closed).
+
+### Tests
+
+57 new tests. The decoder ones run against `testing/acts16.sample.json`, captured from the
+running API rather than typed by hand — a decoder tested against a hand-written body proves
+only that the two agree with each other. The component tests assert the three things only a
+render can show: the verse reads unchanged character for character, the pill sits immediately
+after its word, and the row's geometry does not move when a badge appears.
+
+### What a browser showed
+
+Acts 16 on a 390 dp phone renders twelve pills across five verses with the line pitch
+unchanged; a pill that would overflow wraps whole to the next line rather than splitting.
+Tapping one opens a sheet over the bottom half with the scripture still visible above it; at
+1440 dp the same body fills the context rail and no sheet is mounted. Both themes, zero
+console errors. The one thing a browser could not show is Android — the spike's six device
+checks are still open.
+
+## 0.15.0 — 2026-08-29
+
+M2 spatial badge sheets — **`[Route]` and `[3D City]` now have bodies, and the app draws
+its own map.** `apps/mobile/src/features/sheets/spatial/` renders both spatial badges from
+the real M2 payloads, with no LLM, nothing spent (`AI-07`), and — per `M-01` — **no tile
+provider and no Mapbox token**. The coastline is vendored, so the map works with the
+network off. Like the textual sheets, each is a _body_, not a screen: the host supplies a
+bottom sheet below 600 dp and the context rail above it (`Q-006`), and one component is
+right in both.
+
+### Added — `features/sheets/spatial/`
+
+- **`[Route]`** (`image1.png`) — a stylised dark map with the journey drawn across it as a
+  glowing cyan line, golden pins, decluttered place labels, a stat strip, and the full stop
+  list with the verse that names each place.
+- **`[3D City]`** — an honest **site sheet**: a locator map with a coordinate graticule and
+  a scale bar, the pin, the modern identification, how precise that pin is, how much of the
+  canon names the place, and where this chapter does.
+- **`SpatialSheet`** — one entry point that narrows on `kind` and applies the `AI-05` gate,
+  so a host writes one component and not two.
+- **`/spike/spatial-sheets`** — a diagnostic route rendering both sheets at all three
+  widths in both palettes. Linked from nothing (pillar 1); delete it once the reader host
+  opens these sheets from real badges.
+
+### Added — the basemap
+
+- `data/raw/natural-earth/` — Natural Earth 1:50m land and lakes, **public domain**, with
+  `PROVENANCE.md` and the licence verbatim. It closes the gap
+  `openbible-geocoding/PROVENANCE.md` left open when it deliberately declined OpenBible's
+  partly-ODbL geometry slice.
+- `tools/geo/build-basemap.mjs` — crops, simplifies and rounds it into
+  **100 land rings, 27 lake rings, 3,327 points, 45,921 bytes**, committed so the client
+  build never depends on `data/`.
+- Public domain is what makes bundling lawful: `Q-007` bites on share-alike sources, and
+  Natural Earth has none.
+
+### `react-native-svg`, not Skia — decided on measurements
+
+96 SVG nodes for the whole 20-stop Acts 16 map (the 127 coastline rings are **one** path
+with `fill-rule: evenodd`); **0.92 ms median / 2.02 ms p95** to project and stringify the
+visible coastline; **7.6 ms median / 8.6 ms p95** frames through the draw, with the
+coastline rewritten exactly once per camera change. Skia's advantage is per-frame raster
+work, of which there is none here, and its web cost is a ~2.9 MB CanvasKit WASM binary and
+an async gate before first paint — on a first-class web target (`T-01`). Full comparison in
+`features/sheets/spatial/README.md` §2.
+
+### The honesty the data forced
+
+- **No duration, ever.** `image1.png` prints "2 Days / Estimated Travel"; nothing in
+  `data/raw/` records a sailing time, so the stat does not exist rather than being guessed.
+- **Distance is derived and captioned `STRAIGHT LINE`.** The API sends none. The mockup's
+  "125 Miles by Sea" is not reproducible from any coordinate we hold — the straight line
+  through Troas, Samothrace, Neapolis and Philippi is already **157 miles**, and a sailed
+  track can only be longer. Queued for the product owner as _the Route sheet's stat strip_;
+  proceeding on the derived figure.
+- **`Q-008` is stated, not implied.** The `[3D City]` sheet says in a sentence that no
+  openly licensed 3D reconstruction of the site exists. `model/reconstruction.ts` is the
+  interface a commissioned model drops into, and it demands the model's own
+  `SourceAttribution` — geometry is a claim too.
+- **The route line passes exactly through every pin.** The curve is a centripetal
+  Catmull-Rom spline, which interpolates rather than approximates, so the drawing never
+  makes a geographic claim the gazetteer does not support.
+- **`scheme` is phrased as a method** — "places named in this chapter, in the order the
+  text names them" — never as a road anyone walked.
+- **A stat with no figure behind it is dropped, not dashed.** A hole in a stat strip invites
+  the reader to read it as zero.
+- **The gazetteer's precision class is restated, never quantified.** The API sends
+  `precision_type` and not `precision_meters`, so the sheet says "pinned to a point on an
+  excavated tel" and prints no metre figure.
+
+### Fixed
+
+- `theme/use-reduced-motion.ts` crashed on unmount wherever `react-native-web`'s
+  `AccessibilityInfo` module was first evaluated without a DOM — its `window.matchMedia`
+  probe runs once at import and, when it comes back empty, `addEventListener` returns
+  `undefined` rather than a subscription. That is the jsdom component project and the Node
+  pre-render pass of `expo export --platform web`. Found by the first shipped components to
+  read the reduced-motion preference.
+
+### Motion
+
+The line draws progressively over `motion.duration.slow`, linearly. Under
+`prefers-reduced-motion` it is fully drawn at first paint and **no animation frame is ever
+scheduled** — verified in Chrome with the media query forced: 112 dash mutations over
+420 ms normally, 0 under reduced motion.
+
+### Tests
+
++230 (203 logic, 38 component). Both palettes, all three widths. The projection is asserted
+against published Mercator values rather than its own output; the basemap against seven
+cities on land, three seas in water, Samothrace surviving simplification, and the Sea of
+Galilee subtracting correctly.
+
+## 0.14.0 — 2026-08-29
+
+M2 textual badge sheets — **`[Root]`, `[History]` and `[Cross-Ref]` now have bodies.**
+`apps/mobile/src/features/sheets/textual/` renders the three text badges the M2 API
+serves, from the real payload shapes, with no LLM and nothing spent (`AI-07`). Each sheet
+is a _body_, not a screen: no modal, no scroll view, no close button, because
+`design-language.md` §4 puts it over the bottom half of a phone and `Q-006` puts the same
+content in the context rail beside the scripture, and one component has to be right in
+both.
+
+### Added — `features/sheets/textual/`
+
+- **`[Root]`** (`image6.png`) — the headword large in its own script, transliteration,
+  Strong's number, the lexicon's gloss and fuller definition, a usage strip, the verse it
+  was found in, and **Save as Flashcard**.
+- **`[History]`** (`image5.png`) — a dual-axis timeline with the world's rulers down one
+  side and scripture's own events down the other, merged into rows keyed by year, with a
+  marker on the row the reader's passage is dated to.
+- **`[Cross-Ref]`** — the six strongest links for a verse, each with **the scripture text**
+  and a strength meter, ranked by OpenBible's vote count, each tapping through to the
+  reader.
+- **`TextualSheet`** — one entry point that narrows on `kind`, so a host writes one
+  component and not three.
+
+### `AI-05` is a gate, not a footer
+
+Every sheet ends in a `SourceStrip` naming each dataset and its SPDX licence verbatim, and
+`TextualSheet` refuses to render a payload whose provenance cannot be printed — not the
+lemma, not a ruler, not one verse of a cross-reference. The server enforces the same rule
+before the wire; this is not redundancy, because the same body also renders from a
+persisted cache, a deep link and a fixture, none of which the server checked this session.
+A refusal says why rather than showing a blank sheet.
+
+### The honesty the data forced
+
+- **`Q-015`** — the History sheet's heading is the _sourced year_, never Murai's title.
+  "Paul's vision of the man of Macedonia" appears only inside a note labelled "Murai's
+  reading" and naming Hajime Murai, and all three fields travel together or the title is
+  not shown at all.
+- **`Q-016`** — every History sheet carries the note that dating is New Testament-era only
+  and says why Old Testament passages carry no year. `datingOrigin` other than `sourced`
+  gets its own warning; no M2 row has one, and the day one does it will not arrive
+  unlabelled.
+- **`confidence` is coverage, not certainty** (`ASSUMPTIONS.md` `H-03`). It prints as
+  "Covers about 60% of the passage", beside the rationale that explains it.
+- **A cross-reference span shows its first verse only** — that is what the API populates
+  `text` from — so a row naming `Acts 2:38-39` says so instead of looking complete.
+- **The Root sheet lists one example verse, not several.** `RootPayloadOut` carries counts
+  and no concordance, and no endpoint serves one. The caption states the count rather than
+  promising a list. Every `[Root]` badge in the corpus today is a hapax legomenon anyway,
+  so for every badge that ships the list is complete.
+- **The usage strip has three cells, not the mockup's four.** The fourth is a
+  share-of-corpus percentage that needs a testament split the payload does not carry, and a
+  fabricated number beside three real ones is worse than a gap.
+
+### Greek and Hebrew, measured rather than assumed
+
+- Greek takes the scripture serif — Source Serif 4 covers the Greek block, so `§8.4` holds.
+- **Hebrew and Aramaic name no font family at all.** Source Serif 4 has no Hebrew block,
+  and relying on per-glyph fallback is dependable in a browser and not on Android; the
+  failure mode is a row of empty rectangles on a device while the web build looks fine.
+- Both right-to-left scripts set `writingDirection` and `textAlign`. Verified in Chrome at
+  375 / 768 / 1280: `שָׁלוֹם` renders as `direction: rtl`, `text-align: right`, in the
+  platform stack; `πορφυρόπωλις` renders LTR in `SourceSerif4-Regular`.
+- No Hebrew `[Root]` badge exists — the word layer is Greek-only — so a **synthetic Hebrew
+  probe** fixture exists purely so the right-to-left path has an example to check. It is
+  labelled as synthetic wherever it is shown and is never rendered by the product.
+
+### Added — `app/spike/textual-sheets.tsx`
+
+A diagnostic route rendering all three sheets at the three widths their real homes hand
+them (phone sheet 375, tablet rail 340, wide rail 560), in both palettes, plus the Hebrew
+probe and an unattributed badge. Linked from nothing (pillar 1). Delete it once the reader
+host mounts these sheets from live data.
+
+### Notes for whoever wires the host
+
+- `TextualSheet` takes resolved `VerseKey` values, which is what `@atlas/shared`'s badge
+  envelope declares; `decodeVerseKey` / `decodeVerseRange` are exported for a host still
+  holding the wire's packed integers.
+- `@atlas/shared`'s `RootBadgePayload` is **stale** against the shipped API: it asks for
+  `exampleOsisIds` and `pronunciationAudioUrl`, which nothing serves, and omits `surface`,
+  `verseCount`, `bookCount` and `morphology`, which the endpoint sends. This folder
+  declares `RootSheetPayload` to mirror the endpoint and says so in the module header.
+- **Save as Flashcard is a seam.** `flashcard-store` holds session-lifetime drafts keyed by
+  Strong's number, and the button says so out loud. No SM-2, no persistence, no sync —
+  `A-03` makes flashcards a synced entity, which is a server table and a conflict rule, and
+  belongs to the Studio milestone. When it lands, the store moves to `src/stores`.
+
+### Tests
+
+189 new tests — 121 pure (provenance gate, verse targets, original-language rules, usage
+copy, flashcard store, timeline alignment, dating notices, cross-reference ranking) and 68
+component tests across both palettes, including the right-to-left assertions that read the
+compiled react-native-web rules rather than the style object.
+
+---
+
+## 0.13.0 — 2026-08-29
+
+M2 inline badges — **the interaction the whole product exists for now answers over HTTP.**
+`GET /badges/chapters/BSB/Acts/16` returns twelve fully-formed badges, each anchored to an
+exact character range and each naming its source and licence. Five kinds ship, per `P-04`:
+Route, 3D City, History, Root, Cross-Ref. **No LLM was called and nothing was spent**
+(`AI-07`): every badge is served from the deterministic datasets the ingest agents landed.
+
+### Added — the badge module (`apps/api/app/modules/badges/`)
+
+- **Two endpoints, not five.** `GET /badges/chapters/{translation}/{book}/{chapter}`
+  returns the whole chapter's badges with their payloads embedded — one request, one pool
+  acquire, ten indexed statements, no waterfall. `GET /badges/{badge_id}` reopens one
+  sheet from a deep link. Per-kind endpoints were rejected: the reader asks "what does
+  Acts 16 show", never "what Route badges does Acts 16 have", and fanning out would push
+  the per-verse cap into client code no server test covers.
+- **The payload is a union discriminated on `kind`**, declared to Pydantic, so the OpenAPI
+  document publishes a real `oneOf` and the generated client narrows instead of guessing.
+- **Deterministic ids.** `kind~verse_key~discriminator` — derived from the badge's own
+  coordinates rather than stored, which is what makes them stable for free and lets one
+  badge be rebuilt from its id alone.
+
+### The anchoring rules — three, and only three
+
+A badge is placed by `domain/anchor.py`, a module of pure total functions with no clock and
+no I/O, so the same chapter yields the same anchors forever.
+
+- **`span_anchor`** — the exact range `verse_word_alignments` already computed, _verified_
+  against the text being rendered rather than trusted. A stored offset that no longer sits
+  on a word means the row describes a different text, and the badge is dropped.
+- **`name_anchor`** — the first attested spelling of a place, folded to the gazetteer's own
+  index form, longest phrase first so "Alexandria Troas" is never anchored as "Troas".
+  Only mentions OpenBible classifies as `name` are eligible: Acts 16:9 mentions **Greece**
+  with kind `no_translation`, and a pin on "Macedonia" claiming to be Greece is exactly the
+  quiet wrongness `AI-05` exists to stop. `modern` spellings are excluded for the same
+  reason — the gazetteer files _Athens_ as a modern name for the place called Greece.
+- **`tail_anchor`** — the verse's last word, for History and Cross-Ref, whose claim is
+  about the whole verse rather than about one word of it.
+
+### The density rules — the product judgement, stated and tested
+
+The data justifies a badge on nearly every verse of Acts 16. Rendering them all would
+satisfy pillar 2 while destroying pillar 1, so four rules cut it down, all in
+`domain/selection.py`:
+
+1. **One badge per run of characters.** Overlapping anchors collide, not only identical
+   ones. Ties go to `P-04`'s own listing order, which puts the badges anchored to a proper
+   noun ahead of the ones annotating a whole verse.
+2. **Two badges per verse.** A ~25-word BSB verse is two lines on a phone; three pills is a
+   toolbar in the middle of a sentence.
+3. **A per-kind quota** — route 1, 3D City 2, History 2, Root 4, Cross-Ref 4. Without one,
+   cross-references fill every chapter because they are the densest dataset (344,799 rows),
+   not because they are the most valuable thing on the page.
+4. **Twelve per chapter.** The quotas sum to thirteen deliberately, so the cap bites and
+   drops the chapter's least valuable badge rather than being decorative.
+
+Queued for the product owner as a hub question; proceeding on these numbers meanwhile
+(`ASSUMPTIONS.md`, `B-01`).
+
+### Per-badge selection rules
+
+- **Root — rarity, not importance.** Acts 16:14 has thirteen aligned words. `theos` occurs
+  1,346 times and glosses as "God", which the English already said; `porphyropolis` occurs
+  **once** and means "dealer in purple". So: one badge per verse, on the rarest word
+  occurring at most twelve times — 4,501 of the 5,580 attested lemmas occur ten times or
+  fewer, so a higher bar would badge most of the vocabulary.
+- **Cross-Ref — a ten-vote floor.** Every one of Acts 16's forty verses has a
+  cross-reference; only nine reach ten votes. Weak links are dropped from the sheet too,
+  not merely from the decision to badge: a 3-vote link listed beside a 43-vote one reads as
+  though the two carry equal weight.
+- **History — one badge per dated passage, not per event.** Acts 16 contains eight dated
+  events; eight pills would be eight openings onto near-identical timelines. The biblical
+  axis is chosen nearest-first and rendered in narrative order, which is what keeps the
+  passage the reader is standing in on its own timeline.
+- **Route — one per journey**, anchored at the first stop the English text actually spells,
+  with consecutive repeats collapsed so no zero-length leg is drawn.
+
+### `AI-05` made structural, not editorial
+
+- Every badge carries `sources[]`, and every source carries `key`, `name`, `license`,
+  `attribution`, `share_alike`, `version` and `retrieved_at`. `InlineBadge.is_renderable`
+  checks all of it in one place and the selector drops anything that fails, so **no builder
+  can forget and no route can leak an unattributed badge**. A named test asserts it.
+- The chapter response repeats the union of sources at the top level, so the attribution
+  strip can be drawn without walking every badge — and a share-alike source (`Q-007`) can
+  be spotted by inspection rather than by reading prose.
+- **`Q-015` is honoured where it actually bites.** A History badge's passage title is
+  Hajime Murai's division of the text, not a neutral fact, so `passage_title`,
+  `interpretive_claim` (`"Murai's reading"`) and `attributed_to` travel together or the
+  title is dropped. Acts 16 returns all three.
+
+### Changed — `packages/shared`, additively, because the real data demanded it
+
+- **`InlineBadgeBase` gains a required `sources: readonly SourceAttribution[]`**, and
+  `citation.ts` gains that type. A citation chip proves someone said this; a licence proves
+  we may repeat it, and `Q-007` turns on telling one from the other by inspection.
+- **`City3dBadgePayload` was rebuilt around what exists.** `dataset-validation.md` §4.3 is
+  a confirmed negative — no openly-licensed 3D reconstruction of a biblical city exists,
+  and the nearest candidate fails on _both_ NonCommercial and NoDerivatives. So
+  `reconstructionId`, `eraLabel`, `summary` and `landmarks` became **optional**, and the
+  badge ships the site: the pin, the modern identification, the number of proposed
+  identifications (777 of 1,342 ancient places have more than one, and `DECISIONS.md` #10
+  forbids hiding that), and where the chapter names it. `hasReconstruction` is `false` and
+  is the interface a commission drops into later.
+- **`HistoryBadgePayload` gains `rationale`, `datingOrigin`, `confidence`, `passageTitle`,
+  `interpretiveClaim` and `attributedTo`.** A passage's date is inherited from an event
+  narrating only part of it — "about 60% of this passage" — and a reader entitled to the
+  date is entitled to the caveat.
+
+### Tests — 70 new, 0 regressed
+
+- **21 contract tests** against an in-memory repository: every documented status code
+  (`book_not_found`, `chapter_not_found`, `badge_id_malformed`, `badge_not_found`, 422 on a
+  zero chapter), plus named tests for **anchors stable across calls**, **a badge without
+  provenance is never returned**, **the per-verse cap holds**, and **a chapter with no
+  badge data returns empty rather than erroring**.
+- **10 selection unit tests**, **12 anchor unit tests** and **17 badge-id unit tests**,
+  all on pure functions with no database and no HTTP.
+- **10 integration tests** against real Postgres and real Acts 16: every statement parses,
+  every anchor slices its own text out of the BSB, two independent loads agree exactly, and
+  Leviticus 4 — verses but no enrichment anywhere — returns an empty list.
+- Backend suite: **495 passing**. JS suite unchanged at **1,142 passing**. `ruff check`,
+  `ruff format --check`, `tsc --noEmit` and `eslint` all clean.
+
+### Found, not fixed — the Question Hub is losing the fleet's questions
+
+`tools/question-hub/ask.mjs` has allocated **`Q-024` six times** to six different agents
+between 01:42 and 04:44 today. The event log records all six asks; `questions[]` holds one,
+the most recent. The five earlier questions are **gone**, not renumbered — the newest
+snapshot predates every collision, and the places agent's route-scope wording is nowhere in
+the file. `seq` stands at 162 while the highest allocated id is 24, so the allocator is not
+reading the counter the log advances. Every agent that "queued and kept working" since
+01:42 believes it asked something the product owner will never see. Not fixed here — the
+hub belongs to another agent — but it should be fixed before the next ask, and the five
+lost questions re-queued. Detail in `ASSUMPTIONS.md`.
+
+## 0.12.0 — 2026-08-29
+
+M2 deterministic ingest — the **History** and **Structure** badges now have their data.
+The dual-axis timeline has both of its axes, and the chiasm badge has 1,830 structures
+across the whole canon. **No LLM call was made and nothing was spent.**
+
+### Added — the History badge (`scripts/ingest_history.py`, migration `0004_history`)
+
+- **`rulers` — 43 rows**, three realms, from two Wikidata SPARQL results (CC0 1.0):
+  15 Roman emperors with day-precision reigns, 27 Judaean office-holders, and Gallio.
+- **`historical_events` — 329 rows** over 203 distinct events, from Theographic
+  `Events.csv` (CC BY-SA 4.0). One row per event per book, because the harmonised gospel
+  events narrate the same hour in three books at once.
+- **`passage_dating` — 510 rows.** A derived join: for each passage, the most _specific_
+  overlapping event. Ranking by raw overlap instead handed every passage in Acts 15-18
+  the "Second Missionary Journey" umbrella's AD 46 rather than the AD 47 of the episode
+  actually on the page.
+- **Acts is dated end to end: 51 of 51 passages**, each with a rationale naming the event
+  it came from.
+
+### Added — the Structure badge (`scripts/ingest_structure.py`, migration `0005_structure`)
+
+- **`passages` — 2,005 rows** under scheme `murai`. This is `Q-009`'s passage half, and
+  the first canon-wide pericope boundary set in the database.
+- **`literary_structures` — 1,830** and **`structure_nodes` — 10,085**, from Hajime
+  Murai's _Literary Structure of the Bible_ (CC BY 4.0). Patterns are classified from the
+  author's own labels: 1,213 chiasms, 329 parallels, 46 sequences, 242 other.
+- **Acts: 49 structures, 344 nodes** — matching the author's published figures exactly.
+
+### Decisions now enforced by the schema rather than by convention
+
+- **`Q-016` — dating is New Testament only.** `historical_events` and `passage_dating`
+  both carry `CHECK (book_number BETWEEN 40 AND 66)`. Ussher's 4004 BC is not insertable
+  by any future loader, however well meant; an integration test attempts it and asserts
+  the constraint fires.
+- **`Q-015` — Murai's reading, never settled fact.** `attributed_to`, `claim_label`
+  (`Murai's reading`) and `claim_type = 'interpretive'` are NOT NULL and non-blank by
+  CHECK on every structure row. The UI cannot omit what the row will not let it.
+- **`AI-05` — every claim carries a source anchor.** `source_id` is NOT NULL on all four
+  new tables plus `passage_dating`, so a badge with no provenance cannot be built.
+- **`Q-007` — share-alike stays separable.** Theographic is the one CC BY-SA source here;
+  `data_sources.share_alike` is `true` for it and its rows never leave their own tables.
+
+### Fixed — three traps found in the data, not in the code
+
+- **Four Murai worksheets combine two canonical books each** (`Samuel`, `Kings`,
+  `Chronicles`, `Ezra-Nehemiah`). Reading the sheet name alone would have filed 511
+  pericopes under the wrong book, silently. `scripts/murai_books.py` resolves the
+  per-span abbreviation and raises on anything unrecognised.
+- **The copyright carve-out is wider than the provenance note recorded.** The Old
+  Testament sheets quote scripture in a second shape the documented filter misses, and
+  the _Japanese_ column is contaminated the same way — this ingest never reads it.
+  7,108 of 10,078 English cells dropped; an integration test re-proves in SQL that
+  nothing quoted survived.
+- **Verse-key arithmetic is only valid inside one chapter.** Acts 3:1-4:4 is 30 verses
+  but 1,004 keys apart, so the first dating pass told the reader an event covered 2% of a
+  passage it covers entirely. Coverage is now counted as real verses.
+
+### Changed
+
+- `requirements.txt` adds `openpyxl==3.1.5`. Murai publishes only `.xlsx`; nothing under
+  `app/` imports it.
+- `data/raw/wikidata-rulers/` gains `nt-era-officials.json` and a provenance addendum.
+  **`dataset-validation.md` §7's "Herodian and prefect coverage is unverified" is now
+  closed**: the Judaean governor series is complete and gapless from AD 6 to AD 70, and
+  every ruler the New Testament names by title is present and dated.
+- New: `docs/architecture/history-and-structure-ingest.md` — measured counts, the five
+  traps, and eight honest gaps.
+
+### Tests
+
+72 new (55 unit, 17 integration). Backend suite: **414 passed**.
+
+## 0.11.0 — 2026-08-29
+
+M2 deterministic ingest — the **Root** badge now has its data. The Greek New Testament is
+loaded word by word, joined to two Greek lexicons and one Hebrew one, and — the part no
+dataset supplies — every English word that can be resolved to the Greek behind it is
+resolved and stored. **No LLM call was made and nothing was spent.**
+
+### Added — the original-language word layer
+
+- `apps/api/scripts/ingest_lexicon.py` and `scripts/lexicon/`: one command turns
+  `data/raw/stepbible/`, `data/raw/dodson-greek-lexicon/` and
+  `data/raw/openscriptures-hebrew-lexicon/` into four new tables. Migration
+  `0006_lexicon`. All four sources are CC BY 4.0 or CC0 — no share-alike, so `Q-007`'s
+  separability rule is not engaged and a test asserts it stays that way.
+- **Measured row counts, from the database after the load:**
+
+  | Table                   |        Rows | What it is                                                          |
+  | ----------------------- | ----------: | ------------------------------------------------------------------- |
+  | `lexicon`               |  **19,714** | 11,040 Greek (11,035 TBESG + 5 minted) · 8,021 Hebrew · 653 Aramaic |
+  | `verse_words`           | **142,096** | every word of the Greek NT, across **7,957** verses                 |
+  | `verse_word_alignments` | **185,703** | English word → Greek word, over four translations                   |
+  | `lexicon_usage`         |   **5,580** | pre-computed occurrence / verse / book counts (`AI-07`)             |
+
+- **Provenance per row-set, in the database** (`AI-05`). `data_sources` gains
+  `retrieved_at`, so licence, attribution and retrieval date all live where the UI reads
+  them. A lexeme carries `source_id` for its headword and `definition_source_id` for its
+  definition, because they are routinely different sources — TBESG's disambiguated gloss
+  with Dodson's CC0 definition — and a `CHECK` makes a definition with no source
+  impossible to store rather than merely discouraged.
+- **The Root sheet in `image6.png` can be built entirely from SQL.** Tapping "worshiper"
+  in BSB Acts 16:14 returns σεβομένη → σέβομαι, `sebomai`, G4576, "be devout",
+  "I reverence, worship, adore." (Dodson, CC0), 10 occurrences in 10 verses across
+  3 books. The mockup's "9 different verses / 7 books" is invented; ours is counted.
+
+### Fixed — four traps in the source data, each caught by a test
+
+- **TAGNT is NRSV-versified and `verses` is KJV.** 235 words carry an inline
+  `[chapter.verse]` KJV reference; applying it lands TAGNT's verse set **exactly** on the
+  7,957 KJV New Testament verses, with no orphan on either side. Ignoring it files those
+  words one verse from the reader who tapped them.
+- **53 KJV verses take their Greek from two NRSV verses**, so both halves start numbering
+  at `#01` and collide. Words are renumbered 1..n per KJV verse in canonical file order.
+- **Five Strong's numbers TAGNT uses are absent from TBESG** (`G0256`, `G2453`, `G3700G`,
+  `G3700H`, `G3708`; 317 words). Rather than drop the words or weaken the foreign key,
+  their lemmas are minted from TAGNT's own dictionary column and attributed to TAGNT.
+- **TBESG writes Greek with the "oxia" codepoints** (σέβομαι with U+1F73), not the
+  canonical tonos ones (U+03AD). They render identically and compare unequal. All Greek
+  and Hebrew is normalised to NFC at ingest, so lemma equality means equality on screen.
+
+### Known limits, stated plainly
+
+- **The Old Testament has no word anchors.** TAHOT, the Hebrew word layer, is not among
+  the acquired files, so the Hebrew lexicon loads as headwords with no verse occurrences
+  and the Root badge cannot render on an OT word. Asserted as a deliberate negative.
+- **Alignment is precision-first, not complete.** 57.8–62.8% of content words resolve
+  (KJV 57.8 · BSB 59.5 · ASV 62.0 · WEB 62.8); 99.1–99.5% of NT verses carry at least one
+  tappable word. A pairing is emitted only when it is unambiguous in both directions, so
+  the words it skips are the ones it could not be sure of.
+
+## 0.10.0 — 2026-08-29
+
+M2 deterministic ingest — **Cross-Ref** and **Route/3D City** now have their data.
+Two OpenBible.info datasets (CC BY 4.0, both already acquired and licence-verified) are
+loaded, asserted and idempotent. **No LLM call was made and nothing was spent.**
+
+### Added — cross-references (the Cross-Ref badge)
+
+- **`cross_references`: 344,799 rows, measured.** `scripts/ingest_crossrefs.py` verifies
+  the archive against the SHA-256 recorded at acquisition, asserts the CC-BY marker that
+  travels in the file's own header row, resolves both OSIS endpoints to `BBBCCCVVV` keys
+  and COPYs the lot inside one transaction. Measured: 29,364 distinct source verses,
+  88,150 rows whose target is a passage rather than a verse, 3,506 rows at or below zero
+  votes.
+- **A ranged target keeps both endpoints instead of being expanded.** 637 published ranges
+  cross a chapter and 18 cross a book; expanding those needs a versification table the
+  source file does not carry, and it would throw away the fact that the reference is to a
+  passage. `xref_from_idx (from_key, votes DESC)` answers the badge's only query with no
+  sort.
+- **Negative votes are loaded, not filtered.** `DECISIONS #11` filters `votes > 0` at read
+  time, where the threshold can still be tuned.
+
+### Added — the gazetteer (the Route and 3D City badges)
+
+- **`places` 1,342 · located 1,335 · `place_names` 4,346 · `place_mentions` 8,742 across
+  5,616 verses — all measured.** `scripts/ingest_places.py` performs the two-file join
+  that `dataset-validation.md` §6.1 warns about: **`ancient.jsonl` carries no coordinates
+  at all**, and `modern.jsonl`'s `lonlat` is a string, longitude first.
+- **Scholarly disagreement is kept, not collapsed.** 777 places have more than one
+  candidate site — the majority case. Every candidate is stored with its score in
+  `places.candidates`, and `candidate_count` is a GENERATED column so the two can never
+  disagree (`DECISIONS #10`).
+- **`scripts/place_gazetteer.py` — a name in, a coordinate out.** This is the component
+  that lets "never let a model emit coordinates" hold. An unknown name returns `None`;
+  there is no fuzzy fallback, because a near-miss on a transliterated name is how Ramah
+  becomes Ramoth 60 km away. An ambiguous name reports every candidate rather than picking
+  one Antioch and hiding the other.
+- **`routes` 682 · `route_stops` 7,070, derived — and ordered by the verse text.** Order
+  comes from verse number, then from where each place's name actually appears in the BSB
+  text of that verse (92.3% of located mentions are matched on word boundaries). Sorting
+  alphabetically instead renders Acts 16:11 as "Neapolis, Samothrace, Troas" — the voyage
+  in reverse. It now reads **Troas → Samothrace → Neapolis → Philippi**, asserted by the
+  loader before it commits.
+
+### Added — provenance the UI can read
+
+- **`data_sources.retrieved_at`.** AI-05 requires a badge to name its source, and how
+  fresh it is belongs to that: a 2021 gazetteer and a 2026 cross-reference dump are not
+  equally current. Nullable and added `IF NOT EXISTS`, so the scripture loader is
+  untouched.
+- Every content row carries `source_id`. Both new sources are `share_alike = false`; the
+  OpenBible `geometry/*.geojson` slice is ODbL and was deliberately never acquired.
+
+### Fixed
+
+- **`alembic upgrade head` was failing for everyone.** Two agents branched from `0003`
+  independently, leaving `0005_structure` and `0006_lexicon` as rival heads, and the
+  compose stack runs `upgrade head` before the API is allowed to start. `0007_merge`
+  rejoins them; it creates and drops nothing.
+- **`test_migrations_are_at_head` now computes the head from the migration files** instead
+  of hardcoding `"0003"`, and fails when more than one head exists — so the next branch is
+  caught by the suite rather than by a broken stack.
+
+### Verified
+
+- 342 backend tests pass, 71 of them new. Integration tests run against the live Docker
+  Postgres in rolled-back transactions.
+- Both loaders were run twice end to end: the second run changes nothing but `loaded_at`.
+
 ## 0.9.0 — 2026-08-29
 
 Repair pass over the M1 walkthrough. The suite went from **50 failed / 52 passed / 6
@@ -131,12 +1049,12 @@ skipped** to **0 failed / 102 passed / 6 skipped**, across all three viewports. 
   not shift sideways, the line breaks do not change, and the row below does not jump. A
   component test compares the rendered class lists across all four tones and fails if the
   geometry ever moves.
-- **The `clearPaper` fix, named and tested.** Resting colours are the *canvas at zero
-  alpha*, never the string `transparent` — which is transparent black in every renderer
+- **The `clearPaper` fix, named and tested.** Resting colours are the _canvas at zero
+  alpha_, never the string `transparent` — which is transparent black in every renderer
   and makes a warm paper fill travel through a muddy grey on its way out. `clearOn()`
   exists so the idea has a name that cannot be casually "simplified", and the test asserts
   no resting colour is ever `rgba(0,0,0,0)`.
-- **Four verse tones, not two.** Selected, highlighted, and *both* are three distinct
+- **Four verse tones, not two.** Selected, highlighted, and _both_ are three distinct
   appearances plus rest, because letting selection override a highlight loses information
   the reader put there. Highlighting is optimistic: the set changes before anything is
   persisted, and a failure never rolls it back.
@@ -239,7 +1157,7 @@ skipped** to **0 failed / 102 passed / 6 skipped**, across all three viewports. 
 ### Fixed
 
 - **The divider drifted.** `Pan`'s `translationX` is relative to the gesture's own view,
-  and the divider *moves* as the pane resizes — so a drag past a clamp and back landed
+  and the divider _moves_ as the pane resizes — so a drag past a clamp and back landed
   short. Measured in a browser: a 480 dp rail came back as 736 dp. It is derived from
   `absoluteX` now, a page coordinate, which is the property `resizable_split.dart:44-50`
   exists to preserve. The same drag returns to 540 dp exactly.
@@ -277,7 +1195,7 @@ skipped** to **0 failed / 102 passed / 6 skipped**, across all three viewports. 
   Queued for the product owner; "System" is one tap away and, once chosen, keeps tracking
   the OS live.
 - **`withOpacity` joins `withAlpha`** in `color-math`. `withAlpha` only accepts a hex
-  value, which is right for building a palette; a component works from the *theme*, where
+  value, which is right for building a palette; a component works from the _theme_, where
   a role is typed `Color` and may already be translucent, so it needs the form that
   multiplies the existing alpha rather than replacing it.
 - **`PlaceholderScreen` deleted.** All five tabs render real screens.

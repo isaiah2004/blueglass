@@ -114,3 +114,60 @@ describe('segmentVerse', () => {
     expect(segments.find((segment) => segment.type === 'badge')?.label).toBe('Voyage');
   });
 });
+
+describe('segmentVerse — the server-supplied offset', () => {
+  const SECOND_TROAS_VERSE = 'From Troas to Philippi, and from Philippi back to Troas.';
+
+  it('uses the offset when it still lands on the anchored word', () => {
+    const segments = segmentVerse(SECOND_TROAS_VERSE, [
+      { kind: 'route', word: 'Troas', startOffset: 50 },
+    ]);
+    const before = segments.filter((segment) => segment.type === 'text')[0];
+
+    // The offset picks the SECOND Troas, which no occurrence-1 search would have found.
+    expect(before?.type === 'text' && before.text).toBe(
+      'From Troas to Philippi, and from Philippi back to ',
+    );
+  });
+
+  it('falls back to the occurrence search when the offset has drifted', () => {
+    // The same badge against a different translation's wording: the offset now points at
+    // whitespace, so the anchor is located by its word instead of being dropped.
+    const segments = segmentVerse(SECOND_TROAS_VERSE, [
+      { kind: 'route', word: 'Troas', startOffset: 4 },
+    ]);
+    const word = segments.find((segment) => segment.type === 'word');
+
+    expect(word).toMatchObject({ type: 'word', text: 'Troas' });
+    expect(renderedText(segments)).toBe(SECOND_TROAS_VERSE);
+  });
+
+  it('drops an anchor whose word is absent however good its offset looks', () => {
+    expect(
+      segmentVerse(SECOND_TROAS_VERSE, [{ kind: 'route', word: 'Antioch', startOffset: 5 }]),
+    ).toEqual([{ type: 'text', text: SECOND_TROAS_VERSE }]);
+  });
+
+  it('never edits the verse, whichever way the anchor resolved', () => {
+    const withOffset = segmentVerse(SECOND_TROAS_VERSE, [
+      { kind: 'route', word: 'Troas', startOffset: 50 },
+    ]);
+    expect(renderedText(withOffset)).toBe(SECOND_TROAS_VERSE);
+  });
+
+  it('uses the badge id as the segment key so a tap can find its badge', () => {
+    const segments = segmentVerse(VERSE, [
+      { kind: 'route', word: 'Troas', startOffset: 28, badgeId: 'route~44016011~x' },
+    ]);
+    const badge = segments.find((segment) => segment.type === 'badge');
+
+    expect(badge).toMatchObject({ id: 'route~44016011~x', badgeId: 'route~44016011~x' });
+  });
+
+  it('leaves badgeId undefined for a decorative pill', () => {
+    const segments = segmentVerse(VERSE, [{ kind: 'route', word: 'Troas' }]);
+    const badge = segments.find((segment) => segment.type === 'badge');
+
+    expect(badge?.type === 'badge' && badge.badgeId).toBeUndefined();
+  });
+});

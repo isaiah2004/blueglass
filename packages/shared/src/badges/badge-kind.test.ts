@@ -56,7 +56,7 @@ describe('the badge kind vocabulary', () => {
 
   it('looks a descriptor up by kind', () => {
     expect(describeBadgeKind('root').label).toBe('Root');
-    expect(describeBadgeKind('3d-city').label).toBe('3D City');
+    expect(describeBadgeKind('3d-city').label).toBe('Site');
   });
 });
 

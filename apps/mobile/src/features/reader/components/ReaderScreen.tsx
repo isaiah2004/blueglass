@@ -18,27 +18,35 @@
  *   rail sits beside it, and the sheets and the search overlay are surfaces the reader
  *   deliberately opened.
  *
+ * A tapped badge has two homes, never both
+ *   Below 600 dp it opens a bottom sheet that leaves the scripture above it visible
+ *   (`design-language.md` §4). From 600 dp the rail already exists, so the same body renders
+ *   *there*, beside the text, and no sheet is mounted. `contextIsPinned` decides, and it comes
+ *   from the same rule the layout itself uses — so the two can never both be showing.
+ *
  * Navigation
  *   Expo Router is reached only through the `onNavigate` callback the route supplies, so
- *   this component renders in a test without a navigator above it.
+ *   this component renders in a test without a navigator above it. The three commands that
+ *   use it, and the four pieces of surface state beside them, are `useReaderCommands` —
+ *   which is what keeps this function a description of the page rather than half behaviour.
  */
 
-import { useRef, useState, type JSX } from 'react';
+import { useRef, type JSX } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { bookFromNumber, type CanonicalBook } from '@atlas/shared';
-import type { ApiSearchHit } from '@/api';
 import { ContextRailShell } from '@/components/split/ContextRailShell';
 import { useTheme } from '@/theme/runtime';
 
-import { useReadingCanvas } from '../hooks/use-reading-canvas';
+import { BadgeSheet } from '../badges';
+import { useReaderCommands, type ReaderCommands } from '../hooks/use-reader-commands';
+import { useReadingCanvas, type ReadingCanvas } from '../hooks/use-reading-canvas';
 import { nextChapter, previousChapter, type ReaderAddress } from '../model/reader-address';
 import { selectedVerseView } from '../model/verse-view';
 
 import type { ChapterCanvasHandle } from './ChapterCanvas';
 import { ContextPanel } from './ContextPanel';
 import { ReaderPane } from './ReaderPane';
-import { ReaderSheets, type OpenSheet } from './ReaderSheets';
+import { ReaderSheets } from './ReaderSheets';
 import { SearchOverlay } from './SearchOverlay';
 import { VerseDock } from './VerseDock';
 
@@ -78,74 +86,110 @@ function whereOf(address: ReaderAddress): {
 export function ReaderScreen({ address, onNavigate }: ReaderScreenProps): JSX.Element {
   const theme = useTheme();
   const canvas = useReadingCanvas(address);
-  const canvasRef = useRef<ChapterCanvasHandle>(null);
-  const [openSheet, setOpenSheet] = useState<OpenSheet>('none');
-  const [searchIsOpen, setSearchIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const goTo = (book: CanonicalBook, chapter: number): void => {
-    setOpenSheet('none');
-    onNavigate({ book, chapter });
-  };
-
-  const openHit = (hit: ApiSearchHit): void => {
-    const book = bookFromNumber(hit.bookNumber);
-    setSearchIsOpen(false);
-    if (book.ok) onNavigate({ book: book.value, chapter: hit.chapter });
-  };
-
-  const verse = selectedVerseView(address, canvas.selection.selection, canvas.chapterQuery.data);
-  const closeVerse = canvas.selection.clearSelection;
+  const commands = useReaderCommands({
+    onNavigate,
+    contextIsPinned: canvas.contextIsPinned,
+    closeBadge: canvas.badgeSelection.close,
+  });
+  const parts = { address, canvas, commands, onNavigate };
 
   return (
     <View
       testID="reader-screen"
       style={[styles.root, { backgroundColor: theme.background.canvas }]}
     >
-      <ContextRailShell
-        railTestID="reader-context-rail"
-        handleAccessibilityLabel="Resize the context rail"
-        rail={
-          <ContextPanel reference={verse?.reference} text={verse?.text} onClose={closeVerse} />
-        }
-      >
-        <View style={styles.column}>
-          <ReaderPane
-            ref={canvasRef}
-            address={address}
-            canvas={canvas}
-            previous={previousChapter(address)}
-            next={nextChapter(address)}
-            onNavigate={onNavigate}
-            onOpenSheet={setOpenSheet}
-            onOpenSearch={() => {
-              setSearchIsOpen(true);
-            }}
-          />
-          <VerseDock verse={canvas.contextIsPinned ? undefined : verse} onClose={closeVerse} />
-        </View>
-      </ContextRailShell>
+      <ReadingArea {...parts} />
+      <ReaderSurfaces {...parts} />
+    </View>
+  );
+}
+
+/** What both halves of the screen are assembled from. */
+interface ReaderParts {
+  readonly address: ReaderAddress;
+  readonly canvas: ReadingCanvas;
+  readonly commands: ReaderCommands;
+  readonly onNavigate: (address: ReaderAddress) => void;
+}
+
+/**
+ * The scripture and the context rail beside it — everything the reader reads.
+ *
+ * @param props - See {@link ReaderParts}.
+ * @returns The rail shell wrapping the reading column and its dock. Side effects: none.
+ */
+function ReadingArea({ address, canvas, commands, onNavigate }: ReaderParts): JSX.Element {
+  const canvasRef = useRef<ChapterCanvasHandle>(null);
+  const verse = selectedVerseView(address, canvas.selection.selection, canvas.chapterQuery.data);
+  const closeVerse = canvas.selection.clearSelection;
+
+  return (
+    <ContextRailShell
+      railTestID="reader-context-rail"
+      handleAccessibilityLabel="Resize the context rail"
+      rail={
+        <ContextPanel
+          reference={verse?.reference}
+          text={verse?.text}
+          onClose={closeVerse}
+          badge={canvas.badgeSelection.badge}
+          onCloseBadge={canvas.badgeSelection.close}
+          onOpenBadgeVerse={commands.openBadgeVerse}
+        />
+      }
+    >
+      <View style={styles.column}>
+        <ReaderPane
+          ref={canvasRef}
+          address={address}
+          canvas={canvas}
+          previous={previousChapter(address)}
+          next={nextChapter(address)}
+          onNavigate={onNavigate}
+          onOpenSheet={commands.setOpenSheet}
+          onOpenSearch={commands.openSearch}
+          onOpenBadge={canvas.badgeSelection.open}
+        />
+        <VerseDock verse={canvas.contextIsPinned ? undefined : verse} onClose={closeVerse} />
+      </View>
+    </ContextRailShell>
+  );
+}
+
+/**
+ * The three surfaces a reader may deliberately open over the canvas (pillar 1).
+ *
+ * @param props - See {@link ReaderParts}.
+ * @returns The badge sheet, the reader's own sheets, and the search overlay. Side effects:
+ *   none.
+ */
+function ReaderSurfaces({ address, canvas, commands }: ReaderParts): JSX.Element {
+  return (
+    <>
+      <BadgeSheet
+        badge={canvas.contextIsPinned ? undefined : canvas.badgeSelection.badge}
+        onClose={canvas.badgeSelection.close}
+        onOpenVerse={commands.openBadgeVerse}
+      />
 
       <ReaderSheets
-        open={openSheet}
+        open={commands.openSheet}
         {...whereOf(address)}
         resolvedStep={canvas.scriptureStep}
         onClose={() => {
-          setOpenSheet('none');
+          commands.setOpenSheet('none');
         }}
-        onNavigate={goTo}
+        onNavigate={commands.goTo}
       />
 
       <SearchOverlay
-        visible={searchIsOpen}
-        query={searchQuery}
-        onChangeQuery={setSearchQuery}
-        onClose={() => {
-          setSearchIsOpen(false);
-        }}
-        onOpenHit={openHit}
+        visible={commands.searchIsOpen}
+        query={commands.searchQuery}
+        onChangeQuery={commands.setSearchQuery}
+        onClose={commands.closeSearch}
+        onOpenHit={commands.openHit}
       />
-    </View>
+    </>
   );
 }
 

@@ -28,6 +28,11 @@ understated** — see §3, strategy A.
 shipped as `apps/mobile/src/components/InlineBadge.tsx`. Every visual requirement of §5 is
 met, the pill wraps atomically, it does not disturb the line rhythm, and it is tappable.
 
+**Both concessions are now closed.** See §11 — the reader screen shipped a vector glyph
+(`Q-021`) and the square-highlight note stands as a rule for search highlighting, which is the
+only place it applies. The rest of this section is the spike as it was written; read §11 for
+what changed.
+
 Two things the design must concede, both small:
 
 1. **Colour emoji cannot take the badge's hue.** §5 says "text and icon in the full hue";
@@ -262,3 +267,75 @@ copyright and must not enter the repository for the sake of a layout experiment 
    including `lineage`, the theme uses camelCase and lists **ten**. `InlineBadge` is built on
    the theme's. Whoever reconciles them (`Q-018`) changes `InlineBadge.types.ts`'s two tables
    with it — the component itself is indifferent.
+
+---
+
+## 11. What the reader screen did with it (M2, 0.16.0)
+
+`apps/mobile/src/features/reader/badges/` wires the badge API into the reading canvas.
+Everything §10 asked for was followed; two things it recorded as open are now closed, and one
+new constraint appeared that only a real chapter could have shown.
+
+### Concession 1 is closed — the glyph is a vector
+
+`components/badge-icons.ts` holds ten monochrome outline paths on the same 24-unit grid as
+`nav-icons.ts`, drawn by `components/BadgeGlyph.tsx` and stroked in the badge's own hue. §5's
+"text and icon in the full hue" is now literally true. The bracketed mark that
+`InlineBadge.types.ts` composes is therefore **text only** — `[Route]` — and a renderer places
+the glyph between the opening bracket and the word. Anything asserting on the old emoji mark
+had to change; `InlineBadge.types.test.ts` records the new shape.
+
+### Concession 2 stands, and applies only where it always did
+
+`backgroundColor` on a nested `<Text>` is still a rectangle everywhere. Nothing in the badge
+path depends on it: search highlighting and the verse selection tint are the affected features
+and both were designed as rectangles.
+
+### A third constraint, found in a real chapter
+
+**A tappable pill inside a tappable verse row is two nested controls.** React Native has no
+rule against that; the web does. `react-native-web` renders anything with
+`accessibilityRole="button"` as a real `<button>`, so the pill inside the row produced
+`<button> cannot contain a nested <button>` on every chapter, and the dev LogBox banner sat
+over the tab bar. Queued as `Q-024`; the recommendation taken is in `ASSUMPTIONS.md`:
+
+- The **verse row** keeps its button role — it is the older, more general control, and its
+  `aria-pressed` toggle semantics are what M1 built and tested.
+- The **pill** keeps its label, its hit slop and its tap target on the web but not the role.
+  The **chapter-end summary list is the keyboard-reachable route to every badge**, which is
+  what `design-language.md` §5 built that list for.
+- On native there is no DOM and no nesting rule, so the role stays and TalkBack announces a
+  button.
+
+A second, plainer bug came with it: without `stopPropagation` on the badge press, tapping a
+pill opened the sheet **and** selected the verse under it. `VerseText.tsx` stops it, and
+`InlineBadgeProps.onPress` now forwards the event so it can.
+
+### The tap-target exemption, stated out loud
+
+§5 fixes the pill at 22-24 pt. A 44 dp control cannot live inside a 32 px line, so the
+walkthrough's tap audit exempts `[data-testid^="inline-badge-"]` — with three conditions
+recorded in `e2e/support/probes-text.ts` that must all stay true: the pill carries a `hitSlop`
+computed to reach 44 dp, every badge is repeated in the chapter-end summary at full row
+height (WCAG 2.5.8's "Equivalent" exception), and the pill is 67-96 px wide — small on one
+axis, not small.
+
+### Measured in Chrome, Acts 16 in BSB
+
+At 390 dp: twelve pills across five verses, line pitch unchanged, every row an exact multiple
+of the scripture line height with and without pills, a pill that would overflow wrapping whole
+to the next line. Tapping one opens a sheet over the bottom half with the scripture visible
+above it. At 1440 dp the same body fills the context rail and no sheet is mounted. Both themes.
+**Zero console errors**, and the full Playwright suite passes at all three viewports.
+
+Still untested: Android. §6's six device checks remain open, and check 6 — two badges with no
+text between them — is now reachable in real data, because the per-verse cap allows two pills
+on one verse and Acts 16:1 has them.
+
+### The enum disagreement §10 flagged
+
+Unreconciled, and now bridged rather than resolved. `@atlas/shared` and the five sheet bodies
+use the wire's kebab-case (`3d-city`, `cross-ref`); the theme uses camelCase and owns the hue,
+the glyph and the label. `features/reader/badges/badge-kinds.ts` is the single tested mapping
+between them. `Q-018` still decides which one wins; until it does, that file is the only place
+that has to know there are two.

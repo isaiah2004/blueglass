@@ -19,7 +19,7 @@ import { StyleSheet, View } from 'react-native';
 import type { AtlasQueryResult, ApiChapter } from '@/api';
 import type { ScriptureStep } from '@/theme';
 
-import type { VerseBadgeMap } from '../hooks/use-verse-badges';
+import type { SourceAttribution, ReaderBadge, VerseBadgeMap } from '../badges';
 import { EMPTY_CHAPTER_COPY, readerStatusCopy } from '../model/reader-status';
 import type { VerseSelection } from '../model/verse-selection';
 
@@ -36,6 +36,9 @@ export interface ReaderBodyProps {
   readonly columnMaxWidth: number | undefined;
   readonly reduceMotion: boolean;
   readonly badges: VerseBadgeMap;
+  readonly chapterBadges: readonly ReaderBadge[];
+  readonly badgeSources: readonly SourceAttribution[];
+  readonly onOpenBadge: (badgeId: string) => void;
   readonly translationCode: string;
   readonly translationName: string | undefined;
   readonly onSelectVerse: (verseNumber: number) => void;
@@ -104,6 +107,9 @@ export const ReaderBody = forwardRef<ChapterCanvasHandle, ReaderBodyProps>(
         columnMaxWidth={props.columnMaxWidth}
         reduceMotion={props.reduceMotion}
         badges={props.badges}
+        chapterBadges={props.chapterBadges}
+        badgeSources={props.badgeSources}
+        onOpenBadge={props.onOpenBadge}
         translationCode={props.translationCode}
         translationName={props.translationName}
         onSelectVerse={props.onSelectVerse}

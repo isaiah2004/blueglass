@@ -52,7 +52,9 @@ const PRESSED_OPACITY = 0.62;
  *
  * Side effects: sets and persists the theme preference through the theme provider.
  */
-export function ThemeToggleButton({ size: glyphSize = size.icon.md }: ThemeToggleButtonProps): JSX.Element {
+export function ThemeToggleButton({
+  size: glyphSize = size.icon.md,
+}: ThemeToggleButtonProps): JSX.Element {
   const theme = useTheme();
   const styles = useStyles(theme);
   const { themeName, setPreference } = useThemeController();

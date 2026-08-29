@@ -18,34 +18,39 @@
  *   scrolls on its own: `flutter-port-map.md` §7.2's rule is that a reader who scrolled up
  *   is never yanked.
  *
+ * The chapter-end badge summary
+ *   Every badge in the chapter, repeated as a list beneath the last verse
+ *   (`design-language.md` §5, `image9.png`). It is inside the same scroll view on purpose: it
+ *   is the end of the chapter, not a docked panel, and pillar 1 forbids anything that floats.
+ *
  * Dependencies
- *   The reader's theme hook, its scroll model, and `VerseRow`. No data fetching.
+ *   The reader's theme hook, its scroll model, its badge layer, and `VerseRow`.
+ *   No data fetching.
  */
 
-import { forwardRef, useImperativeHandle, useRef, type JSX } from 'react';
+import { forwardRef, type JSX } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { scriptureText, spacing, type ScriptureStep } from '@/theme';
 import { useTheme } from '@/theme/runtime';
 
 import type { ApiChapter } from '@/api';
-import type { VerseBadgeMap } from '../hooks/use-verse-badges';
-import { offsetToFocusVerse, type ScrollMetrics } from '../model/reader-scroll';
+import {
+  ChapterBadgeSummary,
+  type ReaderBadge,
+  type SourceAttribution,
+  type VerseBadgeMap,
+} from '../badges';
+import { useCanvasScroll, type ChapterCanvasHandle } from '../hooks/use-canvas-scroll';
 import { verseTone, type VerseSelection } from '../model/verse-selection';
 
 import { ChapterFooter } from './ChapterFooter';
 import { ChapterTitle } from './ChapterTitle';
 import { VerseRow } from './VerseRow';
 
-/** What a parent may ask the canvas to do. */
-export interface ChapterCanvasHandle {
-  /**
-   * Scroll a verse to 18 % of the viewport.
-   *
-   * @param verseNumber - The verse to bring into view.
-   */
-  readonly focusVerse: (verseNumber: number) => void;
-}
+// The imperative handle is declared beside the hook that fills it, and re-exported here
+// because this component is what a parent holds a ref to.
+export type { ChapterCanvasHandle } from '../hooks/use-canvas-scroll';
 
 /** What the canvas needs to render. */
 export interface ChapterCanvasProps {
@@ -57,8 +62,18 @@ export interface ChapterCanvasProps {
   /** The column's `maxWidth`, or `undefined` when uncapped. */
   readonly columnMaxWidth: number | undefined;
   readonly reduceMotion: boolean;
-  /** Inline badges to splice into each verse, keyed by verse number. */
+  /** Inline badges to splice into each verse, keyed by packed `verseKey`. */
   readonly badges: VerseBadgeMap;
+  /** Every badge the chapter delivered, for the summary list beneath the last verse. */
+  readonly chapterBadges: readonly ReaderBadge[];
+  /** The union of those badges' sources, for one attribution strip (`AI-05`). */
+  readonly badgeSources: readonly SourceAttribution[];
+  /**
+   * Open one badge, from a pill or from a summary row.
+   *
+   * @param badgeId - The badge's stable id.
+   */
+  readonly onOpenBadge: (badgeId: string) => void;
   /** Full title of the translation, shown as the attribution. */
   readonly translationName: string | undefined;
   readonly translationCode: string;
@@ -83,22 +98,7 @@ export interface ChapterCanvasProps {
 export const ChapterCanvas = forwardRef<ChapterCanvasHandle, ChapterCanvasProps>(
   function ChapterCanvas(props, ref): JSX.Element {
     const theme = useTheme();
-    const scrollRef = useRef<ScrollView>(null);
-    const verseTops = useRef(new Map<number, number>());
-    const metrics = useRef<ScrollMetrics>({ offsetY: 0, contentHeight: 0, viewportHeight: 0 });
-
-    useImperativeHandle(ref, () => ({
-      focusVerse: (verseNumber: number) => {
-        const top = verseTops.current.get(verseNumber);
-        if (top === undefined) {
-          return;
-        }
-        scrollRef.current?.scrollTo({
-          y: offsetToFocusVerse(top, metrics.current),
-          animated: true,
-        });
-      },
-    }));
+    const { scrollRef, onScroll, recordVerseTop } = useCanvasScroll(ref);
 
     return (
       <ScrollView
@@ -106,36 +106,17 @@ export const ChapterCanvas = forwardRef<ChapterCanvasHandle, ChapterCanvasProps>
         testID="chapter-canvas"
         style={{ backgroundColor: theme.background.canvas }}
         contentContainerStyle={[styles.content, { paddingHorizontal: props.gutter }]}
-        scrollEventThrottle={64}
-        onScroll={(event) => {
-          const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
-          metrics.current = {
-            offsetY: contentOffset.y,
-            contentHeight: contentSize.height,
-            viewportHeight: layoutMeasurement.height,
-          };
-        }}
+        scrollEventThrottle={SCROLL_THROTTLE_MS}
+        onScroll={onScroll}
       >
         <View style={[styles.column, { maxWidth: props.columnMaxWidth }]}>
           <ChapterTitle reference={props.chapter.reference} code={props.translationCode} />
-
-          {props.chapter.verses.map((verse) => (
-            <VerseRow
-              key={verse.verseKey}
-              verseNumber={verse.verse}
-              text={verse.text}
-              tone={verseTone(props.selection, verse.verse)}
-              scriptureStep={props.scriptureStep}
-              anchors={props.badges.get(verse.verse) ?? EMPTY_ANCHORS}
-              reduceMotion={props.reduceMotion}
-              onPress={props.onSelectVerse}
-              onLongPress={props.onHighlightVerse}
-              onLayoutTop={(verseNumber, top) => {
-                verseTops.current.set(verseNumber, top);
-              }}
-            />
-          ))}
-
+          <VerseColumn {...props} onLayoutTop={recordVerseTop} />
+          <ChapterBadgeSummary
+            badges={props.chapterBadges}
+            sources={props.badgeSources}
+            onOpen={props.onOpenBadge}
+          />
           <ChapterFooter
             translationName={props.translationName}
             translationCode={props.translationCode}
@@ -150,8 +131,55 @@ export const ChapterCanvas = forwardRef<ChapterCanvasHandle, ChapterCanvasProps>
   },
 );
 
+/** What one verse row needs, plus the callback that records where it landed. */
+type VerseColumnProps = ChapterCanvasProps & {
+  /**
+   * Record a verse's top edge, so `focusVerse` can scroll to it.
+   *
+   * @param verseNumber - Which verse.
+   * @param top - Its offset within the scroll content.
+   */
+  readonly onLayoutTop: (verseNumber: number, top: number) => void;
+};
+
+/**
+ * The verses themselves.
+ *
+ * @param props - See {@link VerseColumnProps}.
+ * @returns One `VerseRow` per verse of the chapter. Side effects: none.
+ */
+function VerseColumn(props: VerseColumnProps): JSX.Element {
+  return (
+    <>
+      {props.chapter.verses.map((verse) => (
+        <VerseRow
+          key={verse.verseKey}
+          verseNumber={verse.verse}
+          text={verse.text}
+          tone={verseTone(props.selection, verse.verse)}
+          scriptureStep={props.scriptureStep}
+          anchors={props.badges.get(verse.verseKey) ?? EMPTY_ANCHORS}
+          reduceMotion={props.reduceMotion}
+          onPress={props.onSelectVerse}
+          onLongPress={props.onHighlightVerse}
+          onBadgePress={props.onOpenBadge}
+          onLayoutTop={props.onLayoutTop}
+        />
+      ))}
+    </>
+  );
+}
+
 /** Shared empty list, so an unannotated verse never allocates one per render. */
 const EMPTY_ANCHORS: readonly [] = [];
+
+/**
+ * How often the scroll position is reported, in milliseconds.
+ *
+ * 64 ms is roughly four frames: often enough that `focusVerse` computes against a current
+ * viewport, rare enough that a drag does not fire a callback per frame.
+ */
+const SCROLL_THROTTLE_MS = 64;
 
 const styles = StyleSheet.create({
   content: {

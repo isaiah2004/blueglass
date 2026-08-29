@@ -80,11 +80,15 @@ export const BADGE_KINDS = [
  */
 const DESCRIPTOR_BY_KIND: Readonly<Record<BadgeKind, BadgeKindDescriptor>> = {
   route: { kind: 'route', label: 'Route', glyph: '🗺️', appearsBeside: 'location names' },
+  // `Q-025`: the label is what the reader is shown, and the sheet behind it shows the
+  // gazetteer site record rather than a reconstruction — no openly licensed 3D model of a
+  // biblical city exists (`DECISIONS.md` §4). The discriminator keeps its published
+  // spelling; only the words the reader reads changed.
   '3d-city': {
     kind: '3d-city',
-    label: '3D City',
+    label: 'Site',
     glyph: '🏛️',
-    appearsBeside: 'cities with a reconstruction',
+    appearsBeside: 'cities named in the passage',
   },
   history: {
     kind: 'history',

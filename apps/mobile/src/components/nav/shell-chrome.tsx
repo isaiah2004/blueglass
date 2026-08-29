@@ -40,7 +40,9 @@ export function ShellChromeProvider({
   hasThemeToggle,
   children,
 }: ShellChromeProviderProps): JSX.Element {
-  return <ShellChromeContext.Provider value={hasThemeToggle}>{children}</ShellChromeContext.Provider>;
+  return (
+    <ShellChromeContext.Provider value={hasThemeToggle}>{children}</ShellChromeContext.Provider>
+  );
 }
 
 /**

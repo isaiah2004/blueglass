@@ -64,6 +64,24 @@ export const size = {
   tapTarget: 44,
   /** The scripture gutter that holds the superscript verse number (§3). */
   verseNumberGutter: 28,
+  /**
+   * 96 — the narrowest one cell of a stat strip may be.
+   *
+   * Below this the uppercase tracked captions break *inside* a word rather than at a
+   * space: at 232 dp of context rail, three `flex: 1` cells left about 60 px each and
+   * `STRAIGHT LINE` rendered as `STRAIGH` / `T LINE`. 96 holds the longest caption token
+   * the strips use plus the cell's own padding, so `components/surface/stat-row-layout`
+   * wraps the strip onto a second row instead.
+   */
+  statCell: 96,
+  /**
+   * 112 — the pill column of the chapter-end badge summary (`image9.png`).
+   *
+   * Wide enough for the longest mark the ten kinds produce (`[glyph Manuscript]`) so every
+   * teaser in the list starts on the same left edge instead of stepping in and out with the
+   * pill's width.
+   */
+  badgeSummaryPillColumn: 112,
   /** Icon sizes. `md` is the default; `lg` is the active tab's glyph. */
   icon: { sm: 16, md: 20, lg: 24 },
   /** The grab handle at the top of every sheet (§4). */

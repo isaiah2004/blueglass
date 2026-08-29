@@ -22,7 +22,10 @@ import type { JSX, ReactNode } from 'react';
 import { View, type ViewProps } from 'react-native';
 
 /** Anything the real library accepts. Only the props the harness queries are honoured. */
-export interface SvgStubProps extends Pick<ViewProps, 'aria-hidden' | 'accessibilityLabel' | 'accessibilityRole'> {
+export interface SvgStubProps extends Pick<
+  ViewProps,
+  'aria-hidden' | 'accessibilityLabel' | 'accessibilityRole'
+> {
   readonly children?: ReactNode;
   readonly testID?: string;
 }

@@ -152,6 +152,30 @@ describe('POST /api/ask rejects what would break a card', () => {
     assert.equal(body.layout, 'compare');
     assert.equal(body.assumedInUse, true);
   });
+
+  test('an auto-assigned id never lands on a question that already exists', async (t) => {
+    const h = await hub(t);
+
+    // A sparse, mixed-padding family — which is what the real file holds: `Q-01` through
+    // `Q-04` were seeded unpadded beside `Q-005`+. An allocator that COUNTS rather than
+    // reads the highest hands out an id that is already taken, and because /api/ask upserts
+    // by id, the second agent to ask silently overwrites a question a human has answered.
+    await h.post('/api/ask', { ...base, id: 'Q-01' });
+    await h.post('/api/ask', { ...base, id: 'Q-02' });
+    await h.post('/api/ask', { ...base, id: 'Q-024' });
+    const before = (await h.readDb()).questions.length;
+
+    const first = await (await h.post('/api/ask', { ...base, id: undefined })).json();
+    const second = await (await h.post('/api/ask', { ...base, id: undefined })).json();
+
+    assert.equal(first.id, 'Q-025', 'the allocator counted instead of reading the highest id');
+    assert.equal(second.id, 'Q-026', 'two asks in a row were handed the same id');
+    assert.equal(
+      (await h.readDb()).questions.length,
+      before + 2,
+      'an auto-assigned id overwrote an existing question instead of creating a new one',
+    );
+  });
 });
 
 describe('POST /api/answer', () => {

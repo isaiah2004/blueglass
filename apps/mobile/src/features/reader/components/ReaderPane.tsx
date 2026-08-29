@@ -38,6 +38,12 @@ export interface ReaderPaneProps {
   readonly onOpenSheet: (sheet: OpenSheet) => void;
   /** Open the scripture search overlay. */
   readonly onOpenSearch: () => void;
+  /**
+   * Open one inline badge — from a pill in the text or from the chapter-end summary.
+   *
+   * @param badgeId - The badge's stable id.
+   */
+  readonly onOpenBadge: (badgeId: string) => void;
 }
 
 /**
@@ -50,7 +56,7 @@ export interface ReaderPaneProps {
  * Side effects: none beyond its callbacks.
  */
 export const ReaderPane = forwardRef<ChapterCanvasHandle, ReaderPaneProps>(function ReaderPane(
-  { address, canvas, previous, next, onNavigate, onOpenSheet, onOpenSearch },
+  { address, canvas, previous, next, onNavigate, onOpenSheet, onOpenSearch, onOpenBadge },
   ref,
 ): JSX.Element {
   const openNavigator = (): void => {
@@ -94,7 +100,10 @@ export const ReaderPane = forwardRef<ChapterCanvasHandle, ReaderPaneProps>(funct
         gutter={canvas.gutter}
         columnMaxWidth={canvas.columnMaxWidth}
         reduceMotion={canvas.reduceMotion}
-        badges={canvas.badges}
+        badges={canvas.badgeView.anchors}
+        chapterBadges={canvas.badgeView.badges}
+        badgeSources={canvas.badgeSources}
+        onOpenBadge={onOpenBadge}
         translationCode={canvas.translationCode}
         translationName={canvas.translationName}
         onSelectVerse={canvas.selection.selectVerse}

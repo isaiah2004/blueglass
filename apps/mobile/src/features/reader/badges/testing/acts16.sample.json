@@ -1,0 +1,488 @@
+{
+  "reference": "Acts 16",
+  "translation": "BSB",
+  "book_number": 44,
+  "chapter": 16,
+  "badges": [
+    {
+      "id": "route~44016001~chapter:Acts.16",
+      "kind": "route",
+      "anchor": {
+        "verse_key": 44016001,
+        "text": "Derbe",
+        "start_offset": 13,
+        "end_offset": 18
+      },
+      "teaser": "Derbe to Thyatira - 20 stops on this journey",
+      "citations": [
+        {
+          "id": "route-0",
+          "kind": "gazetteer",
+          "label": "Place data © OpenBible.info, CC BY 4.0",
+          "osis": null,
+          "source_name": "OpenBible.info Bible Geocoding Data",
+          "url": "https://github.com/openbibleinfo/Bible-Geocoding-Data"
+        }
+      ],
+      "sources": [
+        {
+          "key": "openbible_geocoding",
+          "name": "OpenBible.info Bible Geocoding Data",
+          "license": "CC-BY-4.0",
+          "attribution": "Place data © OpenBible.info, CC BY 4.0",
+          "share_alike": false,
+          "url": "https://github.com/openbibleinfo/Bible-Geocoding-Data",
+          "version": "2021-11-01",
+          "retrieved_at": "2026-08-28"
+        }
+      ],
+      "payload": {
+        "kind": "route",
+        "title": "Derbe to Thyatira",
+        "waypoints": [
+          {
+            "name": "Derbe",
+            "coordinates": [33.361453, 37.348569],
+            "role": "departure",
+            "feature_type": "settlement",
+            "place_id": "aa401a9",
+            "verse_key": 44016001
+          },
+          {
+            "name": "Lystra",
+            "coordinates": [32.3384, 37.6017],
+            "role": "waypoint",
+            "feature_type": "settlement",
+            "place_id": "af0719d",
+            "verse_key": 44016001
+          },
+          {
+            "name": "Iconium",
+            "coordinates": [32.492331, 37.872202],
+            "role": "waypoint",
+            "feature_type": "settlement",
+            "place_id": "ae425aa",
+            "verse_key": 44016002
+          }
+        ],
+        "camera": {
+          "center": [28.887083, 36.688333],
+          "zoom_level": 4.39
+        },
+        "passage": {
+          "start_key": 44016001,
+          "end_key": 44016014
+        },
+        "scheme": "chapter"
+      }
+    },
+    {
+      "id": "3d-city~44016001~af0719d",
+      "kind": "3d-city",
+      "anchor": {
+        "verse_key": 44016001,
+        "text": "Lystra",
+        "start_offset": 31,
+        "end_offset": 37
+      },
+      "teaser": "Lystra - today Tel Lystra",
+      "citations": [
+        {
+          "id": "city-0",
+          "kind": "gazetteer",
+          "label": "Place data © OpenBible.info, CC BY 4.0",
+          "osis": null,
+          "source_name": "OpenBible.info Bible Geocoding Data",
+          "url": "https://github.com/openbibleinfo/Bible-Geocoding-Data"
+        }
+      ],
+      "sources": [
+        {
+          "key": "openbible_geocoding",
+          "name": "OpenBible.info Bible Geocoding Data",
+          "license": "CC-BY-4.0",
+          "attribution": "Place data © OpenBible.info, CC BY 4.0",
+          "share_alike": false,
+          "url": "https://github.com/openbibleinfo/Bible-Geocoding-Data",
+          "version": "2021-11-01",
+          "retrieved_at": "2026-08-28"
+        }
+      ],
+      "payload": {
+        "kind": "3d-city",
+        "location": {
+          "name": "Lystra",
+          "coordinates": [32.3384, 37.6017],
+          "role": "waypoint",
+          "feature_type": "settlement",
+          "place_id": "af0719d",
+          "verse_key": 44016001
+        },
+        "modern_name": "Tel Lystra",
+        "identification_count": 1,
+        "precision_type": "tel",
+        "canon_verse_count": 6,
+        "mentioned_at": ["Acts.16.1", "Acts.16.2"],
+        "has_reconstruction": false
+      }
+    },
+    {
+      "id": "history~44016006~murai:044016006-044016010",
+      "kind": "history",
+      "anchor": {
+        "verse_key": 44016006,
+        "text": "Galatia",
+        "start_offset": 137,
+        "end_offset": 144
+      },
+      "teaser": "AD 47 - Paul's vision of the man of Macedonia",
+      "citations": [
+        {
+          "id": "history-0",
+          "kind": "reference-work",
+          "label": "Event dating from Theographic Bible Metadata, CC BY-SA 4.0 — github.com/robertrouse/theographic-bible-metadata",
+          "osis": null,
+          "source_name": "Theographic Bible Metadata — Events",
+          "url": "https://github.com/robertrouse/theographic-bible-metadata"
+        },
+        {
+          "id": "history-1",
+          "kind": "reference-work",
+          "label": "Reign dates from Wikidata, CC0 1.0 — wikidata.org",
+          "osis": null,
+          "source_name": "Wikidata ruler reigns",
+          "url": "https://query.wikidata.org/sparql"
+        },
+        {
+          "id": "history-2",
+          "kind": "reference-work",
+          "label": "Literary structure analysis by Hajime Murai, CC BY 4.0 — bible.literarystructure.info",
+          "osis": null,
+          "source_name": "Literary Structure of the Bible (Hajime Murai)",
+          "url": "http://bible.literarystructure.info/bible/bible_e.html"
+        }
+      ],
+      "sources": [
+        {
+          "key": "theographic_events",
+          "name": "Theographic Bible Metadata — Events",
+          "license": "CC-BY-SA-4.0",
+          "attribution": "Event dating from Theographic Bible Metadata, CC BY-SA 4.0 — github.com/robertrouse/theographic-bible-metadata",
+          "share_alike": true,
+          "url": "https://github.com/robertrouse/theographic-bible-metadata",
+          "version": "2026-08-28",
+          "retrieved_at": null
+        },
+        {
+          "key": "wikidata_rulers",
+          "name": "Wikidata ruler reigns",
+          "license": "CC0-1.0",
+          "attribution": "Reign dates from Wikidata, CC0 1.0 — wikidata.org",
+          "share_alike": false,
+          "url": "https://query.wikidata.org/sparql",
+          "version": "2026-08-29",
+          "retrieved_at": null
+        },
+        {
+          "key": "murai_literary_structure",
+          "name": "Literary Structure of the Bible (Hajime Murai)",
+          "license": "CC-BY-4.0",
+          "attribution": "Literary structure analysis by Hajime Murai, CC BY 4.0 — bible.literarystructure.info",
+          "share_alike": false,
+          "url": "http://bible.literarystructure.info/bible/bible_e.html",
+          "version": "2022-02-24",
+          "retrieved_at": null
+        }
+      ],
+      "payload": {
+        "kind": "history",
+        "passage_year_label": "AD 47",
+        "passage": {
+          "start_key": 44016006,
+          "end_key": 44016010
+        },
+        "biblical_axis": [
+          {
+            "id": "event-2809",
+            "label": "Timothy Joins Paul and Silas",
+            "year_label": "AD 47",
+            "sort_year": 47,
+            "detail": "Second Missionary Journey"
+          },
+          {
+            "id": "event-2810",
+            "label": "Mission to Phrygia, Galatia and Asia",
+            "year_label": "AD 47",
+            "sort_year": 47,
+            "detail": "Second Missionary Journey"
+          }
+        ],
+        "world_axis": [
+          {
+            "id": "ruler-348",
+            "label": "Claudius, Emperor of Roman Empire",
+            "year_label": "AD 41 to AD 54",
+            "sort_year": 41,
+            "detail": "Roman Empire"
+          }
+        ],
+        "rationale": "Dated from the Theographic event Mission to Phrygia, Galatia and Asia (AD 47), which narrates about 60% of this passage.",
+        "dating_origin": "sourced",
+        "confidence": 0.6,
+        "ruler_name": "Claudius",
+        "passage_title": "Paul's vision of the man of Macedonia",
+        "interpretive_claim": "Murai's reading",
+        "attributed_to": "Hajime Murai"
+      }
+    },
+    {
+      "id": "root~44016011~6",
+      "kind": "root",
+      "anchor": {
+        "verse_key": 44016011,
+        "text": "Samothrace",
+        "start_offset": 33,
+        "end_offset": 43
+      },
+      "teaser": "Σαμοθρᾴκη - \"Samothrace\", used once in the corpus",
+      "citations": [
+        {
+          "id": "root-0",
+          "kind": "reference-work",
+          "label": "STEP Bible — www.STEPBible.org (CC BY 4.0)",
+          "osis": null,
+          "source_name": "STEPBible TBESG — Translators Brief lexicon of Extended Strongs for Greek",
+          "url": "https://github.com/STEPBible/STEPBible-Data"
+        },
+        {
+          "id": "root-1",
+          "kind": "reference-work",
+          "label": "STEP Bible — www.STEPBible.org (CC BY 4.0)",
+          "osis": null,
+          "source_name": "STEPBible TAGNT — Translators Amalgamated Greek New Testament",
+          "url": "https://github.com/STEPBible/STEPBible-Data"
+        },
+        {
+          "id": "root-2",
+          "kind": "reference-work",
+          "label": "Word alignment computed by Atlas Bible from STEP Bible TAGNT glosses (STEP Bible — www.STEPBible.org, CC BY 4.0)",
+          "osis": null,
+          "source_name": "Atlas Bible English-to-Greek word alignment",
+          "url": "https://github.com/STEPBible/STEPBible-Data"
+        },
+        {
+          "id": "root-3",
+          "kind": "reference-work",
+          "label": "Dodson Greek Lexicon — public domain (CC0 1.0)",
+          "osis": null,
+          "source_name": "Dodson Greek Lexicon",
+          "url": "https://github.com/biblicalhumanities/Dodson-Greek-Lexicon"
+        }
+      ],
+      "sources": [
+        {
+          "key": "stepbible_tbesg",
+          "name": "STEPBible TBESG — Translators Brief lexicon of Extended Strongs for Greek",
+          "license": "CC-BY-4.0",
+          "attribution": "STEP Bible — www.STEPBible.org (CC BY 4.0)",
+          "share_alike": false,
+          "url": "https://github.com/STEPBible/STEPBible-Data",
+          "version": "TBESG, master branch; definitions after Abbott-Smith (1922, PD)",
+          "retrieved_at": "2026-08-28"
+        },
+        {
+          "key": "stepbible_tagnt",
+          "name": "STEPBible TAGNT — Translators Amalgamated Greek New Testament",
+          "license": "CC-BY-4.0",
+          "attribution": "STEP Bible — www.STEPBible.org (CC BY 4.0)",
+          "share_alike": false,
+          "url": "https://github.com/STEPBible/STEPBible-Data",
+          "version": "TAGNT Mat-Jhn + Act-Rev, master branch",
+          "retrieved_at": "2026-08-28"
+        },
+        {
+          "key": "atlas_gloss_alignment",
+          "name": "Atlas Bible English-to-Greek word alignment",
+          "license": "CC-BY-4.0",
+          "attribution": "Word alignment computed by Atlas Bible from STEP Bible TAGNT glosses (STEP Bible — www.STEPBible.org, CC BY 4.0)",
+          "share_alike": false,
+          "url": "https://github.com/STEPBible/STEPBible-Data",
+          "version": "gloss-uniqueness alignment v1",
+          "retrieved_at": "2026-08-28"
+        },
+        {
+          "key": "dodson_greek_lexicon",
+          "name": "Dodson Greek Lexicon",
+          "license": "CC0-1.0",
+          "attribution": "Dodson Greek Lexicon — public domain (CC0 1.0)",
+          "share_alike": false,
+          "url": "https://github.com/biblicalhumanities/Dodson-Greek-Lexicon",
+          "version": "master branch, last upstream push 2018-01-11",
+          "retrieved_at": "2026-08-28"
+        }
+      ],
+      "payload": {
+        "kind": "root",
+        "lemma": "Σαμοθρᾴκη",
+        "language": "greek",
+        "transliteration": "Samothrakē",
+        "strongs_number": "G4543",
+        "gloss": "Samothrace",
+        "surface": "Σαμοθρᾴκην,",
+        "occurrence_count": 1,
+        "verse_count": 1,
+        "book_count": 1,
+        "definition": "Samothrace, an island south of the province of Thrace.",
+        "morphology": null
+      }
+    },
+    {
+      "id": "cross-ref~44016015~openbible",
+      "kind": "cross-ref",
+      "anchor": {
+        "verse_key": 44016015,
+        "text": "us",
+        "start_offset": 154,
+        "end_offset": 156
+      },
+      "teaser": "Linked to Acts 11:14",
+      "citations": [
+        {
+          "id": "xref-source-0",
+          "kind": "reference-work",
+          "label": "Cross-references © OpenBible.info, CC BY 4.0",
+          "osis": null,
+          "source_name": "OpenBible.info Cross References",
+          "url": "https://a.openbible.info/data/cross-references.zip"
+        },
+        {
+          "id": "xref-0",
+          "kind": "scripture",
+          "label": "Acts 11:14",
+          "osis": null,
+          "source_name": null,
+          "url": null
+        }
+      ],
+      "sources": [
+        {
+          "key": "openbible_xref",
+          "name": "OpenBible.info Cross References",
+          "license": "CC-BY-4.0",
+          "attribution": "Cross-references © OpenBible.info, CC BY 4.0",
+          "share_alike": false,
+          "url": "https://a.openbible.info/data/cross-references.zip",
+          "version": "2026-08-24",
+          "retrieved_at": "2026-08-28"
+        }
+      ],
+      "payload": {
+        "kind": "cross-ref",
+        "relation": "parallel",
+        "targets": [
+          {
+            "range": {
+              "start_key": 44011014,
+              "end_key": 44011014
+            },
+            "display_reference": "Acts 11:14",
+            "votes": 11,
+            "text": "He will convey to you a message by which you and all your household will be saved.’"
+          }
+        ]
+      }
+    }
+  ],
+  "sources": [
+    {
+      "key": "atlas_gloss_alignment",
+      "name": "Atlas Bible English-to-Greek word alignment",
+      "license": "CC-BY-4.0",
+      "attribution": "Word alignment computed by Atlas Bible from STEP Bible TAGNT glosses (STEP Bible — www.STEPBible.org, CC BY 4.0)",
+      "share_alike": false,
+      "url": "https://github.com/STEPBible/STEPBible-Data",
+      "version": "gloss-uniqueness alignment v1",
+      "retrieved_at": "2026-08-28"
+    },
+    {
+      "key": "dodson_greek_lexicon",
+      "name": "Dodson Greek Lexicon",
+      "license": "CC0-1.0",
+      "attribution": "Dodson Greek Lexicon — public domain (CC0 1.0)",
+      "share_alike": false,
+      "url": "https://github.com/biblicalhumanities/Dodson-Greek-Lexicon",
+      "version": "master branch, last upstream push 2018-01-11",
+      "retrieved_at": "2026-08-28"
+    },
+    {
+      "key": "murai_literary_structure",
+      "name": "Literary Structure of the Bible (Hajime Murai)",
+      "license": "CC-BY-4.0",
+      "attribution": "Literary structure analysis by Hajime Murai, CC BY 4.0 — bible.literarystructure.info",
+      "share_alike": false,
+      "url": "http://bible.literarystructure.info/bible/bible_e.html",
+      "version": "2022-02-24",
+      "retrieved_at": null
+    },
+    {
+      "key": "openbible_geocoding",
+      "name": "OpenBible.info Bible Geocoding Data",
+      "license": "CC-BY-4.0",
+      "attribution": "Place data © OpenBible.info, CC BY 4.0",
+      "share_alike": false,
+      "url": "https://github.com/openbibleinfo/Bible-Geocoding-Data",
+      "version": "2021-11-01",
+      "retrieved_at": "2026-08-28"
+    },
+    {
+      "key": "openbible_xref",
+      "name": "OpenBible.info Cross References",
+      "license": "CC-BY-4.0",
+      "attribution": "Cross-references © OpenBible.info, CC BY 4.0",
+      "share_alike": false,
+      "url": "https://a.openbible.info/data/cross-references.zip",
+      "version": "2026-08-24",
+      "retrieved_at": "2026-08-28"
+    },
+    {
+      "key": "stepbible_tagnt",
+      "name": "STEPBible TAGNT — Translators Amalgamated Greek New Testament",
+      "license": "CC-BY-4.0",
+      "attribution": "STEP Bible — www.STEPBible.org (CC BY 4.0)",
+      "share_alike": false,
+      "url": "https://github.com/STEPBible/STEPBible-Data",
+      "version": "TAGNT Mat-Jhn + Act-Rev, master branch",
+      "retrieved_at": "2026-08-28"
+    },
+    {
+      "key": "stepbible_tbesg",
+      "name": "STEPBible TBESG — Translators Brief lexicon of Extended Strongs for Greek",
+      "license": "CC-BY-4.0",
+      "attribution": "STEP Bible — www.STEPBible.org (CC BY 4.0)",
+      "share_alike": false,
+      "url": "https://github.com/STEPBible/STEPBible-Data",
+      "version": "TBESG, master branch; definitions after Abbott-Smith (1922, PD)",
+      "retrieved_at": "2026-08-28"
+    },
+    {
+      "key": "theographic_events",
+      "name": "Theographic Bible Metadata — Events",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Event dating from Theographic Bible Metadata, CC BY-SA 4.0 — github.com/robertrouse/theographic-bible-metadata",
+      "share_alike": true,
+      "url": "https://github.com/robertrouse/theographic-bible-metadata",
+      "version": "2026-08-28",
+      "retrieved_at": null
+    },
+    {
+      "key": "wikidata_rulers",
+      "name": "Wikidata ruler reigns",
+      "license": "CC0-1.0",
+      "attribution": "Reign dates from Wikidata, CC0 1.0 — wikidata.org",
+      "share_alike": false,
+      "url": "https://query.wikidata.org/sparql",
+      "version": "2026-08-29",
+      "retrieved_at": null
+    }
+  ]
+}

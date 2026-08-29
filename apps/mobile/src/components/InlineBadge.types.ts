@@ -7,57 +7,43 @@
  *
  * Key responsibilities
  *   - Name the props every badge implementation accepts.
- *   - Hold the ten kind -> glyph and kind -> default-label tables, keyed by the theme's
- *     `BadgeKind` so a new badge type is a compile error until it is given both.
+ *   - Hold the kind -> default-label table, keyed by the theme's `BadgeKind` so a new badge
+ *     type is a compile error until it is given one.
  *   - Compose the bracketed mark. `docs/product/design-language.md` §5 makes the brackets
  *     part of the mark, not decoration, so exactly one function builds them.
  *
- * Known conflict with the design language
- *   §5 requires "text and icon in the full hue". The glyphs below are colour emoji, which
- *   the platform renders in its own palette and which `color` cannot tint. They are a
- *   stopgap for the spike only; question `Q-021` asks which monochrome icon set replaces
- *   them. See `docs/architecture/spike-inline-badges.md`.
+ * The glyph is not here, and that is the point
+ *   The spike shipped colour emoji and recorded it as its first concession: §5 asks for "text
+ *   and icon in the full hue", and an emoji is painted by the OS in its own palette. `Q-021`
+ *   settles it - the glyph is now a vector path drawn by `./BadgeGlyph`, so the mark this
+ *   module composes is *text only*: `[Route]`. A renderer places the glyph between the
+ *   opening bracket and the word.
  *
  * Dependencies
  *   `@/theme` for `BadgeKind` only. No React, no React Native — this module is unit-testable
  *   under the plain-node Vitest project.
  */
 
+import type { GestureResponderEvent } from 'react-native';
+
 import type { BadgeKind, ScriptureStep } from '@/theme';
 
 import type { BadgeAlignment } from './InlineBadge.geometry';
 
 /**
- * Placeholder glyphs, one per badge kind, written as code points so the source file stays
- * pure ASCII and cannot be corrupted by an editor's encoding.
+ * The label shown inside the pill when the caller does not override it.
+ *
+ * `city3d` reads **Site**, not "3D City" (`Q-025`). `DECISIONS.md` §4 records it as one of
+ * the two genuinely dataset-less badges: no openly licensed 3D reconstruction of a biblical
+ * city exists, and the nearest candidate is CC BY-NC-ND, which fails twice over. So the
+ * sheet behind the mark shows the gazetteer record and says so, its own eyebrow already
+ * reads `SITE`, and the mark now promises what the sheet delivers. The wire kind stays
+ * `3d-city` and the theme key stays `city3d`: neither is reader-facing, and renaming a
+ * published discriminator to fix a label would be a breaking change for a cosmetic gain.
  */
-export const badgeGlyph = {
-  /** U+1F5FA world map. */
-  route: '\u{1F5FA}',
-  /** U+1F3DB classical building. */
-  city3d: '\u{1F3DB}',
-  /** U+23F3 hourglass with flowing sand. */
-  history: '\u{23F3}',
-  /** U+1F4DC scroll. */
-  manuscript: '\u{1F4DC}',
-  /** U+1F3AF direct hit. */
-  crossRef: '\u{1F3AF}',
-  /** U+1F331 seedling — a word's root. */
-  root: '\u{1F331}',
-  /** U+1F333 deciduous tree — the literary structure graph. */
-  structure: '\u{1F333}',
-  /** U+2696 balance scale. */
-  cultural: '\u{2696}',
-  /** U+1F399 studio microphone. */
-  context: '\u{1F399}',
-  /** U+1F9D8 person in lotus position. */
-  meditate: '\u{1F9D8}',
-} as const satisfies Record<BadgeKind, string>;
-
-/** The label shown inside the pill when the caller does not override it. */
 export const badgeLabel = {
   route: 'Route',
-  city3d: '3D City',
+  city3d: 'Site',
   history: 'History',
   manuscript: 'Manuscript',
   crossRef: 'Cross-Ref',
@@ -74,9 +60,6 @@ const MARK_OPEN = '[';
 /** Closing bracket of the mark. */
 const MARK_CLOSE = ']';
 
-/** Separator between the glyph and the word, inside the brackets. */
-const MARK_GAP = ' ';
-
 /**
  * Builds the text of one badge's mark, brackets included.
  *
@@ -88,23 +71,27 @@ const MARK_GAP = ' ';
  * @returns The full mark, e.g. `[<glyph> Route]`.
  */
 export function composeBadgeMark(kind: BadgeKind, label?: string): string {
-  return `${MARK_OPEN}${badgeGlyph[kind]}${MARK_GAP}${label ?? badgeLabel[kind]}${MARK_CLOSE}`;
+  return `${MARK_OPEN}${label ?? badgeLabel[kind]}${MARK_CLOSE}`;
 }
 
 /**
- * The three parts of a mark, for implementations that render the glyph in its own node.
+ * The three parts of a mark, for implementations that draw the glyph in its own node.
+ *
+ * The glyph belongs between the lead and the word, which is why they are separate: `[` and
+ * `Route]` are two text nodes with a vector between them, and the brackets stay part of the
+ * mark rather than becoming decoration around it.
  *
  * @param kind - Which badge type.
  * @param label - Overrides the default label for this kind.
- * @returns The leading bracket-plus-glyph, the word, and the trailing bracket.
+ * @returns The opening bracket, the word, and the closing bracket.
  */
 export function splitBadgeMark(
   kind: BadgeKind,
   label?: string,
 ): { readonly lead: string; readonly word: string; readonly tail: string } {
   return {
-    lead: `${MARK_OPEN}${badgeGlyph[kind]}`,
-    word: `${MARK_GAP}${label ?? badgeLabel[kind]}`,
+    lead: MARK_OPEN,
+    word: label ?? badgeLabel[kind],
     tail: MARK_CLOSE,
   };
 }
@@ -126,8 +113,14 @@ export interface InlineBadgeProps {
    * because the two hosts start the pill at different heights.
    */
   readonly alignment?: BadgeAlignment;
-  /** Opens the badge's sheet. Absent means the badge is decorative in this render. */
-  readonly onPress?: () => void;
+  /**
+   * Opens the badge's sheet. Absent means the badge is decorative in this render.
+   *
+   * The event is forwarded because an inline badge always sits inside a larger control — the
+   * verse row is itself pressable — and the handler must be able to stop the press bubbling
+   * up to it. Tapping a pill must open the badge, not also select the verse underneath.
+   */
+  readonly onPress?: (event: GestureResponderEvent) => void;
   /** Test hook. */
   readonly testID?: string;
 }

@@ -40,6 +40,14 @@ export interface TranslationSheetProps {
   readonly onSelect: (code: string) => void;
   /** True while the list is still loading. */
   readonly loading: boolean;
+  /**
+   * True when the request failed. Distinct from an empty list on purpose: "no translations
+   * are loaded" is a claim about the database, and a request that timed out has established
+   * nothing about it. Seen for real — the client's ten-second budget elapsed under load
+   * while the API answered every call in single-digit milliseconds, and the sheet told the
+   * reader to re-seed a database that was fine.
+   */
+  readonly failed: boolean;
 }
 
 /**
@@ -70,6 +78,7 @@ export function TranslationSheet({
   selectedCode,
   onSelect,
   loading,
+  failed,
 }: TranslationSheetProps): JSX.Element {
   const theme = useTheme();
   const rows = translations ?? [];
@@ -80,7 +89,13 @@ export function TranslationSheet({
         <Text style={[styles.note, { color: theme.ink.secondary }]}>Loading translations…</Text>
       ) : null}
 
-      {!loading && rows.length === 0 ? (
+      {failed && rows.length === 0 ? (
+        <Text style={[styles.note, { color: theme.ink.secondary }]}>
+          The translation list could not be loaded. Close this and try again.
+        </Text>
+      ) : null}
+
+      {!loading && !failed && rows.length === 0 ? (
         <Text style={[styles.note, { color: theme.ink.secondary }]}>
           No translations are loaded. Seed the database with `pnpm db:seed`.
         </Text>

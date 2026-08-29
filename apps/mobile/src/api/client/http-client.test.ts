@@ -47,7 +47,9 @@ describe('createHttpClient', () => {
   });
 
   it('sends the identity headers on every request', async () => {
-    const { fetchImpl, calls } = createRecordingFetch([{ status: 200, body: { verse: 1, text: 'x' } }]);
+    const { fetchImpl, calls } = createRecordingFetch([
+      { status: 200, body: { verse: 1, text: 'x' } },
+    ]);
     const client = createHttpClient({
       baseUrl: 'http://api.test',
       fetchImpl,
@@ -63,7 +65,9 @@ describe('createHttpClient', () => {
   });
 
   it('builds the URL from base, path and query, encoding each', async () => {
-    const { fetchImpl, calls } = createRecordingFetch([{ status: 200, body: { verse: 1, text: 'x' } }]);
+    const { fetchImpl, calls } = createRecordingFetch([
+      { status: 200, body: { verse: 1, text: 'x' } },
+    ]);
     const client = createHttpClient({ baseUrl: 'http://api.test/', fetchImpl });
 
     await client.request({
@@ -109,7 +113,11 @@ describe('createHttpClient', () => {
 
   it('still produces a typed failure when the body is not the envelope', async () => {
     const { fetchImpl } = createRecordingFetch([{ status: 502, body: '<html>gateway</html>' }]);
-    const client = createHttpClient({ baseUrl: 'http://api.test', fetchImpl, policy: { maxAttempts: 1, baseDelayMs: 0, maxDelayMs: 0, jitterRatio: 0 } });
+    const client = createHttpClient({
+      baseUrl: 'http://api.test',
+      fetchImpl,
+      policy: { maxAttempts: 1, baseDelayMs: 0, maxDelayMs: 0, jitterRatio: 0 },
+    });
 
     const result = await client.request({ path: '/books', decode: decodeVerse });
 
@@ -148,7 +156,9 @@ describe('createHttpClient', () => {
   });
 
   it('sends a JSON body and declares its content type', async () => {
-    const { fetchImpl, calls } = createRecordingFetch([{ status: 200, body: { verse: 1, text: 'x' } }]);
+    const { fetchImpl, calls } = createRecordingFetch([
+      { status: 200, body: { verse: 1, text: 'x' } },
+    ]);
     const client = createHttpClient({ baseUrl: 'http://api.test', fetchImpl });
 
     await client.request({

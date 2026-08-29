@@ -23,13 +23,13 @@ transform.
 
 ## The five guarantees
 
-| # | Guarantee | Where it lives |
-|---|---|---|
-| 1 | **Nothing throws.** Every call resolves an `ApiResult`; the failure arm is one of five typed shapes, never a string and never an `Error`. | `client/api-error.ts`, `client/api-result.ts` |
-| 2 | **Nothing waits forever.** Every attempt carries a deadline (rule 6.4.1). | `client/request-timeout.ts` |
-| 3 | **Retries back off with jitter, and never double-fire.** One attempt in flight at a time; the attempt count is exactly the policy's (rule 6.4.2). | `client/retry-policy.ts`, `client/retry.ts` |
-| 4 | **Every request says who it is.** A device id, minted once and persisted (`A-01`). The prototype sent no auth at all and the server hardcoded `dev-user` — port map risk #9. | `identity/` |
-| 5 | **A chapter read once opens instantly, offline.** Query cache persisted across launches (`O-01`). | `query/query-persistence.ts` |
+| #   | Guarantee                                                                                                                                                                    | Where it lives                                |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| 1   | **Nothing throws.** Every call resolves an `ApiResult`; the failure arm is one of five typed shapes, never a string and never an `Error`.                                    | `client/api-error.ts`, `client/api-result.ts` |
+| 2   | **Nothing waits forever.** Every attempt carries a deadline (rule 6.4.1).                                                                                                    | `client/request-timeout.ts`                   |
+| 3   | **Retries back off with jitter, and never double-fire.** One attempt in flight at a time; the attempt count is exactly the policy's (rule 6.4.2).                            | `client/retry-policy.ts`, `client/retry.ts`   |
+| 4   | **Every request says who it is.** A device id, minted once and persisted (`A-01`). The prototype sent no auth at all and the server hardcoded `dev-user` — port map risk #9. | `identity/`                                   |
+| 5   | **A chapter read once opens instantly, offline.** Query cache persisted across launches (`O-01`).                                                                            | `query/query-persistence.ts`                  |
 
 ## The two seams that exist to be replaced
 
@@ -57,14 +57,14 @@ first-class target. **Exactly one file may import it**:
 
 ## Endpoints
 
-| method | route | server module |
-|---|---|---|
-| `getHealth` | `GET /health` | `health` |
-| `getTranslations` | `GET /translations` | `scripture` |
-| `getBooks` | `GET /books` | `scripture` |
-| `getChapter` | `GET /chapters/{translation}/{book}/{chapter}` | `scripture` |
-| `search` | `GET /search` | `scripture` |
-| `getIdentity` | `GET /me` | `identity` |
+| method            | route                                          | server module |
+| ----------------- | ---------------------------------------------- | ------------- |
+| `getHealth`       | `GET /health`                                  | `health`      |
+| `getTranslations` | `GET /translations`                            | `scripture`   |
+| `getBooks`        | `GET /books`                                   | `scripture`   |
+| `getChapter`      | `GET /chapters/{translation}/{book}/{chapter}` | `scripture`   |
+| `search`          | `GET /search`                                  | `scripture`   |
+| `getIdentity`     | `GET /me`                                      | `identity`    |
 
 All six are `GET`, so all six are idempotent and safe to retry. **The first write endpoint
 added here must pass `NO_RETRY_POLICY` or carry an idempotency key** (rule 6.4.5).
@@ -99,7 +99,7 @@ const chapter = useChapterQuery({ translation: 'BSB', book: 'John', chapter: 3 }
 
 ## Retry lives in one layer, on purpose
 
-The query client sets `retry: false`. That is not a missing retry — it is the *only* way to
+The query client sets `retry: false`. That is not a missing retry — it is the _only_ way to
 avoid two of them. `client/retry.ts` already retries with exponential backoff and jitter,
 and leaving TanStack's own retry on as well would make one failed read nine requests
 arriving in an unjittered rhythm.

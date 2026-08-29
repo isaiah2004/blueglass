@@ -32,6 +32,14 @@ select = ["E", "F", "I", "W", "B", "UP", "ASYNC", "S", "RUF"]
 ignore = ["S101"]
 
 [tool.ruff.lint.per-file-ignores]
+# RUF001 flags Greek and Hebrew letters as "ambiguous" lookalikes for Latin
+# ones. These files exist to parse and test Greek and Hebrew, so every such
+# character is deliberate and the rule has nothing useful to say about them.
+"scripts/lexicon/*.py" = ["RUF001"]
+"tests/unit/test_tagnt_parser.py" = ["RUF001", "S105", "S106"]
+"tests/unit/test_lexeme_parsers.py" = ["RUF001", "S105", "S106"]
+"tests/unit/test_gloss_alignment.py" = ["RUF001", "S105", "S106"]
+"tests/integration/test_loaded_lexicon.py" = ["RUF001", "S105", "S106"]
 # Test bodies legitimately hardcode credentials-shaped strings (device ids).
 "tests/*" = ["S105", "S106"]
 # S608 flags SQL built by string formatting. In this one file the ONLY

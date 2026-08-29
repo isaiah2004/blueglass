@@ -28,12 +28,7 @@
 
 import { abortedError, withAttempts } from './api-error';
 import { apiFailure, type ApiResult } from './api-result';
-import {
-  backoffDelayMs,
-  shouldRetry,
-  type RandomSource,
-  type RetryPolicy,
-} from './retry-policy';
+import { backoffDelayMs, shouldRetry, type RandomSource, type RetryPolicy } from './retry-policy';
 
 /**
  * Wait, or resolve early if the signal aborts.

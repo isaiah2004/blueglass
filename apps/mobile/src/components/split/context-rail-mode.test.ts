@@ -8,7 +8,7 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { contentWidthFor, contextRailMode } from './context-rail-mode';
+import { contentWidthFor, contextRailMode, contextRailWidth } from './context-rail-mode';
 import { breakpoint, layout } from '@/theme';
 
 describe('contextRailMode', () => {
@@ -29,9 +29,7 @@ describe('contextRailMode', () => {
   });
 
   it('gives every desktop width a resizable rail, including the narrowest', () => {
-    expect(contextRailMode({ width: breakpoint.desktop, formFactor: 'desktop' })).toBe(
-      'resizable',
-    );
+    expect(contextRailMode({ width: breakpoint.desktop, formFactor: 'desktop' })).toBe('resizable');
     expect(contextRailMode({ width: 1280, formFactor: 'desktop' })).toBe('resizable');
     expect(contextRailMode({ width: 1440, formFactor: 'desktop' })).toBe('resizable');
   });
@@ -57,5 +55,22 @@ describe('contentWidthFor', () => {
 
   it('never reports a negative width', () => {
     expect(contentWidthFor({ width: 10, formFactor: 'desktop' })).toBe(0);
+  });
+});
+
+describe('contextRailWidth', () => {
+  it('reports nothing for a layout with no rail', () => {
+    expect(contextRailWidth('none')).toBe(0);
+  });
+
+  it('reports the tablet minimum for the fixed regime, which is what is laid out', () => {
+    expect(contextRailWidth('fixed')).toBe(layout.contextRail.minTablet);
+  });
+
+  it('reports the opening width for the resizable one', () => {
+    // A dragged rail is only known to `ContextRailShell`. Reporting the opening width is
+    // safe for the reading-density rule because that regime already guarantees the reader
+    // pane at least `minReader`, so it can never fall into the phone-like band.
+    expect(contextRailWidth('resizable')).toBe(layout.contextRail.initial);
   });
 });

@@ -10,7 +10,8 @@
  *   - Re-export the `Result` type every fallible domain function returns.
  *   - Re-export the scripture domain: the canonical 66-book table, book resolution,
  *     the `VerseKey` value object, and OSIS parsing.
- *   - Re-export the citation and geography primitives those domains share.
+ *   - Re-export the citation and geography primitives those domains share, and the
+ *     display rules for a licence notice (`AI-05`).
  *   - Re-export the inline-badge union and the pre-computed passage record types.
  *
  * Constraint
@@ -27,6 +28,7 @@ export type { FailureResult, Result, SuccessResult } from './result';
 export { fail, succeed } from './result';
 
 export * from './citation';
+export * from './licence-notice';
 export * from './geo';
 export * from './scripture';
 export * from './badges';

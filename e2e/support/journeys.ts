@@ -47,6 +47,22 @@ export const READER_START_PATH = `/read/${READER_START.book}/${String(READER_STA
 export const MIN_VERSES_IN_A_CHAPTER = 5;
 
 /**
+ * How long the first painted verse of a chapter may take.
+ *
+ * The config's 10 s `expect` timeout is right for an element that is either in the tree or
+ * is not. Scripture is neither: it is an HTTP round trip behind a bundle that may still be
+ * compiling, so this wait absorbs the cold start the whole suite pays once per project.
+ * Measured on this machine: 7-9 s for these steps with four workers, and past 10 s under
+ * the six the full run uses — two tablet chapters failed a full run and passed in
+ * isolation, which is a harness budget rather than an app defect.
+ *
+ * This changes the patience, never the assertion: verse 1 must still be on screen, and a
+ * reader that renders no scripture still fails the run. `openBadgedChapter` already makes
+ * the same exception, for the same reason, with the same number.
+ */
+const FIRST_PAINT_TIMEOUT_MS = 30_000;
+
+/**
  * Launch the app at a route and wait for React to have mounted something.
  *
  * This is a **precondition**, not an assertion: it establishes that the bundle is running
@@ -130,12 +146,12 @@ export async function openReader(page: Page, path: string = READER_START_PATH): 
   await expect(
     reader,
     `the reader (testID "${READER_IDS.screen}") never appeared at ${path}`,
-  ).toBeVisible();
+  ).toBeVisible({ timeout: FIRST_PAINT_TIMEOUT_MS });
   await expect(
     firstVerse(page),
     `the reader rendered but verse 1 (testID "${verseId(1)}") did not. ` +
       'A reader with no scripture in it is the one failure milestone M1 cannot ship.',
-  ).toBeVisible();
+  ).toBeVisible({ timeout: FIRST_PAINT_TIMEOUT_MS });
   return reader;
 }
 
@@ -169,7 +185,9 @@ export async function renderedVerseNumbers(page: Page): Promise<number[]> {
   return page.evaluate(
     (idPrefix: string) =>
       Array.from(document.querySelectorAll(`[data-testid^="${idPrefix}"]`))
-        .map((element) => Number((element.getAttribute('data-testid') ?? '').slice(idPrefix.length)))
+        .map((element) =>
+          Number((element.getAttribute('data-testid') ?? '').slice(idPrefix.length)),
+        )
         .filter((value) => Number.isInteger(value) && value > 0),
     prefix,
   );

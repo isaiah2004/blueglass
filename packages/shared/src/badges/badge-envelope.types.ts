@@ -10,7 +10,8 @@
  * Key responsibilities
  *   - Anchor a badge to an exact character range in an exact verse, so it can be placed
  *     inline without disturbing the scripture's line rhythm.
- *   - Require a teaser and citations on every badge, whatever its kind.
+ *   - Require a teaser, citations and source attribution on every badge, whatever its
+ *     kind.
  *
  * Dependencies
  *   `../citation`, `../scripture`, `./badge-kind`. Pure types.
@@ -21,7 +22,7 @@
  *   not just the word — the same word can occur twice in one verse.
  */
 
-import type { Citation } from '../citation';
+import type { Citation, SourceAttribution } from '../citation';
 import type { VerseKey } from '../scripture';
 import type { BadgeKind } from './badge-kind';
 
@@ -60,6 +61,13 @@ export interface InlineBadgeBase<TKind extends BadgeKind, TPayload> {
    * says an uncited claim is not rendered, so a badge with no citations must not ship.
    */
   readonly citations: readonly Citation[];
+  /**
+   * Provenance for everything in `payload`. Required and non-empty by contract:
+   * `AI-05` says a badge that cannot name its source and licence is not rendered, and
+   * the server drops such a badge before it reaches the wire. The UI displays these as
+   * the attribution strip.
+   */
+  readonly sources: readonly SourceAttribution[];
   /** The sheet content. Shape is determined entirely by `kind`. */
   readonly payload: TPayload;
 }

@@ -119,8 +119,7 @@ export const useReader = create<ReaderSlice>()((set, get) => ({
 
 /** Stable selectors. */
 export const selectAddress = (state: ReaderState): ReaderAddress => state.address;
-export const selectSelectedVerseKey = (state: ReaderState): number | null =>
-  state.selectedVerseKey;
+export const selectSelectedVerseKey = (state: ReaderState): number | null => state.selectedVerseKey;
 export const selectFocusedWord = (state: ReaderState): string | null => state.focusedWord;
 export const selectPanel = (state: ReaderState): ReaderPanel => state.panel;
 export const selectStudyTab = (state: ReaderState): StudyTab => state.studyTab;

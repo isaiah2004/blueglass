@@ -43,11 +43,22 @@ export function useIsReduceMotionEnabled(): boolean {
       if (isCurrent) setIsEnabled(enabled);
     });
 
-    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setIsEnabled);
+    // MEASURED, not defensive. `react-native-web`'s `AccessibilityInfo.addEventListener`
+    // returns `undefined` — not a subscription — whenever its module-scope
+    // `window.matchMedia` probe came back empty
+    // (`node_modules/react-native-web/dist/exports/AccessibilityInfo/index.js`: "if
+    // (!prefersReducedMotionMedia) { return; }"). That probe runs once, at import, so it
+    // fails wherever the module is first evaluated without a DOM — the jsdom component
+    // project, and the Node pre-render pass of `expo export --platform web`. Calling
+    // `.remove()` on it threw `Cannot read properties of undefined` on every unmount of
+    // every component using this hook. Found by the spatial sheets' component tests, which
+    // are the first shipped components to read the reduced-motion preference.
+    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setIsEnabled) as
+      { remove: () => void } | undefined;
 
     return (): void => {
       isCurrent = false;
-      subscription.remove();
+      subscription?.remove();
     };
   }, []);
 

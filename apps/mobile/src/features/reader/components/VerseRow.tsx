@@ -65,6 +65,12 @@ export interface VerseRowProps {
   readonly onPress: (verseNumber: number) => void;
   /** Holding the verse highlights or un-highlights it. */
   readonly onLongPress: (verseNumber: number) => void;
+  /**
+   * Tapping an inline badge opens its sheet or fills the context rail.
+   *
+   * @param badgeId - The badge's stable id.
+   */
+  readonly onBadgePress?: (badgeId: string) => void;
   /** Reports the row's top edge so the canvas can scroll a verse into view. */
   readonly onLayoutTop?: (verseNumber: number, top: number) => void;
 }
@@ -86,6 +92,7 @@ export function VerseRow({
   reduceMotion,
   onPress,
   onLongPress,
+  onBadgePress,
   onLayoutTop,
 }: VerseRowProps): JSX.Element {
   const paint = verseToneColors(useTheme(), tone);
@@ -116,6 +123,7 @@ export function VerseRow({
           <VerseText
             text={text}
             {...(anchors === undefined ? {} : { anchors })}
+            {...(onBadgePress === undefined ? {} : { onBadgePress })}
             scriptureStep={scriptureStep}
             style={{ ...scriptureText(scriptureStep), color: paint.text }}
           />

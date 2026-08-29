@@ -48,6 +48,25 @@ const INTERACTIVE_SELECTOR = [
 ].join(',');
 
 /**
+ * The one control that is deliberately smaller than the minimum, and why.
+ *
+ * `design-language.md` §5 fixes the inline badge at 22-24 pt and requires that it "must not
+ * disturb the scripture's line rhythm". A 44 px pill inside a 32 px line cannot satisfy both;
+ * the design chose the line. Three things make that safe rather than sloppy, and all three
+ * have to stay true for this exemption to be honest:
+ *
+ *   1. The pill carries a `hitSlop` sized to bring its *touch* area to 44 dp, so a thumb
+ *      meets the minimum even though the painted pill does not (`InlineBadge.tsx`).
+ *   2. Every badge in the chapter is repeated in the chapter-end summary list, whose rows are
+ *      a full `size.tapTarget` tall. That is WCAG 2.5.8's "Equivalent" exception, and it is
+ *      the reason that list exists (`design-language.md` §5, `image9.png`).
+ *   3. The pill is 67-96 px WIDE. It is small on one axis, not small.
+ *
+ * Nothing else in the app may join this list without the same three answers.
+ */
+const TAP_TARGET_EXEMPT_SELECTOR = '[data-testid^="inline-badge-"]';
+
+/**
  * Which pressable controls are smaller than the minimum tap target?
  *
  * Catches: a tab bar whose buttons are 32 px tall, an icon-only close control with no
@@ -57,17 +76,18 @@ const INTERACTIVE_SELECTOR = [
  *
  * @param page The page to measure.
  * @param minimumPx The minimum edge length in CSS pixels.
- * @returns Up to ten undersized controls.
+ * @returns Up to ten undersized controls, excluding {@link TAP_TARGET_EXEMPT_SELECTOR}.
  */
 export async function probeSmallTapTargets(page: Page, minimumPx: number): Promise<Finding[]> {
   return page.evaluate(
-    ([selector, minimum, limit]: [string, number, number]): Finding[] => {
+    ([selector, exemptSelector, minimum, limit]: [string, string, number, number]): Finding[] => {
       const all = Array.from(document.querySelectorAll(selector));
       const innermost = all.filter(
         (element) => !all.some((other) => other !== element && element.contains(other)),
       );
       const findings: Finding[] = [];
       for (const element of innermost) {
+        if (element.matches(exemptSelector)) continue;
         const rect = element.getBoundingClientRect();
         if (rect.width < 1 || rect.height < 1) continue;
         if (window.getComputedStyle(element).pointerEvents === 'none') continue;
@@ -90,7 +110,12 @@ export async function probeSmallTapTargets(page: Page, minimumPx: number): Promi
       }
       return findings;
     },
-    [INTERACTIVE_SELECTOR, minimumPx, MAX_FINDINGS_PER_PROBE] as [string, number, number],
+    [INTERACTIVE_SELECTOR, TAP_TARGET_EXEMPT_SELECTOR, minimumPx, MAX_FINDINGS_PER_PROBE] as [
+      string,
+      string,
+      number,
+      number,
+    ],
   );
 }
 

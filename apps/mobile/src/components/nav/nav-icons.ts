@@ -37,7 +37,8 @@ export type IconName =
   | 'moon'
   | 'display'
   | 'settings'
-  | 'panelRight';
+  | 'panelRight'
+  | 'chevronRight';
 
 /**
  * One glyph: the strokes that make it, in draw order.
@@ -99,7 +100,12 @@ export const iconPaths = {
     'M19.4 14.6a1.5 1.5 0 0 0 .3 1.65l.05.06a1.8 1.8 0 1 1-2.55 2.55l-.06-.06a1.5 1.5 0 0 0-2.55 1.06v.17a1.8 1.8 0 1 1-3.6 0v-.09a1.5 1.5 0 0 0-2.6-1.03l-.06.06a1.8 1.8 0 1 1-2.55-2.55l.06-.06a1.5 1.5 0 0 0-1.06-2.55h-.17a1.8 1.8 0 1 1 0-3.6h.09a1.5 1.5 0 0 0 1.03-2.6l-.06-.06a1.8 1.8 0 1 1 2.55-2.55l.06.06a1.5 1.5 0 0 0 2.55-1.06v-.17a1.8 1.8 0 1 1 3.6 0v.09a1.5 1.5 0 0 0 2.6 1.03l.06-.06a1.8 1.8 0 1 1 2.55 2.55l-.06.06a1.5 1.5 0 0 0 1.06 2.55h.17a1.8 1.8 0 1 1 0 3.6h-.09a1.5 1.5 0 0 0-1.38.91z',
   ],
   /** Show or hide the context rail. */
-  panelRight: ['M3.6 4.4h16.8a1 1 0 0 1 1 1v13.2a1 1 0 0 1-1 1H3.6a1 1 0 0 1-1-1V5.4a1 1 0 0 1 1-1z', 'M15 4.4v15.2'],
+  panelRight: [
+    'M3.6 4.4h16.8a1 1 0 0 1 1 1v13.2a1 1 0 0 1-1 1H3.6a1 1 0 0 1-1-1V5.4a1 1 0 0 1 1-1z',
+    'M15 4.4v15.2',
+  ],
+  /** Open this row — the chevron ending every badge in the chapter summary (`image9.png`). */
+  chevronRight: ['M9.4 5.4 16 12l-6.6 6.6'],
 } as const satisfies Record<IconName, IconPaths>;
 
 /** Every glyph name, so a gallery or a test iterates rather than restates. */
@@ -114,4 +120,5 @@ export const iconNames = [
   'display',
   'settings',
   'panelRight',
+  'chevronRight',
 ] as const satisfies readonly IconName[];

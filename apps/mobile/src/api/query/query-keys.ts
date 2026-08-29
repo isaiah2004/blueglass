@@ -67,6 +67,25 @@ export const atlasQueryKeys = {
     chapter,
   ],
 
+  /** Prefix for every chapter's inline badges, in every translation. */
+  chapterBadgesAll: (): AtlasQueryKey => ['atlas', 'badges', 'chapter'],
+
+  /**
+   * One chapter's inline badges.
+   *
+   * The translation is part of the key, not decoration: a badge anchor is a character range
+   * into the verse text, and the same word sits at different offsets in KJV and BSB. Sharing
+   * one cache entry across translations would place pills mid-word.
+   */
+  chapterBadges: (translation: string, book: string | number, chapter: number): AtlasQueryKey => [
+    'atlas',
+    'badges',
+    'chapter',
+    normaliseToken(translation),
+    normaliseToken(book),
+    chapter,
+  ],
+
   /** Prefix for every search. */
   searches: (): AtlasQueryKey => ['atlas', 'search'],
 

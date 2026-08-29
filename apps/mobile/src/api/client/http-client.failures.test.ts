@@ -17,11 +17,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { ApiError } from './api-error';
 import { createHttpClient } from './http-client';
-import {
-  createHangingFetch,
-  createManualTimers,
-  createRecordingFetch,
-} from './http-test-doubles';
+import { createHangingFetch, createManualTimers, createRecordingFetch } from './http-test-doubles';
 import type { FetchLike } from './http-attempt';
 import { decodeObject, decodeString } from './json-shape';
 import type { Sleep } from './retry';

@@ -55,9 +55,7 @@ describe('every shape', () => {
   });
 
   it.each(SHAPES)('announces itself as a tab, and says whether it is selected (%s)', (shape) => {
-    const rendered = mount(
-      <NavItem destination={HOME} shape={shape} isActive onPress={vi.fn()} />,
-    );
+    const rendered = mount(<NavItem destination={HOME} shape={shape} isActive onPress={vi.fn()} />);
     const item = rendered.byTestId(HOME.testID);
 
     expect(item?.getAttribute('role')).toBe('tab');
@@ -92,9 +90,7 @@ describe('what each shape shows', () => {
         <NavItem destination={HOME} shape={shape} isActive={false} onPress={vi.fn()} />,
       );
 
-      expect(rendered.text(), `the ${shape} shape rendered no visible label`).toContain(
-        HOME.label,
-      );
+      expect(rendered.text(), `the ${shape} shape rendered no visible label`).toContain(HOME.label);
       rendered.unmount();
     }
   });

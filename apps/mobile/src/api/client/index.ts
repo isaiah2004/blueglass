@@ -104,7 +104,13 @@ export {
 
 export { startRequestDeadline, type RequestDeadline } from './request-timeout';
 
-export { defaultSleep, runWithRetry, type Attempt, type RetryRunnerOptions, type Sleep } from './retry';
+export {
+  defaultSleep,
+  runWithRetry,
+  type Attempt,
+  type RetryRunnerOptions,
+  type Sleep,
+} from './retry';
 
 export {
   backoffDelayMs,

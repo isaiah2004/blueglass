@@ -25,6 +25,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from ..infrastructure.db import Database
+from ..modules.badges.application import (
+    BadgeRepository,
+    GetBadge,
+    GetChapterBadges,
+)
+from ..modules.badges.infrastructure import PostgresBadgeRepository
 from ..modules.identity.application import (
     GetPreferences,
     IdentityRepository,
@@ -62,6 +68,7 @@ class Container:
 
     # ── Ports, bound to their chosen adapters ─────────────────────────────
     scripture_repository: ScriptureRepository = field(init=False)
+    badge_repository: BadgeRepository = field(init=False)
     identity_repository: IdentityRepository = field(init=False)
     identity_resolver: IdentityResolver = field(init=False)
     study_repository: StudyRepository = field(init=False)
@@ -74,6 +81,8 @@ class Container:
     list_books: ListBooks = field(init=False)
     get_chapter: GetChapter = field(init=False)
     search_verses: SearchVerses = field(init=False)
+    get_chapter_badges: GetChapterBadges = field(init=False)
+    get_badge: GetBadge = field(init=False)
     get_preferences: GetPreferences = field(init=False)
     set_preferences: SetPreferences = field(init=False)
     get_chapter_study: GetChapterStudy = field(init=False)
@@ -89,6 +98,7 @@ class Container:
         self.scripture_repository = PostgresScriptureRepository(
             self.database, default_translation=self.settings.default_translation
         )
+        self.badge_repository = PostgresBadgeRepository(self.database)
         self.identity_repository = PostgresIdentityRepository(self.database)
         self.author_registry = self.identity_repository
         self.identity_resolver = DeviceIdentityResolver()
@@ -104,6 +114,8 @@ class Container:
             default_limit=self.settings.search_default_limit,
             max_limit=self.settings.search_max_limit,
         )
+        self.get_chapter_badges = GetChapterBadges(self.badge_repository)
+        self.get_badge = GetBadge(self.badge_repository)
         self.get_preferences = GetPreferences(self.identity_repository)
         self.set_preferences = SetPreferences(self.identity_repository)
         self.get_chapter_study = GetChapterStudy(self.study_repository)

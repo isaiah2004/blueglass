@@ -42,7 +42,19 @@ export interface TimelineEvent {
   readonly detail?: string;
 }
 
-/** Sheet content for `[⏳ History]` — the dual-axis timeline. */
+/**
+ * Sheet content for `[⏳ History]` — the dual-axis timeline.
+ *
+ * EXTENDED FOR M2 with the honesty fields the real data forced.
+ *   `rationale` and `confidence` exist because a passage's date is inherited from an
+ *   event that narrates only PART of it ("...which narrates about 60% of this passage"),
+ *   and a reader entitled to the date is entitled to that caveat.
+ *   `datingOrigin` distinguishes "a dataset says" from "a model wrote this"; every row
+ *   M2 ships is `sourced`.
+ *   `passageTitle`, `interpretiveClaim` and `attributedTo` travel together or not at
+ *   all: the title is Hajime Murai's division of the text, and decision `Q-015` requires
+ *   it to render as "Murai's reading" and never as settled fact.
+ */
 export interface HistoryBadgePayload {
   /** The date of the passage itself, as the sources express it. */
   readonly passageYearLabel: string;
@@ -50,8 +62,20 @@ export interface HistoryBadgePayload {
   readonly biblicalAxis: readonly TimelineEvent[];
   /** Contemporary Roman and world events. The lower axis. */
   readonly worldAxis: readonly TimelineEvent[];
+  /** Why this passage carries this date. Shown, not hidden. */
+  readonly rationale: string;
+  /** `sourced`, `generated`, or `authored`. M2 emits only `sourced`. */
+  readonly datingOrigin: 'sourced' | 'generated' | 'authored';
+  /** How much of the passage the dating event actually narrates, 0–1. */
+  readonly confidence?: number;
   /** Who was on the throne, when a source names them, e.g. `Claudius`. */
   readonly rulerName?: string;
+  /** The pericope heading. One scholar's reading — render it with `attributedTo`. */
+  readonly passageTitle?: string;
+  /** How to label that reading, e.g. `Murai's reading` (`Q-015`). */
+  readonly interpretiveClaim?: string;
+  /** The scholar the reading belongs to, e.g. `Hajime Murai`. */
+  readonly attributedTo?: string;
 }
 
 /** Which cultural world a custom belongs to. */

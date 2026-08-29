@@ -18,6 +18,10 @@
  *   the others; nothing is excluded here, because an exclusion in the config is invisible
  *   from the spec that it silences.
  *
+ * The worker count
+ *   Capped, and the reasoning is on `DEFAULT_WORKERS` below. It is the one number here that
+ *   changes what the harness measures rather than what it covers.
+ *
  * The server
  *   `webServer` starts the Expo web build itself, because an unattended loop cannot depend
  *   on a human having run `pnpm web` first, and reuses one that is already running so the
@@ -37,6 +41,23 @@ import { VIEWPORTS } from './e2e/support/viewports';
 
 /** Where `expo start --web` serves the app during a walkthrough. */
 const WEB_BASE_URL = process.env.ATLAS_WEB_BASE_URL ?? 'http://localhost:8081';
+
+/**
+ * How many browsers drive the app at once. Override with `ATLAS_E2E_WORKERS`.
+ *
+ * Playwright's default is half the logical cores, which is **six** on this machine, and six
+ * cold Chrome instances plus Metro plus Postgres do not fit in twelve cores. Measured, over
+ * five full runs: at six workers the browser's main thread starves and two different classes
+ * of failure appear, neither of them about the app — Playwright's own stability check cannot
+ * settle a bounding box (a pill "in the DOM" that never becomes clickable), and the client's
+ * ten-second request budget elapses while the API is answering in single-digit milliseconds
+ * (a switcher with no translations in it). Sibling steps took 33-37 s cold against 2-4 s warm.
+ *
+ * Four is not a way of hiding flake — `retries` is still 0 and every timeout is unchanged.
+ * It is the number of browsers this machine can actually run, and a harness that cannot
+ * schedule its own work measures the machine rather than the product.
+ */
+const DEFAULT_WORKERS = 4;
 
 /**
  * One Playwright project per viewport.
@@ -61,9 +82,7 @@ export default defineConfig<WalkthroughOptions>({
   forbidOnly: Boolean(process.env.CI),
   // `OP-01`: no CI. A retry locally would hide exactly the flake this harness must expose.
   retries: 0,
-  ...(process.env.ATLAS_E2E_WORKERS === undefined
-    ? {}
-    : { workers: Number(process.env.ATLAS_E2E_WORKERS) }),
+  workers: Number(process.env.ATLAS_E2E_WORKERS ?? DEFAULT_WORKERS),
   // Metro can rebuild mid-run when a sibling agent saves a file, so a step gets a generous
   // budget; the assertions themselves stay short so a genuinely missing element fails fast.
   timeout: 90_000,

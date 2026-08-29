@@ -102,12 +102,7 @@ export function AppBackground({ children }: AppBackgroundProps): JSX.Element {
           </RadialGradient>
         </Defs>
         <Circle cx="0" cy="0" r={GLOW_BOX * GLOW_RADIUS} fill="url(#atlas-glow-gold)" />
-        <Circle
-          cx={GLOW_BOX}
-          cy="0"
-          r={GLOW_BOX * GLOW_RADIUS}
-          fill="url(#atlas-glow-cyan)"
-        />
+        <Circle cx={GLOW_BOX} cy="0" r={GLOW_BOX * GLOW_RADIUS} fill="url(#atlas-glow-cyan)" />
       </Svg>
       <TextureOverlay role="canvas" />
       <View style={styles.content}>{children}</View>
