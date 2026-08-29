@@ -33,14 +33,18 @@ import { spacing, uiText } from '@/theme';
 import { useTheme } from '@/theme/runtime';
 
 import { CrossRefSheet } from './crossref/CrossRefSheet';
+import { CulturalSheet } from './cultural/CulturalSheet';
+import { ContextSheet } from './context/ContextSheet';
 import { HistorySheet } from './history/HistorySheet';
 import { LineageSheet } from './lineage/LineageSheet';
 import { ManuscriptSheet } from './manuscript/ManuscriptSheet';
+import { MeditateSheet } from './meditate/MeditateSheet';
 import { UNATTRIBUTED_COPY, hasProvenance } from './model/provenance';
 import type { SheetChrome } from './model/sheet-chrome';
 import type { TextualBadge } from './model/textual-payloads';
 import type { VerseTarget } from './model/verse-target';
 import { RootSheet } from './root/RootSheet';
+import { StructureSheet } from './structure/StructureSheet';
 
 /** Inputs to {@link TextualSheet}. */
 export interface TextualSheetProps {
@@ -117,6 +121,22 @@ export function TextualSheet({
     case 'manuscript':
       return (
         <ManuscriptSheet badge={badge} chrome={chrome} {...(testID === undefined ? {} : { testID })} />
+      );
+    case 'structure':
+      return (
+        <StructureSheet badge={badge} chrome={chrome} {...(testID === undefined ? {} : { testID })} />
+      );
+    case 'cultural':
+      return (
+        <CulturalSheet badge={badge} chrome={chrome} {...(testID === undefined ? {} : { testID })} />
+      );
+    case 'meditate':
+      return (
+        <MeditateSheet badge={badge} chrome={chrome} {...(testID === undefined ? {} : { testID })} />
+      );
+    case 'context':
+      return (
+        <ContextSheet badge={badge} chrome={chrome} {...(testID === undefined ? {} : { testID })} />
       );
   }
 }

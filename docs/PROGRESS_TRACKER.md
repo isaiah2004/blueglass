@@ -51,12 +51,18 @@ one chapter.** Concretely:
    Add the `pericope` table (GiST range index, boundaries from BSB USFM `\s` headings —
    `Q-009`) and compute the spec's per-passage JSON at build time from verse-keyed rows.
    A hand-maintained `ACTS_16_11_15.json`-per-chapter file is the anti-pattern.
-2. **Split every badge into "ingest" vs. "generate," and scale each differently.**
+2. **Split every badge into "ingest" vs. "author," and scale each differently.**
    Route, 3D City pins, Word Root, Cross-Ref, Lineage, Manuscript are deterministic joins
    against real open datasets — write the loader once, it lights up all 66 books at once.
    History's `year_approx`/`roman_emperor`, Chiasm/Structure, Cultural, Meditate have no
-   dataset — they are a fixed-cost-per-passage content pipeline (LLM-generated with
-   review, or a small hand-built table), never one-off hand authoring.
+   dataset — they are authored directly by the coding agent, per passage, at zero
+   incremental API cost (`Q-024`), reviewed by the product owner before shipping, never
+   one-off hand authoring with no review trail. **This is a review-bandwidth constraint,
+   not a money constraint** — see `Q-024`: the old `$0.10`/`$0.40` budget language
+   described a hypothetical paid third-party pipeline, not what actually ships. That
+   pricing only re-applies if (a) an automated pipeline ever replaces hand-authoring at
+   scale, or (b) the Studio Assistant's live, per-question grounded chat — the one
+   surface with a genuine ongoing runtime cost, and the one to meter/bill per use.
 3. **Models emit names, never coordinates or other structured facts.** All geometry
    (`camera_center`, `zoom_level`) is computed from resolved gazetteer bounding boxes.
    Never let scale re-open the "model guesses the number" failure mode (41km mean error
@@ -89,6 +95,12 @@ addition to its own walkthrough.
   geocoding, Theographic, STEPBible, lexicons — already vendored under `data/raw/`) and a
   Postgres target schema. That is data-pipeline work, not UI work, and is the correct next
   session's focus once loaders are scoped.
+- **M7 no longer needs a reviewer-queue *tool*.** With `Q-024`'s amendment, authored badge
+  content (Structure, Cultural, Meditate, History rationale) is written directly by the
+  coding agent and reviewed by the product owner in the normal PR/commit review flow —
+  no separate review-queue UI or generation-pipeline service is required for v1. The
+  `reviewer-queue-tool` todo is downgraded from "must build" to "revisit only if/when an
+  automated pipeline replaces hand-authoring at scale."
 
 ## 5 · Session log
 
@@ -97,3 +109,4 @@ addition to its own walkthrough.
 | 2026-08-29 | Verified M0–M3 already satisfied in code (not previously named as milestones in `CHANGELOG.md`). Filled in the three undocumented mockup rows (`image2`, `image4`, `image7`) in `docs/product/design-language.md`. Added this tracker and `docs/product/copilot-mockup-spec.md` (textual, Copilot-actionable descriptions of every mockup screen and sheet, mapped to real file paths). |
 | 2026-08-29 | Added §3 "Scaling & extensibility principles" — the 6 rules every future milestone must satisfy so the app works canon-wide (66 books) by construction, not per-chapter. Derived from `docs/architecture/data-inventory.md` and `docs/architecture/ai-model-strategy.md`; not new decisions, just made explicit and binding here. |
 | 2026-08-29 | Confirmed scope: v1 targets **Acts only** (28 chapters, ~230 generated records, human-reviewed per `Q-012`; $0.10 AI budget per `ai-model-strategy.md`), on architecture that is canon-wide by construction (§3). Whole-NT/whole-canon generation is explicitly held until reviewer capacity is re-answered — do not scale generation past Acts without revisiting `Q-012`. Execution gaps ahead of that: M4 loaders unwritten, M6 blocked on the RAG cosine-similarity fix (M3 item 3), no reviewer-queue tool exists yet for the human-review gate, and this sandbox needed a manual Node 20.19.4 + pnpm 10.33 toolchain (repo requires `engines.node >=20.19.4`; the environment default is Node 16 with no pnpm) and has no reachable Postgres/Docker daemon for running the loaders end-to-end. |
+| 2026-08-29 | Shipped the last four `[Structure]`/`[Cultural]`/`[Meditate]`/`[Context]` badge sheets (all 10 UI sheets now exist), plus the `[Lineage]`/`[Manuscript]` sheets and the `lineage` theme-hue fix from the prior entry. Landed `Q-024`: amended `Q-012`'s cost framing — badge enrichment content (Structure, Cultural, Meditate, History rationale) is authored directly by the coding agent at zero incremental API cost, gated only by product-owner review bandwidth, not by an OpenRouter-style dollar budget; that budget math (`ai-model-strategy.md` §5) now applies only to (a) a hypothetical future automated pipeline at scale, and (b) the Studio Assistant's live grounded chat, which remains the one surface with a real ongoing per-call cost and the correct one to meter/bill. Acts stays the sequencing priority (spec'd MVP target), but the cost-based ceiling on going past Acts is gone — expansion to the rest of the canon is now a review-bandwidth question, tracked the same way. `reviewer-queue-tool` todo downgraded accordingly (see §4). |

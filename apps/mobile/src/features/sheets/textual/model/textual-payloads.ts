@@ -33,22 +33,30 @@
  */
 
 import type {
+  ContextBadgePayload,
   CrossRefBadgePayload,
+  CulturalBadgePayload,
   HistoryBadgePayload,
   InlineBadgeBase,
   LineageBadgePayload,
   ManuscriptBadgePayload,
+  MeditateBadgePayload,
   OriginalLanguage,
+  StructureBadgePayload,
   TimelineEvent,
   VerseKeyRange,
 } from '@atlas/shared';
 
 export type {
+  ContextBadgePayload,
   CrossRefBadgePayload,
+  CulturalBadgePayload,
   HistoryBadgePayload,
   LineageBadgePayload,
   ManuscriptBadgePayload,
+  MeditateBadgePayload,
   OriginalLanguage,
+  StructureBadgePayload,
   TimelineEvent,
 };
 
@@ -115,6 +123,25 @@ export type LineageSheetBadge = InlineBadgeBase<'lineage', LineageBadgePayload>;
 /** The `[Manuscript]` badge, envelope and all. Also re-exported as-is. */
 export type ManuscriptSheetBadge = InlineBadgeBase<'manuscript', ManuscriptBadgePayload>;
 
+/** The `[Structure]` badge, envelope and all. Re-exported as-is. */
+export type StructureSheetBadge = InlineBadgeBase<'structure', StructureBadgePayload>;
+
+/** The `[Cultural]` badge, envelope and all. Re-exported as-is. */
+export type CulturalSheetBadge = InlineBadgeBase<'cultural', CulturalBadgePayload>;
+
+/** The `[Meditate]` badge, envelope and all. Re-exported as-is. */
+export type MeditateSheetBadge = InlineBadgeBase<'meditate', MeditateBadgePayload>;
+
+/**
+ * The `[Context]` badge, envelope and all. Re-exported as-is.
+ *
+ * Rendered by `ContextSheet` as a static shell — the payload is drawn, but the sheet does
+ * not (yet) call a live grounded-chat endpoint. Live wiring is gated on `M3`'s RAG/pgvector
+ * fix, tracked as `m3-rag-pgvector`; wiring `ContextSheet` to a real model ahead of that
+ * fix would let an ungrounded answer through with a Grounding Confidence meter that lies.
+ */
+export type ContextSheetBadge = InlineBadgeBase<'context', ContextBadgePayload>;
+
 /**
  * Any badge this folder knows how to render.
  *
@@ -126,7 +153,11 @@ export type TextualBadge =
   | HistorySheetBadge
   | CrossRefSheetBadge
   | LineageSheetBadge
-  | ManuscriptSheetBadge;
+  | ManuscriptSheetBadge
+  | StructureSheetBadge
+  | CulturalSheetBadge
+  | MeditateSheetBadge
+  | ContextSheetBadge;
 
 /** The discriminants this folder answers to. */
 export type TextualBadgeKind = TextualBadge['kind'];
