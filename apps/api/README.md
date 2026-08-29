@@ -186,3 +186,57 @@ are not his to license. `scripts/murai_copyright.py` drops any cell carrying a
 verse reference or a quotation mark — 7,108 of 10,078 English cells — and the
 Japanese column, which is contaminated the same way, is never read. An
 integration test re-proves in SQL that nothing quoted survived.
+
+## Loading People/Lineage and the Cultural dictionary
+
+Two more deterministic ingests, no model and no network at load time. Either
+order is fine — neither depends on the other:
+
+```bash
+docker compose exec api python -m scripts.ingest_people      # genealogy graph
+docker compose exec api python -m scripts.ingest_dictionary  # citation table
+```
+
+Measured on 2026-08-29, from the acquired files in `data/raw/`:
+
+|                                                                    |         Rows |
+| ------------------------------------------------------------------ | ------------: |
+| `people` (Theographic, every row loaded regardless of `status`)     |     **3,069** |
+| `person_relations` — `parent-of`                                    |     **1,784** |
+| `person_relations` — `spouse-of`                                    |       **104** |
+| `person_mentions`                                                   |    **28,240** |
+| `dictionary_entries` (Easton 3,962 + Smith 4,561)                   |     **8,523** |
+| `dictionary_citations` (single-verse and same-chapter refs only)    |    **54,545** |
+
+Both loaders are idempotent, verify their source files' SHA-256 against
+`data/raw/<dir>/PROVENANCE.md` before parsing, and prove the committed rows
+inside the loading transaction — `scripts/person_assertions.py` and
+`scripts/dictionary_assertions.py`.
+
+**Lineage is a graph, not prose.** `person_relations.kind` is only
+`parent-of` or `spouse-of` — Theographic also publishes siblings, but
+`LineageRelationKind` (`packages/shared`) has no sibling variant yet, so
+Theographic's sibling columns are not loaded. Deriving that edge is a product
+decision about what the badge draws, not something this loader should decide
+by writing a row nothing downstream reads.
+
+**Cultural is a citation table, not the badge.** `dictionary_entries`/
+`dictionary_citations` give the Cultural badge's authored `explanation` prose
+(M7, `Q-024`) something deterministic to quote and cite. The loader writes no
+prose itself. NEUU's Easton + Smith was chosen over unfoldingWord's `en_tn`
+per `docs/architecture/dataset-validation.md` §3.5 ("Option D"): `en_tn` is
+officially NEEDS-DECISION and only 18.7% of its Acts notes are culturally
+informative, where Easton/Smith are cleared USE and verse-indexed across the
+whole canon. Of 56,155 raw scripture references in the two dictionaries,
+54,545 (97.1%) resolve to one verse or a same-chapter range and become a
+citation row; the rest — whole-chapter references, cross-chapter ranges, and
+a small number of malformed sentinel values the source itself carries — are
+counted and reported by the loader rather than guessed at.
+
+**`Q-007` (share-alike) applies to people, not the dictionary.** Theographic
+is CC BY-SA 4.0, so `people`/`person_relations`/`person_mentions` stay in
+their own tables, reachable by `WHERE share_alike` on their `data_sources`
+row, and must never be blended into a bundled or redistributed record. NEUU
+is CC BY 4.0 (its two source dictionaries are themselves public domain), so
+`dictionary_entries`/`dictionary_citations` carry no share-alike obligation —
+only the same `AI-05` `source_id` every table here carries.
