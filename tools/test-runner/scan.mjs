@@ -17,6 +17,7 @@
  *   node tools/test-runner/scan.mjs --quiet   # print only when something is waiting
  */
 import { execFileSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
 
 const BRANCH_PREFIX = 'test/';
 const REQUEST_PATH = '.testing/request.md';
@@ -179,7 +180,12 @@ export function scanBranches() {
 }
 
 // ── CLI ────────────────────────────────────────────────────────────────────
-if (import.meta.url === 'file://' + process.argv[1].replace(/\\/g, '/')) {
+// `pathToFileURL` rather than string-building the URL: on Windows the drive letter and the
+// separators do not survive a naive comparison, so the guard silently never fired and the
+// CLI printed nothing at all.
+const invokedDirectly = import.meta.url === pathToFileURL(process.argv[1] ?? '').href;
+
+if (invokedDirectly) {
   const branches = scanBranches();
   const waiting = branches.filter((b) => b.status === 'waiting');
   const invalid = branches.filter((b) => b.status === 'invalid');
