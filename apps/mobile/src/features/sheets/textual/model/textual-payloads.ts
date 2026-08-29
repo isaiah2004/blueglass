@@ -2,12 +2,13 @@
  * The three textual badges, as the sheets consume them.
  *
  * Purpose
- *   `[Root]`, `[History]` and `[Cross-Ref]` are served by
- *   `GET /badges/chapters/{translation}/{book}/{chapter}` and typed on the server in
- *   `apps/api/app/modules/badges/presentation/schemas.py`. This module states the same
- *   three payloads in the client's vocabulary — camelCase, `VerseKey` instead of a packed
- *   integer — so a sheet component never touches a wire field and never has to guess
- *   whether a value is present.
+ *   `[Root]`, `[History]`, `[Cross-Ref]`, `[Lineage]` and `[Manuscript]` are the five badge
+ *   kinds `TextualSheet` routes to, whichever `packages/shared` module their payload
+ *   actually lives in (`textual-badge.types.ts` for three of them, `historical-badge.types`
+ *   for History, `literary-badge.types` for Lineage) — this folder groups by where a badge
+ *   renders, not by that split. This module states each payload in the client's
+ *   vocabulary — camelCase, `VerseKey` instead of a packed integer — so a sheet component
+ *   never touches a wire field and never has to guess whether a value is present.
  *
  * Key responsibilities
  *   - Re-export the two shared payload types that already match the wire exactly, rather
@@ -35,12 +36,21 @@ import type {
   CrossRefBadgePayload,
   HistoryBadgePayload,
   InlineBadgeBase,
+  LineageBadgePayload,
+  ManuscriptBadgePayload,
   OriginalLanguage,
   TimelineEvent,
   VerseKeyRange,
 } from '@atlas/shared';
 
-export type { CrossRefBadgePayload, HistoryBadgePayload, OriginalLanguage, TimelineEvent };
+export type {
+  CrossRefBadgePayload,
+  HistoryBadgePayload,
+  LineageBadgePayload,
+  ManuscriptBadgePayload,
+  OriginalLanguage,
+  TimelineEvent,
+};
 
 /**
  * Sheet content for `[Root]` — one original-language word.
@@ -97,12 +107,26 @@ export type HistorySheetBadge = InlineBadgeBase<'history', HistorySheetPayload>;
 export type CrossRefSheetBadge = InlineBadgeBase<'cross-ref', CrossRefBadgePayload>;
 
 /**
+ * The `[Lineage]` badge, envelope and all. `LineageBadgePayload` in `@atlas/shared`
+ * matches the wire exactly, so unlike `[Root]` it is re-exported rather than restated.
+ */
+export type LineageSheetBadge = InlineBadgeBase<'lineage', LineageBadgePayload>;
+
+/** The `[Manuscript]` badge, envelope and all. Also re-exported as-is. */
+export type ManuscriptSheetBadge = InlineBadgeBase<'manuscript', ManuscriptBadgePayload>;
+
+/**
  * Any badge this folder knows how to render.
  *
  * Narrow on `kind` before reaching `payload`; `TextualSheet` is the one place that does
  * so, and every sheet below it receives an already-narrowed badge.
  */
-export type TextualBadge = RootSheetBadge | HistorySheetBadge | CrossRefSheetBadge;
+export type TextualBadge =
+  | RootSheetBadge
+  | HistorySheetBadge
+  | CrossRefSheetBadge
+  | LineageSheetBadge
+  | ManuscriptSheetBadge;
 
 /** The discriminants this folder answers to. */
 export type TextualBadgeKind = TextualBadge['kind'];

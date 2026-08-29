@@ -26,6 +26,7 @@
 
 import {
   formatVerseReference,
+  parseOsisPoint,
   toVerseReference,
   verseKeyFromNumber,
   type VerseKey,
@@ -143,6 +144,24 @@ export function rangeTarget(range: VerseKeyRange, label?: string): VerseTarget {
  */
 export function spansMultipleVerses(range: VerseKeyRange): boolean {
   return range.end.value > range.start.value;
+}
+
+/**
+ * Describe where a tap on an OSIS id should go, for the two payloads that carry OSIS ids
+ * instead of a resolved `VerseKey` — a `[Lineage]` person's introduction and a messianic
+ * prophecy's location (`literary-badge.types.ts`).
+ *
+ * @param osis - An OSIS point reference, e.g. `1Sam.16.13`.
+ * @param label - Optional override for the destination's label.
+ * @returns The destination, or `undefined` when the id does not parse — a lineage row with
+ *   an unparsable id is shown without a jump-to-verse action rather than dropped, since the
+ *   name and relationship are still true even when the reference is not actionable.
+ *   Side effects: none.
+ */
+export function osisTarget(osis: string, label?: string): VerseTarget | undefined {
+  const result = parseOsisPoint(osis);
+
+  return result.ok ? verseTarget(result.value, label) : undefined;
 }
 
 /**

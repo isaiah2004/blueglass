@@ -21,7 +21,7 @@ data/behaviour yet) · ⬜ not started. A row only moves to ✅ after the milest
 | M2 | One badge, end to end, on real data | ✅ | commit `7ce7758`; inline badge + Route/City spatial sheets |
 | M3 | Identity, and the three defects that must not ship | ✅ (verified, uncommitted as a named milestone) | `app/modules/identity/*` (device-id resolver, no `dev-user` literal), `app/modules/study/presentation/router.py` (write requires `CurrentIdentity`, indexing decoupled from the request), CORS reads `settings.cors_origins` not `*`, `.gitignore` covers `.env*`. See §3 below for the one open follow-up. |
 | M4 | The deterministic ingest (places, roots, culture, people) | ⬜ | `data/raw/*` holds vendored source snapshots only; no loader writes to Postgres yet |
-| M5 | The sourced badge sheets | 🟡 | Route, 3D City, Word Root, Cross-Ref, History sheets exist (`src/features/sheets/`); Lineage, Manuscript, Structure(Chiasm), Cultural still missing |
+| M5 | The sourced badge sheets | 🟡 | Route, 3D City, Word Root, Cross-Ref, History, Lineage, Manuscript sheets exist (`src/features/sheets/textual/`); Structure(Chiasm), Cultural, Meditate, Studio-Assistant `[Context]` still missing. Lineage/Manuscript unverified in this sandbox — no build/run available, see §4 |
 | M6 | Grounded chat that actually cites | ⬜ | no RAG/pgvector module in `apps/api` yet; Studio Assistant / `[Context]` sheet not built |
 | M7 | Generated enrichment, with review | ⬜ | — |
 | M8 | The habit loop (Home tab) | 🟡 | `app/(tabs)/index.tsx` is scaffold copy, no streak/sync data (`A-03` not built) |
@@ -34,7 +34,7 @@ data/behaviour yet) · ⬜ not started. A row only moves to ✅ after the milest
 | Tab / Screen | Mockup(s) | Status | Notes |
 |---|---|---|---|
 | Home | `image3.png`, `image10.png` | 🟡 scaffold | Needs streak ring, Today's Drop hero, 3-step checklist, quick-access carousel — see `docs/product/copilot-mockup-spec.md` §Home |
-| Bible (reader) | `image1,2,4,6,8,9,11.png` | ✅ core / 🟡 sheets | Reader canvas + 5 of 10 badge sheets shipped; Lineage, Manuscript, Structure, Cultural, Meditate, and the Studio Assistant `[Context]` sheet remain |
+| Bible (reader) | `image1,2,4,6,8,9,11.png` | ✅ core / 🟡 sheets | Reader canvas + 7 of 10 badge sheets shipped (Route, 3D City, Word Root, Cross-Ref, History, Lineage, Manuscript); Structure, Cultural, Meditate, and the Studio Assistant `[Context]` sheet remain |
 | Discover | `image5.png` | 🟡 scaffold | 3D Travel Routes, Empire Timeline, Literary Patterns cards not wired |
 | Studio | `image12.png` | 🟡 scaffold | Grounded Chat / Custom Notebooks toggle, audio overview, 2×2 artifact grid not wired |
 | Journal | `image7.png` | 🟡 scaffold | Streak tracker, milestone reward, reflections feed, saved resources not wired; blocked on `J-01` client-side encryption |

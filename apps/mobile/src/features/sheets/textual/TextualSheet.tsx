@@ -34,6 +34,8 @@ import { useTheme } from '@/theme/runtime';
 
 import { CrossRefSheet } from './crossref/CrossRefSheet';
 import { HistorySheet } from './history/HistorySheet';
+import { LineageSheet } from './lineage/LineageSheet';
+import { ManuscriptSheet } from './manuscript/ManuscriptSheet';
 import { UNATTRIBUTED_COPY, hasProvenance } from './model/provenance';
 import type { SheetChrome } from './model/sheet-chrome';
 import type { TextualBadge } from './model/textual-payloads';
@@ -102,6 +104,19 @@ export function TextualSheet({
           chrome={chrome}
           {...(testID === undefined ? {} : { testID })}
         />
+      );
+    case 'lineage':
+      return (
+        <LineageSheet
+          badge={badge}
+          onOpenVerse={onOpenVerse}
+          chrome={chrome}
+          {...(testID === undefined ? {} : { testID })}
+        />
+      );
+    case 'manuscript':
+      return (
+        <ManuscriptSheet badge={badge} chrome={chrome} {...(testID === undefined ? {} : { testID })} />
       );
   }
 }

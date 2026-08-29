@@ -61,6 +61,7 @@ for the system's intelligence (AI, sources, analysis, navigation).
 | Manuscript | cyan |
 | Cross-Ref | gold |
 | Root | cyan |
+| Lineage | rose `#E8749C` (`#B03863` light) — resolves `Q-018`; distinct from gold/cyan/blue/violet so the family-tree sheet is never mistaken for a devotional or analytical one |
 | Structure | blue |
 | Cultural | gold |
 | Context | cyan |
