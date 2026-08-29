@@ -103,9 +103,25 @@ the same breath as "the key only has $2".
    131 km, and the latter invented a location absent from the passage — a direct pillar-3
    violation.
 
-**Not silently resolved.** Queued as `AI-02b` for override at leisure. Because the model
-registry makes a swap a one-line change (`packages/ai-guard/src/registry.ts`), being wrong
-here costs one edit, not rework.
+**RESOLVED by the product owner in `AI-02b`: use `openai/gpt-4o-mini`.**
+Cheap ($0.15 / $0.60 per M), not open-weight, comfortably under the guard's $1.00 ceiling,
+and it is what the prototype's Next.js config actually ran. The `anthropic/claude-sonnet-4.5`
+reading is dead — the price ceiling would refuse it at import time regardless.
+
+Applied to **`grounded_chat`** and **`editorial`**. Deliberately **not** applied to
+`extract_structured`, which stays on `mistralai/mistral-small-3.2-24b-instruct`: the
+question was asked and answered about the *chat* model — the role the Next.js config used
+gpt-4o-mini for — and extraction is a different job with a measured benchmark behind it
+(41 km mean coordinate error against 79 and 131). Flagged to the product owner; a one-line
+change if they want extraction moved too.
+
+Both prose tasks keep an **open-weight fallback** (`deepseek-v4-flash`, `gemma-4-31b-it`),
+so if OpenAI is unreachable or rate-limits, chat degrades to a model with no second-vendor
+dependency rather than failing. Locked by tests in `packages/ai-guard/src/registry.test.ts`.
+
+**Consequence:** a second vendor and a second key are now on the critical path for chat.
+Combined with `Q-010` (paid OpenAI embeddings), OpenAI is now a hard dependency for both
+chat and retrieval.
 
 ### C-2 · `D-01`'s stored answer did not match its own option string
 
@@ -173,7 +189,6 @@ Taken by the fleet, within the constraints above.
 
 | # | Question | Proceeding on |
 |---|---|---|
-| `AI-02b` | Frontier vs open-weight models (conflict C-1). | Benchmarked open-weight defaults. |
 | `Q-012` | Review bar for AI-generated badge content. | Human-reviewed before visible, Acts only. |
 | `Q-021` | Icon family for the eleven badge glyphs. | Monochrome SVG paths vendored in-repo. |
 | `Q-022` | Behaviour when a grounded-chat stream drops mid-answer. | Keep partial text, show Retry — never spend without a tap. |

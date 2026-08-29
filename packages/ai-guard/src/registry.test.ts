@@ -159,10 +159,27 @@ describe('the shipped catalogue', () => {
     expect(Object.keys(MODEL_REGISTRY)).toHaveLength(AI_TASKS.length);
   });
 
-  it('uses the benchmarked models from the model strategy document', () => {
+  it('keeps the benchmarked open-weight models for the measured tasks', () => {
+    // Extraction stays on the model that won the benchmark (41 km mean coordinate error
+    // against 79 and 131). `AI-02b` moved the prose tasks off open weights but was asked
+    // and answered about the *chat* model, so this one is unaffected.
     expect(resolveModel('extract_structured').id).toBe('mistralai/mistral-small-3.2-24b-instruct');
-    expect(resolveModel('grounded_chat').id).toBe('qwen/qwen3-235b-a22b-2507');
     expect(resolveModel('classify_cheap').id).toBe('mistralai/mistral-nemo');
+  });
+
+  it('routes the prose tasks to the model the product owner chose in AI-02b', () => {
+    // Not open-weight, and that is deliberate: the product owner resolved the conflict
+    // between "whatever the spark app was using" and the no-frontier constraint by picking
+    // the cheap OpenAI model the prototype's Next.js config actually ran.
+    expect(resolveModel('grounded_chat').id).toBe('openai/gpt-4o-mini');
+    expect(resolveModel('editorial').id).toBe('openai/gpt-4o-mini');
+  });
+
+  it('keeps an open-weight fallback under both prose tasks', () => {
+    // If OpenAI is unreachable or rate-limits, chat degrades to a model with no second
+    // vendor dependency rather than failing outright.
+    expect(resolveModel('grounded_chat').fallback?.id).toBe('deepseek/deepseek-v4-flash');
+    expect(resolveModel('editorial').fallback?.id).toBe('google/gemma-4-31b-it');
   });
 
   it('keeps the measured 600-token extraction cap, because 200 truncates the schema', () => {

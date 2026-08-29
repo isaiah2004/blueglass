@@ -101,15 +101,20 @@ const LLAMA_31_8B_INSTRUCT: ModelSpec = {
  * package's public API uses. Same model, same price, shorter name.
  */
 export const TASK_MODELS: Readonly<Record<AiTask, ModelSpec>> = {
-  // Largest open-weight instruct model in the cheap tier (235B MoE, 22B active). Chosen for
-  // refusal discipline: pillar 3 requires the model decline when retrieved context does not
-  // support an answer. Non-reasoning, so there is no hidden token tax.
+  // Chosen by the product owner in `AI-02b`, resolving the conflict between "whatever the
+  // spark app was using" and the standing no-frontier constraint. Not open-weight, but
+  // cheap and well under the price ceiling — and it is what the prototype's Next.js config
+  // actually ran (`AI_CHAT_MODEL=openai/gpt-4o-mini`), unlike the FastAPI config's
+  // `anthropic/claude-sonnet-4.5`, which the ceiling would refuse outright.
+  //
+  // The fallback stays open-weight on purpose: if OpenAI is unreachable or rate-limits,
+  // grounded chat degrades to a model with no second vendor dependency rather than failing.
   grounded_chat: {
-    id: 'qwen/qwen3-235b-a22b-2507',
+    id: 'openai/gpt-4o-mini',
     host: 'openrouter',
-    inputPerMTok: 0.0875,
-    outputPerMTok: 0.35,
-    contextWindow: 262_144,
+    inputPerMTok: 0.15,
+    outputPerMTok: 0.6,
+    contextWindow: 128_000,
     maxOutputTokens: 1_200,
     supportsStructuredOutput: true,
     supportsTools: true,
@@ -118,6 +123,11 @@ export const TASK_MODELS: Readonly<Record<AiTask, ModelSpec>> = {
     fallback: DEEPSEEK_V4_FLASH,
   },
 
+  // Deliberately NOT moved to `openai/gpt-4o-mini` with the two prose tasks. `AI-02b` was
+  // asked and answered about the *chat* model — which is the role the prototype's Next.js
+  // config used gpt-4o-mini for — and extraction is a different job with hard measured
+  // evidence behind it. Flagged to the product owner; one line to change if they disagree.
+  //
   // Won the measured extraction benchmark: 41 km mean coordinate error against 79 and 131.
   // `openai/gpt-oss-120b` is deliberately absent — it hallucinated a location not present in
   // the passage, which disqualifies it under pillar 3 regardless of price.
@@ -139,15 +149,18 @@ export const TASK_MODELS: Readonly<Record<AiTask, ModelSpec>> = {
     fallback: QWEN3_30B_A3B_INSTRUCT,
   },
 
-  // Chapter summaries and dual-host podcast scripts. Prose quality was NOT benchmarked —
-  // this row is estimated from model class and must be re-tested before the podcast
-  // pipeline ships (model strategy §2, job 3).
+  // Chapter summaries and dual-host podcast scripts. Follows `grounded_chat` onto the model
+  // the product owner chose in `AI-02b`, since both are prose-generation jobs and splitting
+  // them would mean two voices in one product.
+  //
+  // Prose quality was never benchmarked — that caveat survives the model change and must be
+  // tested before the podcast pipeline ships (model strategy §2, job 3).
   editorial: {
-    id: 'qwen/qwen3-235b-a22b-2507',
+    id: 'openai/gpt-4o-mini',
     host: 'openrouter',
-    inputPerMTok: 0.0875,
-    outputPerMTok: 0.35,
-    contextWindow: 262_144,
+    inputPerMTok: 0.15,
+    outputPerMTok: 0.6,
+    contextWindow: 128_000,
     maxOutputTokens: 2_000,
     supportsStructuredOutput: true,
     supportsTools: true,
