@@ -79,6 +79,29 @@ class Settings(BaseSettings):
     search_default_limit: int = Field(default=40, ge=1, le=200)
     search_max_limit: int = Field(default=200, ge=1)
 
+    # ── Retrieval embeddings (Q-010) ───────────────────────────────────────
+    # A paid vendor, deliberately: Q-010 weighed self-hosting BGE-M3 at $0/embed
+    # against OpenAI at ~$0.02/M tokens and chose the paid API to avoid a second
+    # service in the compose stack. The key is optional at the Settings level
+    # so the API can start without it; scripts/ingest_embeddings.py is the only
+    # thing that needs it, and it fails loudly, naming the variable, if unset.
+    openai_api_key: SecretStr | None = Field(
+        default=None,
+        description="OpenAI API key. Only scripts.ingest_embeddings needs this.",
+    )
+    embedding_model: str = Field(
+        default="text-embedding-3-small",
+        description="Q-010's chosen embedding model. Changing this invalidates "
+        "every stored vector -- embedding_dimensions and the pgvector column "
+        "width would need to move together.",
+    )
+    embedding_dimensions: int = Field(
+        default=1536,
+        description="Must match db/versions/0003_20260829_retrieval_embeddings.py's "
+        "EMBEDDING_DIMENSIONS. Not derived from it: a migration and a running "
+        "process should not import each other.",
+    )
+
     # ── HTTP ──────────────────────────────────────────────────────────────
     allowed_origins: str = Field(
         default="*",
