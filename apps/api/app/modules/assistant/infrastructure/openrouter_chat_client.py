@@ -63,8 +63,12 @@ class OpenRouterChatClient:
         self._api_key = api_key
         self._model = model
         self._fallback_model = fallback_model
+        # Deliberately NOT base_url=_ENDPOINT with a later post(""). httpx joins an empty
+        # path onto a base by appending a slash, giving ".../chat/completions/", and
+        # OpenRouter answers that with a bare 404 "Not Found" — which reads exactly like an
+        # unknown model id and sends you hunting through the catalogue. The same mistake
+        # existed in OpenAiEmbeddingClient; both are fixed by posting the full URL.
         self._client = httpx.AsyncClient(
-            base_url=_ENDPOINT,
             headers={"Authorization": "Bearer " + api_key} if api_key else {},
             timeout=timeout_seconds,
         )
@@ -89,7 +93,7 @@ class OpenRouterChatClient:
         self, model: str, messages: Sequence[ChatMessage], *, max_tokens: int
     ) -> ChatCompletionResult:
         response = await self._client.post(
-            "",
+            _ENDPOINT,
             json={
                 "model": model,
                 "max_tokens": max_tokens,

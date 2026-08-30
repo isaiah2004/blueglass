@@ -56,8 +56,13 @@ class OpenAiEmbeddingClient:
     def __init__(self, *, api_key: str, model: str, timeout_seconds: float = 30.0) -> None:
         self._api_key = api_key
         self._model = model
+        # Deliberately NOT base_url=_ENDPOINT with a later post(""). httpx joins an empty
+        # path onto a base by appending a slash, producing "/v1/embeddings/", and OpenAI
+        # rejects the trailing slash with "Invalid URL". base_url is for a prefix shared by
+        # several paths; this client calls exactly one endpoint, so it posts the full URL.
+        # Only a real call against the live API surfaces this -- every test double accepts
+        # whatever URL it is handed.
         self._client = httpx.AsyncClient(
-            base_url=_ENDPOINT,
             headers={"Authorization": "Bearer " + api_key} if api_key else {},
             timeout=timeout_seconds,
         )
@@ -79,7 +84,7 @@ class OpenAiEmbeddingClient:
 
     async def _embed_batch(self, batch: Sequence[str]) -> list[list[float]]:
         response = await self._client.post(
-            "", json={"model": self._model, "input": list(batch)}
+            _ENDPOINT, json={"model": self._model, "input": list(batch)}
         )
         if response.status_code != httpx.codes.OK:
             raise EmbeddingClientError(
