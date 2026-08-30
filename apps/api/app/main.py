@@ -31,6 +31,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from . import __version__
 from .config import Settings, get_settings
 from .config.container import Container
+from .modules.assistant.presentation import router as assistant_router
 from .modules.badges.presentation import router as badge_router
 from .modules.health.presentation import router as health_router
 from .modules.identity.presentation import router as identity_router
@@ -118,6 +119,7 @@ def create_app(
     app.include_router(identity_router)
     app.include_router(study_router)
     app.include_router(badge_router)
+    app.include_router(assistant_router)
     return app
 
 

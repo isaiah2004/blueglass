@@ -2,27 +2,22 @@
  * ContextSheet — the `[Context]` badge's sheet body, the Studio Assistant's background.
  *
  * Purpose
- *   `image11.png`'s dual-host audio card, grounded summary, and suggested-question chips —
- *   drawn from whatever payload the sheet is handed, with a low-confidence caveat when the
- *   grounding is weak (`design-language.md` §8.3).
- *
- * Why this is a shell and not a live chat box
- *   `m3-rag-pgvector` (the tracker's own todo) is still open: the API has no pgvector/RAG
- *   module yet, and wiring a chat box to a model ahead of that fix would let an ungrounded
- *   answer through wearing a Grounding Confidence meter that lies about it. This sheet
- *   renders whatever payload it is given — a fixture today, a real one once M6 lands — and
- *   the suggested questions are shown as static chips, not yet a live input.
+ *   `image11.png`'s dual-host audio card, grounded summary, and grounded-chat box — the
+ *   summary and audio metadata are drawn from whatever payload the sheet is handed, with
+ *   a low-confidence caveat when the grounding is weak (`design-language.md` §8.3); the
+ *   "ask about this passage" section is a live thread wired to `POST /assistant/ask`
+ *   (`AssistantThread`), seeded with the payload's suggested questions as starter chips.
  *
  * Responsibilities
  *   - Owns: the order of the sections, the badge's hue, and the low-confidence caveat.
  *   - Does NOT own: audio playback (no player is wired here, only the overview's metadata)
- *     or the grounded chat itself.
+ *     or the grounded chat wire contract (`AssistantThread`/`assistant-api.ts` own that).
  */
 
 import type { JSX } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { borderWidth, metadataText, radius, spacing, uiText, type Theme } from '@/theme';
+import { metadataText, spacing, uiText, type Theme } from '@/theme';
 import { createThemedStyles, useTheme } from '@/theme/runtime';
 
 import { CaveatNote } from '../chrome/CaveatNote';
@@ -32,6 +27,7 @@ import { SourceStrip } from '../chrome/SourceStrip';
 import type { SheetChrome } from '../model/sheet-chrome';
 import type { ContextSheetBadge } from '../model/textual-payloads';
 import { verseLabel } from '../model/verse-target';
+import { AssistantThread } from './AssistantThread';
 import { GroundingMeter } from './GroundingMeter';
 
 /** Shown under the meter when grounding is weak. */
@@ -99,17 +95,9 @@ export function ContextSheet({ badge, chrome = 'full', testID }: ContextSheetPro
         ) : null}
       </SheetSection>
 
-      {payload.suggestedQuestions.length === 0 ? null : (
-        <SheetSection eyebrow="Ask about this passage" badgeTint={tint} testID="context-questions">
-          <View style={styles.chipRow}>
-            {payload.suggestedQuestions.map((question) => (
-              <View key={question} style={styles.chip}>
-                <Text style={styles.chipText}>{question}</Text>
-              </View>
-            ))}
-          </View>
-        </SheetSection>
-      )}
+      <SheetSection eyebrow="Ask about this passage" badgeTint={tint} testID="context-questions">
+        <AssistantThread suggestedQuestions={payload.suggestedQuestions} tint={tint} />
+      </SheetSection>
 
       {chrome === 'body' ? null : (
         <SourceStrip sources={badge.sources} testID="context-sources" />
@@ -124,13 +112,4 @@ const useStyles = createThemedStyles((theme: Theme) => ({
   audioHosts: { ...uiText('sm', 'semiBold'), color: theme.ink.primary },
   audioMeta: { ...metadataText('xs', 'medium'), color: theme.ink.secondary },
   summary: { ...uiText('sm'), color: theme.ink.primary, marginBottom: spacing.sm },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  chip: {
-    borderWidth: borderWidth.hairline,
-    borderColor: theme.line.hairline,
-    borderRadius: radius.pill,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  chipText: { ...uiText('sm'), color: theme.ink.primary },
 }));

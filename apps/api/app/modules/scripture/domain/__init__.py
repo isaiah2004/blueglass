@@ -12,6 +12,7 @@ from .books import (
     Testament,
 )
 from .entities import Chapter, SearchHit, SearchScope, Translation, Verse
+from .reference_label import display_reference
 from .verse_key import osis_id_for, osis_id_from_key, split_verse_key, verse_key
 
 __all__ = [
@@ -30,6 +31,7 @@ __all__ = [
     "Verse",
     "book_from_any",
     "book_number_from_any",
+    "display_reference",
     "normalise_token",
     "osis_id_for",
     "osis_id_from_key",
